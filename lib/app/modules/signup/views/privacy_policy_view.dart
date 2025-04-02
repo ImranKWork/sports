@@ -54,8 +54,6 @@ class PrivacyPolicyView extends GetView<HelpSupportController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
-
                       Obx(
                             () =>
                         controller.isLoading.value

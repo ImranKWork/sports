@@ -585,6 +585,10 @@ class _HomeWidgetState extends State<HomeWidget> {
         );
       }
 
+      if(controller.videos.length==0){
+        return Center(child: Text("Data not Found, Please select another category"),);
+      }
+
       return SizedBox(
         height: 540,
 
