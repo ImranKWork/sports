@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sports_trending/app/modules/challenges_details/views/challenges_details.dart';
 import 'package:sports_trending/app/modules/home/views/video_player_screen.dart';
 
 import '../../../../source/color_assets.dart';
@@ -145,7 +146,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                               SizedBox(height: 10),
                               ElevatedButton(
                                 onPressed: () {
-                                  // Join Challenge Click Event
+                                  Get.to(() => ChallengesDetails());
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.orange,
@@ -690,10 +691,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size10),
 
-                        Image.asset(
-                          "assets/images/chat.png",
-                          height: 22,
-                          width: 22,
+                        GestureDetector(
+                          onTap: () => _showCommentSection(context),
+                          child: Image.asset(
+                            "assets/images/chat.png",
+                            height: 22,
+                            width: 22,
+                          ),
                         ),
                         SizedBox(height: Constant.size5),
 
@@ -725,6 +729,182 @@ class _HomeWidgetState extends State<HomeWidget> {
       );
     });
   }
+}
+
+void _showCommentSection(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    backgroundColor: Colors.white,
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Column(
+              children: [
+                /// **Drag Indicator**
+                Container(
+                  height: 4,
+                  width: 73,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Color(0xffA6A6A6),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+
+                /// **Header Row**
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: Get.back,
+                        child: Image.asset(
+                          "assets/images/back.png",
+                          scale: 2.8,
+                          color: ColorAssets.black,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Text("Comments", style: Styles.buttonTextStyle18),
+                      Spacer(),
+                      Text("View 10 Comments", style: Styles.textBlueHeader),
+                      SizedBox(width: 10),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                /// **Comment List (Scrollable)**
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    controller: scrollController,
+                    physics: BouncingScrollPhysics(),
+                    itemCount: 10, // Replace with actual comment count
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Image.asset(ImageAssets.img6),
+                        title: Text(
+                          "John Deo | 21 h",
+                          style: Styles.textMetalHeader.copyWith(
+                            color: ColorAssets.black,
+                          ),
+                        ),
+                        subtitle: Text(
+                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                          style: Styles.textStyleWhite16.copyWith(fontSize: 12),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                /// **TextField for Writing Comments**
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      top: BorderSide(color: Colors.grey.shade300, width: 1),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(ImageAssets.img6, height: 40, width: 40),
+                      SizedBox(width: Constant.size5),
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: "Add a Comment....",
+                            hintStyle: Styles.textStyleWhite16.copyWith(
+                              fontSize: 12,
+                            ),
+
+                            filled: true,
+                            fillColor:
+                                Colors.white, // ✅ **Pure White Background**
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 10,
+                            ),
+
+                            // ✅ Border with Color
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade400, // **Border Color**
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color:
+                                    ColorAssets
+                                        .themeColorOrange, // **Border color when active**
+                                width: 1.5,
+                              ),
+                            ),
+
+                            // ✅ Send Button & Emoji Inside TextField with Divider
+                            suffixIcon: Row(
+                              mainAxisSize:
+                                  MainAxisSize.min, // ✅ Keeps it compact
+                              children: [
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                    ImageAssets.smile,
+                                    scale: 3,
+                                  ),
+                                ),
+
+                                // ✅ **Vertical Divider**
+                                Container(
+                                  height: 20,
+                                  width: 1.5, // Thin Divider
+                                  color: Colors.grey.shade400,
+                                  margin: EdgeInsets.symmetric(horizontal: 8),
+                                ),
+
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                    ImageAssets.send,
+                                    scale: 3,
+                                  ),
+                                ),
+                                SizedBox(width: Constant.size10),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+    },
+  );
 }
 
 /*import 'package:flutter/material.dart';

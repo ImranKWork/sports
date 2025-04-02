@@ -62,7 +62,12 @@ class Styles {
     fontWeight: FontWeight.w500,
     fontFamily: StringAssets.fontFamilyArchivo,
   );
-
+  static TextStyle textStyleWhiteRegular = TextStyle(
+    color: ColorAssets.white,
+    fontSize: FontSize.s12,
+    fontWeight: FontWeight.w500,
+    fontFamily: StringAssets.fontFamilyArchivo,
+  );
   static TextStyle textStyleBlackMedium = TextStyle(
     color: ColorAssets.black,
     fontSize: FontSize.s16,
@@ -88,6 +93,12 @@ class Styles {
     color: ColorAssets.white,
     fontSize: FontSize.s14,
     fontWeight: FontWeight.w500,
+    fontFamily: StringAssets.fontFamilyArchivo,
+  );
+  static TextStyle textMetalHeader18 = TextStyle(
+    color: ColorAssets.white,
+    fontSize: FontSize.s18,
+    fontWeight: FontWeight.w600,
     fontFamily: StringAssets.fontFamilyArchivo,
   );
   static TextStyle textBlueHeader = TextStyle(

@@ -49,4 +49,9 @@ class ImageAssets {
   static String img3 = "assets/images/img3.png";
   static String img4 = "assets/images/img4.png";
   static String img5 = "assets/images/img5.png";
+  static String img6 = "assets/images/img6.png";
+  static String send = "assets/images/send.png";
+  static String smile = "assets/images/smile.png";
+  static String check = "assets/images/check.png";
+  static String unCheck = "assets/images/uncheck.png";
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:sports_trending/app/modules/search/views/filter_page.dart';
+import 'package:sports_trending/app/modules/search/views/search_back.dart';
 
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
@@ -52,7 +54,12 @@ class SearchWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Image.asset("assets/images/back.png", scale: 2.2),
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => SearchBack());
+                },
+                child: Image.asset("assets/images/back.png", scale: 2.2),
+              ),
               Container(
                 height: Get.height / 20,
                 width: Get.width / 1.4,
@@ -84,7 +91,12 @@ class SearchWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              Image.asset("assets/images/filter.png", scale: 3),
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => FilterPage());
+                },
+                child: Image.asset("assets/images/filter.png", scale: 3),
+              ),
             ],
           ),
         ),
