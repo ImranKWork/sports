@@ -1,0 +1,11 @@
+import 'package:get/get.dart';
+import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
+
+
+class PhoneSignUpBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<LoginController>(()=>
+        LoginController());
+  }
+}

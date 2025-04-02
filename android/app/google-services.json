@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "346127172343",
+    "project_id": "sporttrendning",
+    "storage_bucket": "sporttrendning.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346127172343:android:707cfb5a137135d29749f2",
+        "android_client_info": {
+          "package_name": "com.sporttrending.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346127172343-36gmqhstc33ffm77uh5h5opun3n9gr0k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sporttrending.app",
+            "certificate_hash": "e50853784070cd1b3fb80ba8737a607f68667b1c"
+          }
+        },
+        {
+          "client_id": "346127172343-q35780ion57psojiskqslt0cfjfiu17b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sporttrending.app",
+            "certificate_hash": "3b5b9b4614b175531b905967235413c1b7107b1e"
+          }
+        },
+        {
+          "client_id": "346127172343-qee8ehuic5tkv5qkib1nfq711p453irs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSO2CYnhl5e7Ll2JAi0km0Z3qXvsAKrU4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346127172343-qee8ehuic5tkv5qkib1nfq711p453irs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
