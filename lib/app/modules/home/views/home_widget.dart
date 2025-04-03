@@ -627,7 +627,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       }
 
       if (controller.videos.isEmpty) {
-        return SizedBox();
+        return Center(child: Text("No Videos found with selected category"));
       }
 
       return SizedBox(

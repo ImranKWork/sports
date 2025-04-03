@@ -7,12 +7,15 @@ import 'package:sports_trending/app/modules/language/controllers/language_contro
 import 'package:sports_trending/service/navigation_service.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/source/string_assets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/shared_preference.dart';
 import 'helper/life_cycle_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('video_cache');
   await SharedPref.init();
   await Firebase.initializeApp();
   Get.put(LifeCycleController());

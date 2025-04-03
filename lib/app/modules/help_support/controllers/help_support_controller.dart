@@ -19,7 +19,7 @@ class HelpSupportController extends GetxController {
   var selectedContent = "".obs;
   var content = "".obs;
   final faqPageKey = "Frquently";
-  final privacyPolicyPageKey = "Term_Policy";
+  final privacyPolicyPageKey = "Privacy_Policy";
   final ApiProvider apiService = ApiProvider();
   var faqList = <FAQModel>[].obs;
 

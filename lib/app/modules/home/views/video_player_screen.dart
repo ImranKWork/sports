@@ -61,6 +61,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           ),
         )..addListener(() {
           if (!mounted) return;
+          // Manual Play
 
           setState(() {
             isPlaying = _controller!.value.isPlaying;
@@ -70,7 +71,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
             _scrollToNextVideo();
           }
         });
-
+        _controller!.cue(videoId);
         setState(() {});
         _controller?.play();
       });

@@ -224,7 +224,7 @@ class LoginView extends StatelessWidget {
                                           fillColor: Colors.white,
                                           filled: true,
                                           hintText:
-                                              "${languageController.getLabel("phone_empty")} (Ex: +1 XXXXXXXXXX)",
+                                              "${languageController.getLabel("phone_empty")} (Ex: XXXXXXXXXX)",
                                           hintStyle: Styles.textBlackHeader,
                                           border: UnderlineInputBorder(),
                                           focusedBorder: OutlineInputBorder(
