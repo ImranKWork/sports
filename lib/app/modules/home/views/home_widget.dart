@@ -192,7 +192,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                   ],
                 ),
                 Stack(
-                  clipBehavior: Clip.none, // Allow overflow
+                  clipBehavior: Clip.none,
                   alignment: Alignment.center,
                   children: [
                     Column(
@@ -585,8 +585,230 @@ class _HomeWidgetState extends State<HomeWidget> {
         );
       }
 
-      if(controller.videos.length==0){
-        return Center(child: Text("Data not Found, Please select another category"),);
+      if (controller.videos.isEmpty) {
+        return SizedBox();
+      }
+
+      return SizedBox(
+        height: 540,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.videos.length,
+          itemBuilder: (context, index) {
+            var video = controller.videos[index];
+            String thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? '';
+
+            return GestureDetector(
+              onTap: () {
+                Get.to(
+                  () => ShortsPlayerScreen(
+                    allVideos: controller.videos,
+                    initialIndex: index,
+                  ),
+                );
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5),
+                    width: Get.width / 1.4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(17.37),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(17.37),
+                      child: Image.network(
+                        thumbnailUrl,
+                        fit: BoxFit.cover,
+                        width: Get.width / 1.4,
+                        height: 540,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child; // Image loaded successfully
+                          }
+                          return SizedBox(
+                            width: Get.width / 1.4,
+                            height: 540,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: ColorAssets.themeColorOrange,
+                                value:
+                                    loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            (loadingProgress
+                                                    .expectedTotalBytes ??
+                                                1)
+                                        : null,
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/world_cup.png',
+                            fit: BoxFit.cover,
+                            width: Get.width / 1.4,
+                            height: 540,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  /*     Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5),
+                    width: Get.width / 1.4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(17.37),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(17.37),
+                      child: FadeInImage(
+                        placeholder: AssetImage('assets/images/loader.gif'),
+                        image:
+                            thumbnailUrl.isNotEmpty
+                                ? NetworkImage(thumbnailUrl)
+                                : AssetImage('assets/images/world_cup.png')
+                                    as ImageProvider,
+                        fit: BoxFit.cover,
+                        width: Get.width / 1.4,
+                        height: 540,
+                      ),
+                    ),
+                  ),*/
+                  Positioned(
+                    bottom: 10,
+                    left: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 15,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white24,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Text(
+                              "FIFA World Cup",
+                              style: Styles.textStyleWhiteSemiBold,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(height: Constant.size8),
+                          SizedBox(
+                            width: Get.width / 1.7,
+                            child: Text(
+                              video['title'] ?? 'No Title',
+                              style: Styles.textStyleWhiteSemiBold,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(height: Constant.size8),
+                          Text(
+                            (video['videoContent']?['snippet']?['tags']
+                                        as List<dynamic>?)
+                                    ?.map((tag) => '#$tag ')
+                                    .join(' ') ??
+                                'No Tags',
+                            style: Styles.textStyleWhiteNormal.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 10,
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/like.png",
+                          height: 22,
+                          width: 22,
+                        ),
+                        SizedBox(height: Constant.size5),
+                        Text(
+                          video['appLikes']?.toString() ?? '0',
+                          style: Styles.textStyleWhiteMedium,
+                        ),
+                        SizedBox(height: Constant.size10),
+                        GestureDetector(
+                          onTap: () => _showCommentSection(context),
+                          child: Image.asset(
+                            "assets/images/chat.png",
+                            height: 22,
+                            width: 22,
+                          ),
+                        ),
+                        SizedBox(height: Constant.size5),
+                        Text(
+                          video['appComments']?.toString() ?? '0',
+                          style: Styles.textStyleWhiteMedium,
+                        ),
+                        SizedBox(height: Constant.size10),
+                        Image.asset(
+                          "assets/images/chat.png",
+                          height: 22,
+                          width: 22,
+                        ),
+                        SizedBox(height: Constant.size5),
+                        Text(
+                          video['appShares']?.toString() ?? '0',
+                          style: Styles.textStyleWhiteMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    });
+  }
+
+  /*Widget _buildHorizontalImageList() {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return SizedBox(
+          height: 540,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 5,
+            itemBuilder: (context, index) {
+              return Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  width: Get.width / 1.4,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(17.37),
+                    color: Colors.white,
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      }
+
+      if (controller.videos.length == 0) {
+        return Center(
+          child: Text("Data not Found, Please select another category"),
+        );
       }
 
       return SizedBox(
@@ -732,7 +954,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         ),
       );
     });
-  }
+  }*/
 }
 
 void _showCommentSection(BuildContext context) {
@@ -910,450 +1132,3 @@ void _showCommentSection(BuildContext context) {
     },
   );
 }
-
-/*import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-
-import '../../../../source/styles.dart';
-
-class ShortsPlayerScreen extends StatefulWidget {
-  final List<Map<String, dynamic>> allVideos;
-  final int initialIndex;
-
-  const ShortsPlayerScreen({
-    super.key,
-    required this.allVideos,
-    required this.initialIndex,
-  });
-
-  @override
-  _ShortsPlayerScreenState createState() => _ShortsPlayerScreenState();
-}
-
-class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
-  late PageController _pageController;
-  YoutubePlayerController? _controller;
-  int currentIndex = 0;
-  bool isScrolling = false;
-  bool isPlaying = true;
-
-  @override
-  void initState() {
-    super.initState();
-    currentIndex = widget.initialIndex;
-    _pageController = PageController(initialPage: widget.initialIndex);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-    });
-  }
-
-  void _initializePlayer(String videoUrl) {
-    final String? videoId = YoutubePlayer.convertUrlToId(videoUrl);
-    if (videoId != null) {
-      _controller?.dispose();
-      _controller = null;
-      setState(() {});
-
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (!mounted) return;
-
-        _controller = YoutubePlayerController(
-          initialVideoId: videoId,
-          flags: const YoutubePlayerFlags(
-            autoPlay: true,
-            mute: false,
-            forceHD: true,
-            loop: false,
-            enableCaption: false,
-            isLive: false,
-          ),
-        )..addListener(() {
-          if (!mounted) return;
-
-          setState(() {
-            isPlaying = _controller!.value.isPlaying;
-          });
-
-          if (_controller!.value.playerState == PlayerState.ended) {
-            _scrollToNextVideo();
-          }
-        });
-
-        setState(() {});
-        _controller?.play();
-      });
-    }
-  }
-
-  void _scrollToNextVideo() {
-    if (isScrolling || currentIndex >= widget.allVideos.length - 1) return;
-
-    isScrolling = true;
-    currentIndex++;
-
-    _pageController
-        .animateToPage(
-          currentIndex,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        )
-        .then((_) {
-          isScrolling = false;
-          _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-        });
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: PageView.builder(
-        scrollDirection: Axis.vertical,
-        controller: _pageController,
-        itemCount: widget.allVideos.length,
-        onPageChanged: (index) {
-          if (index != currentIndex) {
-            setState(() {
-              currentIndex = index;
-              _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-            });
-          }
-        },
-        itemBuilder: (context, index) {
-          final videoData = widget.allVideos[index];
-
-          return Stack(
-            children: [
-              if (_controller != null)
-                YoutubePlayerBuilder(
-                  player: YoutubePlayer(
-                    controller: _controller!,
-                    aspectRatio: 9 / 16,
-                  ),
-                  builder: (context, player) {
-                    return Center(child: player);
-                  },
-                )
-              else
-                const Center(child: CircularProgressIndicator()),
-
-              /// Back Button
-              Positioned(
-                top: 40,
-                left: 10,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-
-              /// Video Details (Left Bottom)
-              Positioned(
-                bottom: 100,
-                left: 10,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: Get.width / 1.7,
-
-                      child: Text(
-                        (videoData['videoContent']['snippet']['tags']
-                                    as List<dynamic>?)
-                                ?.map((tag) => '#$tag ')
-                                .join(' ') ??
-                            'No Tags',
-                        style: Styles.textStyleWhiteNormal.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: Get.width / 1.7,
-                      child: Text(
-                        videoData['title'] ?? 'No Title',
-                        style: Styles.textStyleWhiteSemiBold,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
-
-              Positioned(
-                bottom: 100,
-                right: 10,
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/images/like.png",
-                      height: 22,
-                      width: 22,
-                    ),
-                    Text(
-                      videoData['appLikes']?.toString() ?? '0',
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                    const SizedBox(height: 20),
-                    Image.asset(
-                      "assets/images/chat.png",
-                      height: 22,
-                      width: 22,
-                    ),
-                    Text(
-                      videoData['appComments']?.toString() ?? '0',
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                    const SizedBox(height: 20),
-                    Image.asset(
-                      "assets/images/share.png",
-                      height: 25,
-                      width: 25,
-                    ),
-                    Text(
-                      videoData['appShares']?.toString() ?? '0',
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-*/
-/*import 'package:better_player/better_player.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../../../../source/styles.dart';
-
-class ShortsPlayerScreen extends StatefulWidget {
-  final List<Map<String, dynamic>> allVideos;
-  final int initialIndex;
-
-  const ShortsPlayerScreen({
-    super.key,
-    required this.allVideos,
-    required this.initialIndex,
-  });
-
-  @override
-  _ShortsPlayerScreenState createState() => _ShortsPlayerScreenState();
-}
-
-class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
-  late PageController _pageController;
-  BetterPlayerController? _playerController;
-  int currentIndex = 0;
-  bool isScrolling = false;
-
-  @override
-  void initState() {
-    super.initState();
-    currentIndex = widget.initialIndex;
-    _pageController = PageController(initialPage: widget.initialIndex);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-    });
-  }
-
-  void _initializePlayer(String videoUrl) {
-    _playerController?.dispose(); // Previous player dispose
-    _playerController = null;
-    setState(() {}); // Reset UI
-
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (!mounted) return;
-
-      BetterPlayerDataSource dataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        videoUrl,
-      );
-
-      _playerController = BetterPlayerController(
-        BetterPlayerConfiguration(
-          autoPlay: true,
-          looping: true,
-          controlsConfiguration: BetterPlayerControlsConfiguration(
-            showControls: false,
-          ),
-        ),
-        betterPlayerDataSource: dataSource,
-      );
-
-      setState(() {});
-    });
-  }
-
-  void _scrollToNextVideo() {
-    if (isScrolling || currentIndex >= widget.allVideos.length - 1) return;
-
-    isScrolling = true;
-    currentIndex++;
-
-    _pageController
-        .animateToPage(
-          currentIndex,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        )
-        .then((_) {
-          isScrolling = false;
-          _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-        });
-  }
-
-  @override
-  void dispose() {
-    _playerController?.dispose();
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: PageView.builder(
-        scrollDirection: Axis.vertical,
-        controller: _pageController,
-        itemCount: widget.allVideos.length,
-        onPageChanged: (index) {
-          if (index != currentIndex) {
-            setState(() {
-              currentIndex = index;
-              _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-            });
-          }
-        },
-        itemBuilder: (context, index) {
-          final videoData = widget.allVideos[index];
-
-          return Stack(
-            children: [
-              if (_playerController != null)
-                Center(child: BetterPlayer(controller: _playerController!))
-              else
-                const Center(child: CircularProgressIndicator()),
-
-              /// Back Button
-              Positioned(
-                top: 40,
-                left: 10,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-
-              /// Video Details (Left Bottom)
-              Positioned(
-                bottom: 100,
-                left: 10,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: Get.width / 1.7,
-                      child: Text(
-                        (videoData['videoContent']['snippet']['tags']
-                                    as List<dynamic>?)
-                                ?.map((tag) => '#$tag ')
-                                .join(' ') ??
-                            'No Tags',
-                        style: Styles.textStyleWhiteNormal.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: Get.width / 1.7,
-                      child: Text(
-                        videoData['title'] ?? 'No Title',
-                        style: Styles.textStyleWhiteSemiBold,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
-
-              Positioned(
-                bottom: 100,
-                right: 10,
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/images/like.png",
-                      height: 22,
-                      width: 22,
-                    ),
-                    Text(
-                      videoData['appLikes']?.toString() ?? '0',
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                    const SizedBox(height: 20),
-                    Image.asset(
-                      "assets/images/chat.png",
-                      height: 22,
-                      width: 22,
-                    ),
-                    Text(
-                      videoData['appComments']?.toString() ?? '0',
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                    const SizedBox(height: 20),
-                    Image.asset(
-                      "assets/images/share.png",
-                      height: 25,
-                      width: 25,
-                    ),
-                    Text(
-                      videoData['appShares']?.toString() ?? '0',
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-*/

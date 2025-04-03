@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
-import 'package:sports_trending/app/modules/splash/controllers/splash_controller.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/source/image_assets.dart';
 import 'package:sports_trending/source/styles.dart' show Styles;
 import 'package:sports_trending/utils/screen_util.dart';
 import 'package:sports_trending/widgets/common_button.dart';
+
 import '../controllers/onboarding_controller.dart';
 
 class OnboardingView extends GetView<OnboardingController> {
@@ -20,70 +21,100 @@ class OnboardingView extends GetView<OnboardingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(() =>
-          languageController.isLoading.value ? Center(child: CircularProgressIndicator(),):
-          Stack(
-        children: [
-          PageView(
-            controller: onboardingController.pageController,
-            onPageChanged: (index) {
-              onboardingController.changePage(index);
-            },
-            children: [
-              OnboardingPage(
-                imagePath: ImageAssets.onboardingImg1,
-                title: languageController.getLabel("onboarding_sub_1"),
-                description: languageController.getLabel("onboarding_main_1"),
-              ),
-              OnboardingPage(
-                imagePath: ImageAssets.onboardingImg2,
-                title: languageController.getLabel("onbording_sub_2"),
-                description: languageController.getLabel("onbording_main_2"),
-              ),
-              OnboardingPage(
-                imagePath: ImageAssets.onboardingImg3,
-                title: languageController.getLabel("onbording_main_3"),
-                description: languageController.getLabel("onbording_main_3"),
-              ),
-            ],
-          ),
-          Positioned(
-            top: Constant.size40,
-            right: Constant.size20,
-            child: TextButton(
-              onPressed: () {
-                controller.onTapSkip();
-              },
-              child: Text(
-                languageController.getLabel("skip"),
-                style: Styles.textStyleBlackNormal,
-              ),
-            ),
-          ),
+      body: Obx(
+        () =>
+            languageController.isLoading.value
+                ? Center(child: CircularProgressIndicator())
+                : Stack(
+                  children: [
+                    PageView(
+                      controller: onboardingController.pageController,
+                      onPageChanged: (index) {
+                        onboardingController.changePage(index);
+                      },
+                      children: [
+                        OnboardingPage(
+                          imagePath: ImageAssets.onboardingImg1,
+                          title: languageController.getLabel(
+                            "onboarding_sub_1",
+                          ),
+                          description: languageController.getLabel(
+                            "onboarding_main_1",
+                          ),
+                        ),
+                        OnboardingPage(
+                          imagePath: ImageAssets.onboardingImg2,
+                          title: languageController.getLabel("onbording_sub_2"),
+                          description: languageController.getLabel(
+                            "onbording_main_2",
+                          ),
+                        ),
+                        OnboardingPage(
+                          imagePath: ImageAssets.onboardingImg3,
+                          title: languageController.getLabel(
+                            "onbording_main_3",
+                          ),
+                          description: languageController.getLabel(
+                            "onbording_main_3",
+                          ),
+                        ),
+                      ],
+                    ),
+                    Positioned(
+                      top: Constant.size40,
+                      right: Constant.size20,
+                      // child: TextButton(
+                      //   onPressed: () {
+                      //     // controller.onTapSkip();
+                      //     languageController.onDonePressed();
+                      //   },
+                      //   child: Text(
+                      //     languageController.getLabel("skip"),
+                      //     style: Styles.textStyleBlackNormal,
+                      //   ),
+                      // ),
+                      child: TextButton(
+                        onPressed: () {
+                          // controller.onTapSkip();
+                          languageController.onDonePressed();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeView()),
+                          );
+                        },
+                        child: Text(
+                          languageController.getLabel("skip"),
+                          style: Styles.textStyleBlackNormal,
+                        ),
+                      ),
+                    ),
 
-          Obx(
-                () => Positioned(
-              bottom: Constant.size10,
-              left: 10,
-              right: 10,
-              child: Container(
-                margin: EdgeInsets.all(Constant.size10),
-                width: Get.width,
-                child: CommonButton(
-                  label:
-                  controller.currentPage.value == 0 ||
-                      controller.currentPage.value == 1
-                      ? languageController.getLabel("next_btn")
-                      : languageController.getLabel("get_started"),
-                  onClick: () {
-                    controller.nextPage();
-                  },
+                    Obx(
+                      () => Positioned(
+                        bottom: Constant.size10,
+                        left: 10,
+                        right: 10,
+                        child: Container(
+                          margin: EdgeInsets.all(Constant.size10),
+                          width: Get.width,
+                          child: CommonButton(
+                            label:
+                                controller.currentPage.value == 0 ||
+                                        controller.currentPage.value == 1
+                                    ? languageController.getLabel("next_btn")
+                                    : languageController.getLabel(
+                                      "get_started",
+                                    ),
+                            onClick: () {
+                              controller.nextPage();
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ),
-        ],
-      )),
+      ),
     );
   }
 }

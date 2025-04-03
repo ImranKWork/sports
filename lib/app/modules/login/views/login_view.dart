@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:sports_trending/app/modules/forgot_password/views/forgot_password_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
@@ -13,7 +14,6 @@ import 'package:sports_trending/utils/string_extension.dart';
 import 'package:sports_trending/widgets/common_button.dart';
 import 'package:sports_trending/widgets/common_svg_images.dart';
 import 'package:sports_trending/widgets/custom_text_form_field.dart';
-import 'dart:io' show Platform;
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
@@ -204,14 +204,83 @@ class LoginView extends StatelessWidget {
                                             .copyWith(fontSize: FontSize.s14),
                                       ),
                                       SizedBox(height: 5),
-                                      CustomTextFormField(
-                                        input: TextInputAction.next,
-                                        textInputType: TextInputType.phone,
-
+                                      // CustomTextFormField(
+                                      //   input: TextInputAction.next,
+                                      //   textInputType: TextInputType.phone,
+                                      //
+                                      //   controller: controller.mobileController,
+                                      //   placeHolder:
+                                      //       "${languageController.getLabel("phone_empty")} (Ex: +1 XXXXXXXXXX)",
+                                      //   disableFloatingLabel: true,
+                                      // ),
+                                      IntlPhoneField(
                                         controller: controller.mobileController,
-                                        placeHolder:
-                                            "${languageController.getLabel("phone_empty")} (Ex: +1 XXXXXXXXXX)",
-                                        disableFloatingLabel: true,
+                                        textInputAction: TextInputAction.next,
+                                        keyboardType: TextInputType.phone,
+                                        decoration: InputDecoration(
+                                          fillColor: Colors.white,
+                                          filled: true,
+                                          hintText:
+                                              "${languageController.getLabel("phone_empty")} (Ex: +1 XXXXXXXXXX)",
+                                          hintStyle: Styles.textBlackHeader,
+                                          border: UnderlineInputBorder(),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: ColorAssets.white,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              Constant.size8,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.white,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              Constant.size8,
+                                            ),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              Constant.size8,
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: Colors.red,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      Constant.size8,
+                                                    ),
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                          contentPadding: EdgeInsets.all(10),
+                                          counterText: "",
+                                        ),
+                                        initialCountryCode: 'US',
+                                        disableLengthCheck: true,
+                                        showDropdownIcon: false,
+                                        onChanged: (phone) {},
+                                        validator: (phone) {
+                                          if (phone == null ||
+                                              phone.number.isEmpty) {
+                                            return 'Phone number is required';
+                                          } else if (phone.number.length < 10 ||
+                                              phone.number.length > 15) {
+                                            return 'Enter a valid phone number';
+                                          } else if (!RegExp(
+                                            r'^\d+$',
+                                          ).hasMatch(phone.number)) {
+                                            return 'Phone number should contain only digits';
+                                          }
+                                          return null;
+                                        },
                                       ),
 
                                       SizedBox(height: Constant.size15),
@@ -256,7 +325,6 @@ class LoginView extends StatelessWidget {
                                 SizedBox(height: Constant.size10),
                               ],
 
-                              // Remember Me & Forgot Password
                               if (controller.selectedIndex.value == 0) ...[
                                 Row(
                                   mainAxisAlignment:
@@ -443,27 +511,27 @@ class LoginView extends StatelessWidget {
                                         controller.youTubeLogin();
                                       },
                                     ),
+                                    // socialLoginButton(
+                                    //   "assets/images/facebook.svg",
+                                    //   () {
+                                    //     controller.facebookLogin();
+                                    //   },
+                                    // ),
+                                    // socialLoginButton(
+                                    //   "assets/images/instagram.svg",
+                                    //   () {},
+                                    // ),
+                                    // socialLoginButton(
+                                    //   "assets/images/twitter.svg",
+                                    //   () {
+                                    //     controller.signInWithTwitter();
+                                    //   },
+                                    // ),
+                                    // if (Platform.isIOS)
                                     socialLoginButton(
-                                      "assets/images/facebook.svg",
-                                      () {
-                                        controller.facebookLogin();
-                                      },
-                                    ),
-                                    socialLoginButton(
-                                      "assets/images/instagram.svg",
+                                      "assets/images/apple.svg",
                                       () {},
                                     ),
-                                    socialLoginButton(
-                                      "assets/images/twitter.svg",
-                                      () {
-                                        controller.signInWithTwitter();
-                                      },
-                                    ),
-                                    if (Platform.isIOS)
-                                      socialLoginButton(
-                                        "assets/images/apple.svg",
-                                        () {},
-                                      ),
                                   ],
                                 ),
                               ),

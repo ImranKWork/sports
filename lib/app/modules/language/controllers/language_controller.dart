@@ -66,10 +66,9 @@ class LanguageController extends GetxController {
       );
       if (register.statusCode == 200) {
         Future.delayed(const Duration(seconds: 1), () {
-          Get.offAll(() => LoginView());
+          //    Get.offAll(() => LoginView());
         });
       } else {
-        // Handle unsuccessful response if needed
         Get.snackbar(
           "Error",
           "Failed to update user information",
