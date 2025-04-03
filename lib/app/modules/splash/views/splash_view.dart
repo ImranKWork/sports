@@ -7,6 +7,7 @@ import 'package:sports_trending/source/image_assets.dart';
 import 'package:sports_trending/source/styles.dart';
 import 'package:sports_trending/utils/screen_util.dart';
 import 'package:sports_trending/widgets/common_svg_images.dart';
+
 import '../controllers/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
@@ -17,6 +18,7 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: ColorAssets.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -46,9 +48,9 @@ class SplashView extends GetView<SplashController> {
                         alignment: Alignment.center,
 
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            ColorAssets.themeColorOrange,
-                          ),
+                          // valueColor: AlwaysStoppedAnimation<Color>(
+                          color: ColorAssets.themeColorOrange,
+                          //   ),
                         ),
                       )
                       : const SizedBox(),

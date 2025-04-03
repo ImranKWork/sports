@@ -37,6 +37,7 @@ class SignUpView extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               child: Container(
+                height: Get.height / 1.2,
                 padding: EdgeInsets.all(Constant.size20),
                 decoration: BoxDecoration(
                   color: ColorAssets.purple,

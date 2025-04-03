@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/challenges_details/views/challenges_details.dart';
+import 'package:sports_trending/app/modules/home/views/premium_videos.dart';
 import 'package:sports_trending/app/modules/home/views/video_player_screen.dart';
 
 import '../../../../source/color_assets.dart';
@@ -10,7 +11,9 @@ import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_header.dart';
 import '../controllers/home_controller.dart';
+import 'challenges.dart';
 import 'imgae_pageindicator.dart';
+import 'leader_board.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -43,27 +46,33 @@ class _HomeWidgetState extends State<HomeWidget> {
       appBar: CommonAppBar(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.asset(ImageAssets.headerLogo),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: Constant.size5,
-                  horizontal: Constant.size5,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset(ImageAssets.headerLogo, scale: 3),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Constant.size5,
+                    horizontal: Constant.size5,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(Constant.size30),
+                    color: ColorAssets.lightPurple,
+                  ),
+                  child: Row(
+                    spacing: Constant.size5,
+
+                    children: [
+                      Image.asset(ImageAssets.star, scale: 3),
+                      SizedBox(width: 3),
+                      Text("250.0", style: Styles.textStyleWhiteMedium),
+                    ],
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Constant.size30),
-                  color: ColorAssets.lightPurple,
-                ),
-                child: Row(
-                  children: [
-                    Image.asset(ImageAssets.star),
-                    Text("250.0", style: Styles.textStyleWhiteMedium),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -94,7 +103,12 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                 Text("Challenges", style: Styles.buttonTextStyle18),
                 Spacer(),
-                Text("View All", style: Styles.textBlueHeader),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => ChallengesWidget());
+                  },
+                  child: Text("View All", style: Styles.textBlueHeader),
+                ),
                 SizedBox(width: Constant.size10),
               ],
             ),
@@ -187,7 +201,12 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                     Text("Leaderboards", style: Styles.buttonTextStyle18),
                     Spacer(),
-                    Text("View All", style: Styles.textBlueHeader),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(() => LeaderBoard());
+                      },
+                      child: Text("View All", style: Styles.textBlueHeader),
+                    ),
                     SizedBox(width: Constant.size5),
                   ],
                 ),
@@ -336,67 +355,89 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                 Text("Exclusive for you", style: Styles.buttonTextStyle18),
                 Spacer(),
-                Text("View All", style: Styles.textBlueHeader),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => PremiumVideos());
+                  },
+                  child: Text("View All", style: Styles.textBlueHeader),
+                ),
                 SizedBox(width: Constant.size10),
               ],
             ),
             SizedBox(height: Constant.size15),
+            Stack(
+              children: [
+                /// 🎯 Background Image with Overlay
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    "assets/images/playing_football.jpg",
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
 
-            Container(
-              height: 200,
-              width: Get.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          "assets/images/playing_football.jpg",
-                          width: double.infinity, // Full width
-                          height: 200, // Fixed height
-                          fit: BoxFit.cover, // Cover full space
-                        ),
-                      ),
+                /// 🎯 Semi-transparent Overlay
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.black54, // Semi-transparent black overlay
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
 
-                      /// 🎯 Grey Overlay (Semi-Transparent)
-                      Container(
-                        height: 200,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color:
-                              Colors.black54, // Semi-transparent black overlay
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-
-                      /// 🎯 Lock Image (Centered)
-                      Positioned.fill(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/images/lock.png",
-                                width: 80, // Adjust lock size
-                                height: 80,
-                                fit: BoxFit.contain,
-                              ),
-                              Text("250.0", style: Styles.textMetalHeader),
-                            ],
+                /// 🎯 Rating Container (Top-Left)
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: Constant.size5,
+                      horizontal: Constant.size5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Constant.size30),
+                      color: Colors.white24,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min, // Minimum required space
+                      children: [
+                        Image.asset(ImageAssets.star, scale: 3),
+                        SizedBox(width: 3),
+                        Text(
+                          "250.0",
+                          style: Styles.textStyleBlackSemiBold.copyWith(
+                            fontSize: 15,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+
+                /// 🎯 Lock Image (Centered)
+                Positioned.fill(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/images/lock.png",
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.contain,
+                        ),
+                        Text("250.0", style: Styles.textMetalHeader),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
+
             SizedBox(height: Constant.size15),
 
             Row(

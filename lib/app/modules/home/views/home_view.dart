@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sports_trending/app/modules/home/views/challenges.dart';
 import 'package:sports_trending/app/modules/profile/controllers/profile_controller.dart';
 import 'package:sports_trending/app/modules/profile/views/profile_view.dart';
 import 'package:sports_trending/source/color_assets.dart';
@@ -42,18 +43,6 @@ class HomeView extends GetView<HomeController> {
         return ProfileView();
     }
     return SizedBox();
-  }
-}
-
-class ChallengesWidget extends StatelessWidget {
-  const ChallengesWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [Center(child: Text("Challenges screen"))],
-    );
   }
 }
 

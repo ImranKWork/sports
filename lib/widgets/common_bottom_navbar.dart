@@ -16,7 +16,7 @@ class CommonBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:  EdgeInsets.only(bottom: Constant.size10),
+      padding: EdgeInsets.only(bottom: Constant.size10),
       decoration: BoxDecoration(
         color: Colors.white,
 
@@ -46,8 +46,17 @@ class CommonBottomNavigationBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                 SizedBox(height: Constant.size10),
-                Image.asset( _getImage(index), color: index != 2 ?  isSelected  ? ColorAssets.themeColorOrange : Colors.grey: null),
+                SizedBox(height: Constant.size10),
+                Image.asset(
+                  _getImage(index),
+                  color:
+                      index != 2
+                          ? isSelected
+                              ? ColorAssets.themeColorOrange
+                              : Colors.grey
+                          : null,
+                  scale: 3,
+                ),
               ],
             ),
           );

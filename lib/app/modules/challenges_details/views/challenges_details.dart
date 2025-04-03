@@ -572,9 +572,7 @@ class _ChallengesDetailsState extends State<ChallengesDetails> {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {
-                                Get.to(() => ChallengesDetails());
-                              },
+                              onPressed: () {},
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
                                 shape: RoundedRectangleBorder(

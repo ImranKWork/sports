@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'
-    show FacebookAuth;
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sports_trending/app/modules/edit_profile/controllers/edit_profile_controller.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
+import 'package:sports_trending/app/modules/language/views/language_view.dart';
+import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
 import 'package:sports_trending/app/modules/user_profile/views/user_profile_view.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
@@ -24,6 +22,7 @@ class ProfileView extends GetView<ProfileController> {
 
   final ImageController imageController = Get.put(ImageController());
   final LanguageController languageController = Get.find();
+
   final ProfileController profileController = Get.put(ProfileController());
   final EditProfileController editProfileController = Get.put(
     EditProfileController(),
@@ -36,28 +35,31 @@ class ProfileView extends GetView<ProfileController> {
       appBar: CommonAppBar(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.asset(ImageAssets.headerLogo),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: Constant.size5,
-                  horizontal: Constant.size5,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset(ImageAssets.headerLogo, scale: 3),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Constant.size5,
+                    horizontal: Constant.size5,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(Constant.size30),
+                    color: ColorAssets.lightPurple,
+                  ),
+                  child: Row(
+                    spacing: Constant.size5,
+                    children: [
+                      Image.asset(ImageAssets.star, scale: 3),
+                      Text("250.0", style: Styles.textStyleWhiteMedium),
+                    ],
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Constant.size30),
-                  color: ColorAssets.lightPurple,
-                ),
-                child: Row(
-                  spacing: Constant.size5,
-                  children: [
-                    Image.asset(ImageAssets.star),
-                    Text("250.0", style: Styles.textStyleWhiteMedium),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -172,6 +174,7 @@ class ProfileView extends GetView<ProfileController> {
 class CommonTileList extends StatelessWidget {
   CommonTileList({super.key});
   final LanguageController languageController = Get.find();
+  final LoginController loginController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +213,16 @@ class CommonTileList extends StatelessWidget {
           iconPath: ImageAssets.notification,
         ),
         CommonTile(
-          onTap: () {},
+          onTap: () {
+            Get.to(
+              () => LanguageView(
+                firstName: '',
+                lastName: '',
+                email: '',
+                accessToken: '',
+              ),
+            );
+          },
           text: languageController.getLabel("languages"),
           iconPath: ImageAssets.languages,
         ),
@@ -228,13 +240,14 @@ class CommonTileList extends StatelessWidget {
         ),
 
         CommonTile(
-          onTap: () async {
-            FirebaseAuth.instance.signOut();
-            await GoogleSignIn().signOut();
-            await FacebookAuth.instance.logOut(); //
-            SharedPref.clearData();
-
-            Get.offAllNamed('/login'); // Na
+          onTap: () {
+            // FirebaseAuth.instance.signOut();
+            // await GoogleSignIn().signOut();
+            // await FacebookAuth.instance.logOut(); //
+            // SharedPref.clearData();
+            //
+            // Get.offAllNamed('/login');
+            loginController.logout();
           },
           text: languageController.getLabel("logout"),
           iconPath: ImageAssets.logout,
@@ -269,8 +282,9 @@ class CommonTile extends StatelessWidget {
           children: [
             Image.asset(
               iconPath,
-              height: Constant.size32,
-              width: Constant.size32,
+              scale: 2.5,
+              // height: Constant.size30,
+              // width: Constant.size30,
               color: ColorAssets.darkGrey,
             ),
             Padding(

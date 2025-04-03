@@ -4,19 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/login/controllers/otp_verification_controller.dart';
 import 'package:sports_trending/app/modules/login/views/otp_verification.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sports_trending/app/modules/login/views/phone_signup.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/model/login/auth_error_model.dart';
 import 'package:sports_trending/model/sign_up/sign_up_response.dart';
 import 'package:sports_trending/providers/api_provider.dart';
 import 'package:sports_trending/utils/internet_controller.dart';
 import 'package:twitter_login/twitter_login.dart';
+
 import '../../../../source/color_assets.dart';
 
 class LoginController extends GetxController {
@@ -39,6 +37,12 @@ class LoginController extends GetxController {
     super.onInit();
 
     checkRememberedUser();
+    emailController.text = SharedPref.getString(PrefsKey.email) ?? "";
+    passwordController.text = SharedPref.getString(PrefsKey.password) ?? "";
+    print("Loaded Email: ${SharedPref.getString(PrefsKey.email)}"); // Debugging
+    print(
+      "Loaded Password: ${SharedPref.getString(PrefsKey.password)}",
+    ); // Debugging
   }
 
   final formKey = GlobalKey<FormState>();
@@ -48,8 +52,17 @@ class LoginController extends GetxController {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-  void toggleRememberMe() {
+  // void toggleRememberMe() {
+  //   rememberMe.value = !rememberMe.value;
+  // }
+  void toggleRememberMe() async {
     rememberMe.value = !rememberMe.value;
+    await SharedPref.setValue(PrefsKey.rememberMe, rememberMe.value);
+
+    if (!rememberMe.value) {
+      await SharedPref.remove(PrefsKey.email);
+      await SharedPref.remove(PrefsKey.password);
+    }
   }
 
   void setSelectedIndex(int val) {
@@ -57,6 +70,22 @@ class LoginController extends GetxController {
   }
 
   Future<void> saveRememberMe(String email, String password) async {
+    print("Remember Me Selected: ${rememberMe.value}"); // Debugging
+
+    if (rememberMe.value) {
+      await SharedPref.setValue(PrefsKey.rememberMe, true);
+      await SharedPref.setValue(PrefsKey.email, email);
+      await SharedPref.setValue(PrefsKey.password, password);
+      print("Email Saved: $email"); // Debugging
+    } else {
+      await SharedPref.remove(PrefsKey.rememberMe);
+      await SharedPref.remove(PrefsKey.email);
+      await SharedPref.remove(PrefsKey.password);
+      print("Remember Me Disabled, Email Removed"); // Debugging
+    }
+  }
+
+  /* Future<void> saveRememberMe(String email, String password) async {
     if (rememberMe.value) {
       await SharedPref.setValue(PrefsKey.rememberMe, true);
       await SharedPref.setValue(PrefsKey.email, email);
@@ -65,9 +94,8 @@ class LoginController extends GetxController {
       await SharedPref.remove(PrefsKey.rememberMe);
     }
   }
-
-  saveUserInfo(SignUpResponseModel signUpResponse) async{
-
+*/
+  saveUserInfo(SignUpResponseModel signUpResponse) async {
     SharedPref.setValue(PrefsKey.isLoggedIn, true);
     SharedPref.setValue(PrefsKey.userId, signUpResponse.data.id);
     SharedPref.setValue(PrefsKey.fName, signUpResponse.data.firstname);
@@ -75,17 +103,29 @@ class LoginController extends GetxController {
     SharedPref.setValue(PrefsKey.email, signUpResponse.data.email);
     SharedPref.setValue(PrefsKey.phoneNo, signUpResponse.data.phoneNumber);
     SharedPref.setValue(PrefsKey.language, signUpResponse.data.language);
-    SharedPref.setValue(PrefsKey.profilePhoto, signUpResponse.data.profileImage);
+    SharedPref.setValue(
+      PrefsKey.profilePhoto,
+      signUpResponse.data.profileImage,
+    );
     SharedPref.setValue(PrefsKey.bio, signUpResponse.data.bio);
-    SharedPref.setValue(PrefsKey.memberSince, signUpResponse.data.createdAt.toIso8601String());
+    SharedPref.setValue(
+      PrefsKey.memberSince,
+      signUpResponse.data.createdAt.toIso8601String(),
+    );
   }
 
   Future<void> checkRememberedUser() async {
     bool? isRemembered = SharedPref.getBool(PrefsKey.rememberMe);
-
+    rememberMe.value = isRemembered ?? false;
     if (isRemembered == true) {
       emailController.text = SharedPref.getString(PrefsKey.email) ?? "";
       passwordController.text = SharedPref.getString(PrefsKey.password) ?? "";
+      print(
+        "Loaded Email: ${SharedPref.getString(PrefsKey.email)}",
+      ); // Debugging
+      print(
+        "Loaded Password: ${SharedPref.getString(PrefsKey.password)}",
+      ); // Debugging
     }
   }
 
@@ -168,6 +208,8 @@ class LoginController extends GetxController {
       );
 
       if (user != null) {
+        await saveRememberMe(email, password);
+
         debugPrint("user loginWithEmail : $user");
         await updateUser(user, isLoginWithEmail: true);
       }
@@ -287,6 +329,30 @@ class LoginController extends GetxController {
       );
     }
     return null;
+  }
+
+  Future<void> logout() async {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+    await FacebookAuth.instance.logOut();
+
+    bool? isRemembered = SharedPref.getBool(PrefsKey.rememberMe) ?? false;
+
+    if (!isRemembered) {
+      await SharedPref.clearData();
+    } else {
+      await SharedPref.remove(PrefsKey.isLoggedIn);
+      await SharedPref.remove(PrefsKey.userId);
+      await SharedPref.remove(PrefsKey.fName);
+      await SharedPref.remove(PrefsKey.lName);
+      await SharedPref.remove(PrefsKey.phoneNo);
+      await SharedPref.remove(PrefsKey.language);
+      await SharedPref.remove(PrefsKey.profilePhoto);
+      await SharedPref.remove(PrefsKey.bio);
+      await SharedPref.remove(PrefsKey.memberSince);
+    }
+
+    Get.offAllNamed('/login');
   }
 
   Future<UserCredential?> signInWithYouTube() async {
@@ -507,7 +573,6 @@ class LoginController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-
     }
     isLoading(false);
   }

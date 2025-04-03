@@ -53,7 +53,10 @@ class LoginView extends StatelessWidget {
                         padding: EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: ColorAssets.purple,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            topRight: Radius.circular(8),
+                          ),
                         ),
                         child: SingleChildScrollView(
                           child: Column(
@@ -321,10 +324,28 @@ class LoginView extends StatelessWidget {
                                         .validatePassword());
                                   },
                                 ),
+                                SizedBox(height: Constant.size5),
 
-                                SizedBox(height: Constant.size10),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.to(() => ForgotPasswordView());
+                                    },
+                                    child: Text(
+                                      languageController.getLabel(
+                                        "forgot_password",
+                                      ),
+                                      style: Styles.textStyleWhiteMedium
+                                          .copyWith(
+                                            color: ColorAssets.grey,
+                                            fontSize: FontSize.s13,
+                                          ),
+                                    ),
+                                  ),
+                                ),
                               ],
-
+                              SizedBox(height: 10),
                               if (controller.selectedIndex.value == 0) ...[
                                 Row(
                                   mainAxisAlignment:
@@ -371,44 +392,32 @@ class LoginView extends StatelessWidget {
                                             ),
                                           ),
                                           SizedBox(width: Constant.size5),
-                                          InkWell(
-                                            onTap:
-                                                () =>
-                                                    controller
-                                                        .toggleRememberMe(),
-                                            child: Text(
-                                              languageController.getLabel(
-                                                "remember_me",
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: InkWell(
+                                              onTap:
+                                                  () =>
+                                                      controller
+                                                          .toggleRememberMe(),
+                                              child: Text(
+                                                languageController.getLabel(
+                                                  "remember_me",
+                                                ),
+                                                style: Styles
+                                                    .textStyleWhiteMedium
+                                                    .copyWith(
+                                                      color: ColorAssets.grey,
+                                                      fontSize: FontSize.s13,
+                                                    ),
                                               ),
-                                              style: Styles.textStyleWhiteMedium
-                                                  .copyWith(
-                                                    color: ColorAssets.grey,
-                                                    fontSize: FontSize.s13,
-                                                  ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Expanded(
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Get.to(() => ForgotPasswordView());
-                                        },
-                                        child: Text(
-                                          languageController.getLabel(
-                                            "forgot_password",
-                                          ),
-                                          style: Styles.textStyleWhiteMedium
-                                              .copyWith(
-                                                color: ColorAssets.grey,
-                                                fontSize: FontSize.s13,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
+                                SizedBox(height: 5),
                               ],
 
                               // Login Button

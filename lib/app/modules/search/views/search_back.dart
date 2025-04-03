@@ -22,22 +22,25 @@ class _SearchBackState extends State<SearchBack> {
       appBar: CommonAppBar(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Get.back();
-                },
-                child: Image.asset("assets/images/back.png", scale: 2.2),
-              ),
-              SizedBox(width: Constant.size25),
-              Text(
-                "Back",
-                style: Styles.textStyleBlackMedium.copyWith(
-                  color: ColorAssets.white,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Image.asset("assets/images/back.png", scale: 2.2),
                 ),
-              ),
-            ],
+                SizedBox(width: Constant.size50),
+                Text(
+                  "Back",
+                  style: Styles.textStyleBlackMedium.copyWith(
+                    color: ColorAssets.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

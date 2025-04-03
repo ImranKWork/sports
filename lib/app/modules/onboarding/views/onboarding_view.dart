@@ -63,19 +63,8 @@ class OnboardingView extends GetView<OnboardingController> {
                     Positioned(
                       top: Constant.size40,
                       right: Constant.size20,
-                      // child: TextButton(
-                      //   onPressed: () {
-                      //     // controller.onTapSkip();
-                      //     languageController.onDonePressed();
-                      //   },
-                      //   child: Text(
-                      //     languageController.getLabel("skip"),
-                      //     style: Styles.textStyleBlackNormal,
-                      //   ),
-                      // ),
                       child: TextButton(
                         onPressed: () {
-                          // controller.onTapSkip();
                           languageController.onDonePressed();
                           Navigator.pushReplacement(
                             context,
@@ -88,7 +77,6 @@ class OnboardingView extends GetView<OnboardingController> {
                         ),
                       ),
                     ),
-
                     Obx(
                       () => Positioned(
                         bottom: Constant.size10,
@@ -143,7 +131,6 @@ class OnboardingPage extends StatelessWidget {
           height: Get.height,
           fit: BoxFit.cover,
         ),
-
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -159,7 +146,6 @@ class OnboardingPage extends StatelessWidget {
               right: Constant.size15,
               bottom: Constant.size10,
             ),
-
             Text(
               description,
               style: Styles.textStyleWhiteNormal,
@@ -169,7 +155,6 @@ class OnboardingPage extends StatelessWidget {
               right: Constant.size25,
               bottom: Constant.size30,
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (index) => buildDot(index)),
@@ -182,10 +167,8 @@ class OnboardingPage extends StatelessWidget {
   }
 
   Widget buildDot(int index) {
-    final OnboardingController controller = Get.find();
     return Obx(() {
-      return AnimatedContainer(
-        duration: Duration(milliseconds: 300),
+      return Container(
         height: Constant.size10,
         width:
             controller.currentPage.value == index

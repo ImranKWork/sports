@@ -51,58 +51,62 @@ class SearchWidget extends StatelessWidget {
       appBar: CommonAppBar(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => SearchBack());
-                },
-                child: Image.asset("assets/images/back.png", scale: 2.2),
-              ),
-              Container(
-                height: Get.height / 20,
-                width: Get.width / 1.4,
-                padding: EdgeInsets.symmetric(
-                  vertical: Constant.size5,
-                  horizontal: Constant.size5,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => SearchBack());
+                  },
+                  child: Image.asset("assets/images/back.png", scale: 2.2),
                 ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Constant.size30),
-                  border: Border.all(color: ColorAssets.grey3),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(width: Constant.size5),
-                    SvgPicture.asset(
-                      ImageAssets.search,
-                      height: 23,
-                      width: 23,
-                      color: ColorAssets.white,
-                    ),
-                    SizedBox(width: Constant.size10),
-                    Text(
-                      "Search sports videos, players, events…",
-                      style: Styles.textStyleWhiteMedium.copyWith(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
+                Container(
+                  height: Get.height / 20,
+                  width: Get.width / 1.4,
+                  padding: EdgeInsets.symmetric(
+                    vertical: Constant.size5,
+                    horizontal: Constant.size5,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(Constant.size30),
+                    border: Border.all(color: ColorAssets.grey3),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(width: Constant.size5),
+                      SvgPicture.asset(
+                        ImageAssets.search,
+                        height: 23,
+                        width: 23,
+                        color: ColorAssets.white,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: Constant.size10),
+                      Text(
+                        "Search sports videos, players, events…",
+                        style: Styles.textStyleWhiteMedium.copyWith(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => FilterPage());
-                },
-                child: Image.asset("assets/images/filter.png", scale: 3),
-              ),
-            ],
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => FilterPage());
+                  },
+                  child: Image.asset("assets/images/filter.png", scale: 3),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(12),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

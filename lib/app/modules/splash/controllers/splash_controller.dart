@@ -21,23 +21,23 @@ class SplashController extends GetxController {
     bool? hasSeenOnboarding = SharedPref.getBool(PrefsKey.onboarding);
     await languageController.loadLabels();
     // Future.delayed(Duration(seconds: 0), () {
-      if (isRemembered || isLoggedIn) {
-        Get.offAll(() => HomeView());
+    if (isRemembered || isLoggedIn) {
+      Get.offAll(() => HomeView());
+    } else {
+      if (hasSeenOnboarding) {
+        Get.off(
+          () => LoginView(),
+          transition: Transition.fade,
+          duration: const Duration(milliseconds: 2000),
+        );
       } else {
-        if (hasSeenOnboarding) {
-          Get.off(
-            () => LoginView(),
-            transition: Transition.fade,
-            duration: const Duration(milliseconds: 2000),
-          );
-        } else {
-          Get.off(
-            () => OnboardingView(),
-            transition: Transition.fade,
-            duration: const Duration(milliseconds: 2000),
-          );
-        }
+        Get.off(
+          () => OnboardingView(),
+          // transition: Transition.fade,
+          duration: const Duration(milliseconds: 1000),
+        );
       }
+    }
     // });
   }
 }
