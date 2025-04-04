@@ -33,7 +33,7 @@ class LanguageController extends GetxController {
 
   void onSkipPressed() {
     SharedPref.setValue(PrefsKey.language, defaultSelectedCode.value);
-
+    //updateUser(defaultSelectedCode.value);
     Get.to(() => LoginView());
   }
 
@@ -67,7 +67,11 @@ class LanguageController extends GetxController {
       );
       if (register.statusCode == 200) {
         Future.delayed(const Duration(seconds: 1), () {
+<<<<<<< Updated upstream
           Get.offAll(() => HomeView());
+=======
+          Get.offAll(() => LoginView());
+>>>>>>> Stashed changes
         });
       } else {
         Get.snackbar(

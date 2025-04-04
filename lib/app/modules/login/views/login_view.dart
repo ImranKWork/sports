@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sports_trending/app/modules/forgot_password/views/forgot_password_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
@@ -535,11 +539,13 @@ class LoginView extends StatelessWidget {
                                     //     controller.signInWithTwitter();
                                     //   },
                                     // ),
-                                    // if (Platform.isIOS)
-                                    socialLoginButton(
-                                      "assets/images/apple.svg",
-                                      () {},
-                                    ),
+                                    if (Platform.isIOS)
+                                      socialLoginButton(
+                                        "assets/images/apple.svg",
+                                        () {
+                                          signInWithApple();
+                                        },
+                                      ),
                                   ],
                                 ),
                               ),
@@ -552,6 +558,22 @@ class LoginView extends StatelessWidget {
                 ),
       ),
     );
+  }
+
+  Future<void> signInWithApple() async {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    final storage = FlutterSecureStorage();
+    await storage.write(key: 'apple_user_id', value: credential.userIdentifier);
+
+    print('User ID: ${credential.userIdentifier}');
+    print('Email: ${credential.email}');
+    print('Full Name: ${credential.givenName} ${credential.familyName}');
   }
 
   InputDecoration inputDecoration(String hintText) {

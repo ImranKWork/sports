@@ -30,6 +30,19 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<key>UILaunchStoryboardName</key>
+	<key>CFBundleURLTypes</key>
+    <array>
+    <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>om.sporttrending.app</string> <!-- Change this -->
+    </array>
+    </dict>
+    </array>
+<key>NSAppleMusicUsageDescription</key>
+<string>We need access to Apple Music.</string>
+<key>NSFaceIDUsageDescription</key>
+<string>Sign in securely using Face ID.</string>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
