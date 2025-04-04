@@ -53,6 +53,7 @@ class AppPages {
             lastName: '',
             email: '',
             accessToken: '',
+            fromSignup: true,
           ),
       binding: LanguageBinding(),
     ),

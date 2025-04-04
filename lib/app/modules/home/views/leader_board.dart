@@ -21,10 +21,12 @@ class _LeaderBoardState extends State<LeaderBoard> {
     return Scaffold(
       backgroundColor: ColorAssets.white,
       appBar: CommonAppBar(
+        height: 120,
         child: Column(
           //    mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(height: Constant.size40),
+            SizedBox(height: Constant.size50),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -43,7 +45,9 @@ class _LeaderBoardState extends State<LeaderBoard> {
                 ),
               ],
             ),
+
             Spacer(),
+
             //   SizedBox(height: Constant.size5),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -63,7 +67,12 @@ class _LeaderBoardState extends State<LeaderBoard> {
           children: [
             SizedBox(height: Constant.size15),
 
-            Text("Video Ranking Leaderboard", style: Styles.buttonTextStyle18),
+            Text(
+              selectedIndex == 0
+                  ? "Video Ranking Leaderboard"
+                  : "User Ranking Leaderboard",
+              style: Styles.buttonTextStyle18,
+            ),
             SizedBox(height: Constant.size15),
             Container(
               height: 50,

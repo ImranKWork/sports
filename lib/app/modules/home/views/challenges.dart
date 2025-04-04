@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_header.dart';
+import '../../challenges_details/views/challenges_details.dart';
+import '../../wallet/views/wallet_page.dart';
 
 class ChallengesWidget extends StatefulWidget {
   const ChallengesWidget({super.key});
@@ -23,7 +26,7 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
   ];
   String selectedCategory = 'All';
   double progressValue = 0.4;
-
+  String? selectedFilter;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,21 +42,28 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.asset(ImageAssets.headerLogo, scale: 3),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Constant.size5,
-                    horizontal: Constant.size5,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Constant.size30),
-                    color: ColorAssets.lightPurple,
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(ImageAssets.star, scale: 3),
-                      SizedBox(width: 3),
-                      Text("250.0", style: Styles.textStyleWhiteMedium),
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => WalletPage());
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: Constant.size5,
+                      horizontal: Constant.size5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Constant.size30),
+                      color: ColorAssets.lightPurple,
+                    ),
+                    child: Row(
+                      spacing: Constant.size5,
+
+                      children: [
+                        Image.asset(ImageAssets.star, scale: 3),
+                        Text("250.0", style: Styles.textStyleWhiteMedium),
+                        SizedBox(width: 2),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -76,26 +86,48 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
                 SizedBox(width: Constant.size10),
                 Text("Challenges", style: Styles.buttonTextStyle18),
                 Spacer(),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(46),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
+                DropdownButtonHideUnderline(
+                  child: Container(
+                    height: 30,
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(46),
+                    ),
+                    child: DropdownButton<String>(
+                      hint: Text(
                         "Sort By",
                         style: Styles.textBlackHeader.copyWith(fontSize: 10),
                       ),
-                      SizedBox(width: 5),
-
-                      Icon(
+                      value: selectedFilter,
+                      icon: Icon(
                         Icons.keyboard_arrow_down_outlined,
                         color: ColorAssets.black,
                         size: 15,
                       ),
-                    ],
+                      style: Styles.textBlackHeader.copyWith(fontSize: 10),
+                      dropdownColor: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      items:
+                          [
+                            'Last Week',
+                            'Last Month',
+                            'Last 3 Months',
+                            'Last 6 Months',
+                            'Custom',
+                          ].map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedFilter = newValue;
+                        });
+                        // Handle filter logic
+                      },
+                    ),
                   ),
                 ),
                 SizedBox(width: Constant.size10),
@@ -214,7 +246,9 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
                       SizedBox(height: 10),
 
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.to(() => ChallengesDetails());
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
                           shape: RoundedRectangleBorder(
@@ -493,7 +527,9 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
                       SizedBox(height: 10),
 
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.to(() => ChallengesDetails());
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
                           shape: RoundedRectangleBorder(

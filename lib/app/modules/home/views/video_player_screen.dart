@@ -6,6 +6,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
 import '../../../../source/styles.dart';
+import '../../search/views/comment_list.dart';
 
 class ShortsPlayerScreen extends StatefulWidget {
   final List<Map<String, dynamic>> allVideos;
@@ -125,13 +126,27 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           return Stack(
             children: [
               if (_controller != null)
+                // YoutubePlayerBuilder(
+                //   player: YoutubePlayer(
+                //     controller: _controller!,
+                //     aspectRatio: 10 / 22,
+                //   ),
+                //   builder: (context, player) {
+                //     return Center(child: player);
+                //   },
+                // )
                 YoutubePlayerBuilder(
                   player: YoutubePlayer(
                     controller: _controller!,
-                    aspectRatio: 9 / 16,
+                    showVideoProgressIndicator: false,
+                    bottomActions: const [],
                   ),
                   builder: (context, player) {
-                    return Center(child: player);
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: player,
+                    );
                   },
                 )
               else
@@ -143,7 +158,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
 
               /// Back Button
               Positioned(
-                top: 40,
+                top: 30,
                 left: 10,
                 child: IconButton(
                   icon: const Icon(
@@ -155,9 +170,8 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                 ),
               ),
 
-              /// Video Details (Left Bottom)
               Positioned(
-                bottom: 100,
+                bottom: 15,
                 left: 10,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,19 +179,26 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                     SizedBox(
                       width: Get.width / 1.7,
 
-                      child: Text(
-                        (videoData['videoContent']['snippet']['tags']
-                                    as List<dynamic>?)
-                                ?.map((tag) => '#$tag ')
-                                .join(' ') ??
-                            'No Tags',
-                        style: Styles.textStyleWhiteNormal.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      child:
+                          (() {
+                            final tags =
+                                (videoData['videoContent']['snippet']['tags']
+                                        as List<dynamic>?)
+                                    ?.map((tag) => '#$tag')
+                                    .join(' ');
+
+                            if (tags != null && tags.isNotEmpty) {
+                              return Text(
+                                tags,
+                                style: Styles.textStyleWhiteNormal.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              );
+                            } else {
+                              return SizedBox();
+                            }
+                          })(),
                     ),
                     const SizedBox(height: 8),
                     SizedBox(
@@ -195,7 +216,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
               ),
 
               Positioned(
-                bottom: 100,
+                bottom: 15,
                 right: 10,
                 child: Column(
                   children: [
@@ -290,7 +311,15 @@ void _showCommentSection(BuildContext context) {
                       SizedBox(width: 10),
                       Text("Comments", style: Styles.buttonTextStyle18),
                       Spacer(),
-                      Text("View 10 Comments", style: Styles.textBlueHeader),
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => CommentList());
+                        },
+                        child: Text(
+                          "View 10 Comments",
+                          style: Styles.textBlueHeader,
+                        ),
+                      ),
                       SizedBox(width: 10),
                     ],
                   ),
@@ -304,7 +333,7 @@ void _showCommentSection(BuildContext context) {
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                     controller: scrollController,
                     physics: BouncingScrollPhysics(),
-                    itemCount: 10, // Replace with actual comment count
+                    itemCount: 10,
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: Image.asset(ImageAssets.img6),

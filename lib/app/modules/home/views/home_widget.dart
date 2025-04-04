@@ -4,11 +4,13 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/challenges_details/views/challenges_details.dart';
 import 'package:sports_trending/app/modules/home/views/premium_videos.dart';
 import 'package:sports_trending/app/modules/home/views/video_player_screen.dart';
+import 'package:sports_trending/app/modules/wallet/views/wallet_page.dart';
 
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
+import '../../../../widgets/common_button.dart';
 import '../../../../widgets/common_header.dart';
 import '../controllers/home_controller.dart';
 import 'challenges.dart';
@@ -52,23 +54,28 @@ class _HomeWidgetState extends State<HomeWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.asset(ImageAssets.headerLogo, scale: 3),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Constant.size5,
-                    horizontal: Constant.size5,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Constant.size30),
-                    color: ColorAssets.lightPurple,
-                  ),
-                  child: Row(
-                    spacing: Constant.size5,
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => WalletPage());
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: Constant.size5,
+                      horizontal: Constant.size5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Constant.size30),
+                      color: ColorAssets.lightPurple,
+                    ),
+                    child: Row(
+                      spacing: Constant.size5,
 
-                    children: [
-                      Image.asset(ImageAssets.star, scale: 3),
-                      SizedBox(width: 3),
-                      Text("250.0", style: Styles.textStyleWhiteMedium),
-                    ],
+                      children: [
+                        Image.asset(ImageAssets.star, scale: 3),
+                        Text("250.0", style: Styles.textStyleWhiteMedium),
+                        SizedBox(width: 2),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -88,7 +95,17 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                 Text("Viral Videos", style: Styles.buttonTextStyle18),
                 Spacer(),
-                Text("View All", style: Styles.textBlueHeader),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(
+                      () => ShortsPlayerScreen(
+                        allVideos: controller.videos,
+                        initialIndex: 0,
+                      ),
+                    );
+                  },
+                  child: Text("View All", style: Styles.textBlueHeader),
+                ),
                 SizedBox(width: Constant.size10),
               ],
             ),
@@ -365,77 +382,79 @@ class _HomeWidgetState extends State<HomeWidget> {
               ],
             ),
             SizedBox(height: Constant.size15),
-            Stack(
-              children: [
-                /// 🎯 Background Image with Overlay
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    "assets/images/playing_football.jpg",
-                    width: double.infinity,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-
-                /// 🎯 Semi-transparent Overlay
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.black54, // Semi-transparent black overlay
+            GestureDetector(
+              onTap: () {
+                _showVideoDialog();
+              },
+              child: Stack(
+                children: [
+                  ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-
-                /// 🎯 Rating Container (Top-Left)
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: Constant.size5,
-                      horizontal: Constant.size5,
+                    child: Image.asset(
+                      "assets/images/playing_football.jpg",
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
                     ),
+                  ),
+
+                  Container(
+                    height: 200,
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(Constant.size30),
-                      color: Colors.white24,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min, // Minimum required space
-                      children: [
-                        Image.asset(ImageAssets.star, scale: 3),
-                        SizedBox(width: 3),
-                        Text(
-                          "250.0",
-                          style: Styles.textStyleBlackSemiBold.copyWith(
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
+                      color: Colors.black54, // Semi-transparent black overlay
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                ),
 
-                /// 🎯 Lock Image (Centered)
-                Positioned.fill(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/images/lock.png",
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.contain,
-                        ),
-                        Text("250.0", style: Styles.textMetalHeader),
-                      ],
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Constant.size5,
+                        horizontal: Constant.size5,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(Constant.size30),
+                        color: Colors.white24,
+                      ),
+                      child: Row(
+                        mainAxisSize:
+                            MainAxisSize.min, // Minimum required space
+                        children: [
+                          Image.asset(ImageAssets.star, scale: 3),
+                          SizedBox(width: 3),
+                          Text(
+                            "250.0",
+                            style: Styles.textStyleBlackSemiBold.copyWith(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+
+                  Positioned.fill(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            "assets/images/lock.png",
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.contain,
+                          ),
+                          Text("250.0", style: Styles.textMetalHeader),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             SizedBox(height: Constant.size15),
@@ -467,10 +486,15 @@ class _HomeWidgetState extends State<HomeWidget> {
                 Spacer(),
                 Column(
                   children: [
-                    Image.asset(
-                      "assets/images/like2.png",
-                      height: 35,
-                      width: 35,
+                    GestureDetector(
+                      onTap: () {
+                        _showVideoDialog();
+                      },
+                      child: Image.asset(
+                        "assets/images/like2.png",
+                        height: 35,
+                        width: 35,
+                      ),
                     ),
                     SizedBox(height: Constant.size5),
 
@@ -481,10 +505,15 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                 Column(
                   children: [
-                    Image.asset(
-                      "assets/images/chat2.png",
-                      height: 35,
-                      width: 35,
+                    GestureDetector(
+                      onTap: () {
+                        _showVideoDialog();
+                      },
+                      child: Image.asset(
+                        "assets/images/chat2.png",
+                        height: 35,
+                        width: 35,
+                      ),
                     ),
                     SizedBox(height: Constant.size5),
 
@@ -495,10 +524,15 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                 Column(
                   children: [
-                    Image.asset(
-                      "assets/images/share.png",
-                      height: 35,
-                      width: 35,
+                    GestureDetector(
+                      onTap: () {
+                        _showVideoDialog();
+                      },
+                      child: Image.asset(
+                        "assets/images/share.png",
+                        height: 35,
+                        width: 35,
+                      ),
                     ),
                     SizedBox(height: Constant.size5),
 
@@ -547,7 +581,6 @@ class _HomeWidgetState extends State<HomeWidget> {
         );
       }
 
-      // Setting default category on load
       if (selectedCategory.value.isEmpty && controller.categories.isNotEmpty) {
         selectedCategory.value = controller.categories[0]['name'];
         controller.fetchVideos(controller.categories[0]['_id']);
@@ -697,27 +730,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                     ),
                   ),
 
-                  /*     Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5),
-                    width: Get.width / 1.4,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(17.37),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(17.37),
-                      child: FadeInImage(
-                        placeholder: AssetImage('assets/images/loader.gif'),
-                        image:
-                            thumbnailUrl.isNotEmpty
-                                ? NetworkImage(thumbnailUrl)
-                                : AssetImage('assets/images/world_cup.png')
-                                    as ImageProvider,
-                        fit: BoxFit.cover,
-                        width: Get.width / 1.4,
-                        height: 540,
-                      ),
-                    ),
-                  ),*/
                   Positioned(
                     bottom: 10,
                     left: 10,
@@ -753,17 +765,36 @@ class _HomeWidgetState extends State<HomeWidget> {
                             ),
                           ),
                           SizedBox(height: Constant.size8),
-                          Text(
+                          /*Text(
                             (video['videoContent']?['snippet']?['tags']
                                         as List<dynamic>?)
                                     ?.map((tag) => '#$tag ')
                                     .join(' ') ??
-                                'No Tags',
+                                '',
                             style: Styles.textStyleWhiteNormal.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                             ),
-                          ),
+                          ),*/
+                          (() {
+                            final tags =
+                                (video['videoContent']?['snippet']?['tags']
+                                        as List<dynamic>?)
+                                    ?.map((tag) => '#$tag')
+                                    .join(' ');
+
+                            if (tags != null && tags.isNotEmpty) {
+                              return Text(
+                                tags,
+                                style: Styles.textStyleWhiteNormal.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              );
+                            } else {
+                              return SizedBox(); // No tags, return empty widget
+                            }
+                          })(),
                         ],
                       ),
                     ),
@@ -820,182 +851,60 @@ class _HomeWidgetState extends State<HomeWidget> {
     });
   }
 
-  /*Widget _buildHorizontalImageList() {
-    return Obx(() {
-      if (controller.isLoading.value) {
-        return SizedBox(
-          height: 540,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5),
-                  width: Get.width / 1.4,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(17.37),
-                    color: Colors.white,
-                  ),
-                ),
-              );
-            },
+  void _showVideoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-        );
-      }
+          backgroundColor: ColorAssets.white,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(ImageAssets.balance, scale: 3),
+              SizedBox(height: 5),
 
-      if (controller.videos.length == 0) {
-        return Center(
-          child: Text("Data not Found, Please select another category"),
-        );
-      }
-
-      return SizedBox(
-        height: 540,
-
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: controller.videos.length,
-          itemBuilder: (context, index) {
-            var video = controller.videos[index];
-
-            return GestureDetector(
-              onTap: () {
-                Get.to(
-                  () => ShortsPlayerScreen(
-                    allVideos: controller.videos,
-                    initialIndex: index,
-                  ),
-                );
-              },
-
-              child: Stack(
+              Text("Balance low", style: Styles.textStyleBlackMedium),
+              SizedBox(height: 8),
+              Row(
+                mainAxisSize: MainAxisSize.min, // Minimum required space
                 children: [
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5),
-                    width: Get.width / 1.4,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(17.37),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          video['thumbnails']['maxres']['url'] ?? ''.toString(),
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 15,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white24, // Button background color
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Text(
-                              "FIFA World Cup",
-                              style: Styles.textStyleWhiteSemiBold,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(height: Constant.size8),
-
-                          SizedBox(
-                            width: Get.width / 1.7,
-                            child: Text(
-                              video['title'] ?? 'No Title',
-                              style: Styles.textStyleWhiteSemiBold,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-
-                          SizedBox(height: Constant.size8),
-
-                          Text(
-                            (video['videoContent']['snippet']['tags']
-                                        as List<dynamic>?)
-                                    ?.map((tag) => '#$tag ')
-                                    .join(' ') ??
-                                'No Tags',
-                            style: Styles.textStyleWhiteNormal.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "assets/images/like.png",
-                          height: 22,
-                          width: 22,
-                        ),
-                        SizedBox(height: Constant.size5),
-
-                        Text(
-                          video['appLikes']?.toString() ?? '0',
-                          style: Styles.textStyleWhiteMedium,
-                        ),
-                        SizedBox(height: Constant.size10),
-
-                        GestureDetector(
-                          onTap: () => _showCommentSection(context),
-                          child: Image.asset(
-                            "assets/images/chat.png",
-                            height: 22,
-                            width: 22,
-                          ),
-                        ),
-                        SizedBox(height: Constant.size5),
-
-                        Text(
-                          video['appComments']?.toString() ?? '0',
-                          style: Styles.textStyleWhiteMedium,
-                        ),
-                        SizedBox(height: Constant.size10),
-
-                        Image.asset(
-                          "assets/images/chat.png",
-                          height: 22,
-                          width: 22,
-                        ),
-                        SizedBox(height: Constant.size5),
-
-                        Text(
-                          video['appShares']?.toString() ?? '0',
-                          style: Styles.textStyleWhiteMedium,
-                        ),
-                      ],
+                  Image.asset(ImageAssets.star, scale: 3),
+                  SizedBox(width: 3),
+                  Text(
+                    "20",
+                    style: Styles.textStyleBlackNormal.copyWith(
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
-            );
-          },
-        ),
-      );
-    });
-  }*/
+              SizedBox(height: Constant.size10),
+
+              Text(
+                "For unlimited of joy for watching the shorties! You have to use ST Coins or join challenges",
+                style: Styles.textStyleWhite14.copyWith(fontSize: 12),
+                maxLines: 2,
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: Constant.size20),
+              Padding(
+                padding: const EdgeInsets.only(left: 38.0, right: 38),
+                child: CommonButton(
+                  label: 'Unlock Now',
+                  onClick: () {
+                    Get.back();
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
 void _showCommentSection(BuildContext context) {

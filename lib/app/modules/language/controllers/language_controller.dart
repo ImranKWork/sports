@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
@@ -66,7 +67,7 @@ class LanguageController extends GetxController {
       );
       if (register.statusCode == 200) {
         Future.delayed(const Duration(seconds: 1), () {
-          //    Get.offAll(() => LoginView());
+          Get.offAll(() => HomeView());
         });
       } else {
         Get.snackbar(

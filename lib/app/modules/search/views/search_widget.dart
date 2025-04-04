@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/app/modules/search/views/filter_page.dart';
-import 'package:sports_trending/app/modules/search/views/search_back.dart';
 
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
@@ -15,7 +14,6 @@ class SearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for list items
     final List<Map<String, String>> searchItems = [
       {
         "image": ImageAssets.img1,
@@ -58,7 +56,7 @@ class SearchWidget extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Get.to(() => SearchBack());
+                    Get.back();
                   },
                   child: Image.asset("assets/images/back.png", scale: 2.2),
                 ),

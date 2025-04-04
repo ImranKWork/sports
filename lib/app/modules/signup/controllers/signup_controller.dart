@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:sports_trending/app/modules/language/views/language_view.dart';
-import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/providers/api_provider.dart';
+import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/utils/internet_controller.dart';
 
 import '../../../../model/sign_up/sign_up_response.dart';
@@ -219,11 +219,17 @@ class SignupController extends GetxController {
       final Map<String, dynamic> responseData = jsonDecode(register!.body);
       final signUpData = SignUpResponseModel.fromJson(responseData);
 
-
       clearControllerValue();
       Future.delayed(const Duration(seconds: 1), () {
-        Get.offAll(() => LanguageView(firstName: firstName,
-        lastName: lastName,email: email,accessToken: signUpData.message,));
+        Get.offAll(
+          () => LanguageView(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            accessToken: signUpData.message,
+            fromSignup: true,
+          ),
+        );
       });
     }
   }

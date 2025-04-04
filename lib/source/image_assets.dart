@@ -57,4 +57,7 @@ class ImageAssets {
   static String balance = "assets/images/balance.png";
   static String running = "assets/images/running.png";
   static String playing = "assets/images/playing.png";
+  static String question = "assets/images/questionfilled.png";
+  static String wallet = "assets/images/wallet.png";
+  static String celebration = "assets/images/celebration.png";
 }

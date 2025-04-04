@@ -15,6 +15,7 @@ import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_header.dart';
 import '../../../../widgets/common_svg_images.dart';
 import '../../help_support/views/help_support_view.dart';
+import '../../wallet/views/wallet_page.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -41,21 +42,28 @@ class ProfileView extends GetView<ProfileController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.asset(ImageAssets.headerLogo, scale: 3),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Constant.size5,
-                    horizontal: Constant.size5,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Constant.size30),
-                    color: ColorAssets.lightPurple,
-                  ),
-                  child: Row(
-                    spacing: Constant.size5,
-                    children: [
-                      Image.asset(ImageAssets.star, scale: 3),
-                      Text("250.0", style: Styles.textStyleWhiteMedium),
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => WalletPage());
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: Constant.size5,
+                      horizontal: Constant.size5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Constant.size30),
+                      color: ColorAssets.lightPurple,
+                    ),
+                    child: Row(
+                      spacing: Constant.size5,
+
+                      children: [
+                        Image.asset(ImageAssets.star, scale: 3),
+                        Text("250.0", style: Styles.textStyleWhiteMedium),
+                        SizedBox(width: 2),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -220,6 +228,7 @@ class CommonTileList extends StatelessWidget {
                 lastName: '',
                 email: '',
                 accessToken: '',
+                fromSignup: true,
               ),
             );
           },

@@ -7,14 +7,14 @@ import '../../../../source/image_assets.dart';
 import '../../../../source/styles.dart';
 import '../../../../widgets/common_header.dart';
 
-class SearchBack extends StatefulWidget {
-  const SearchBack({super.key});
+class CommentList extends StatefulWidget {
+  const CommentList({super.key});
 
   @override
-  State<SearchBack> createState() => _SearchBackState();
+  State<CommentList> createState() => _SearchBackState();
 }
 
-class _SearchBackState extends State<SearchBack> {
+class _SearchBackState extends State<CommentList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +32,7 @@ class _SearchBackState extends State<SearchBack> {
                   },
                   child: Image.asset("assets/images/back.png", scale: 2.2),
                 ),
-                SizedBox(width: Constant.size50),
+                SizedBox(width: Constant.size30),
                 Text(
                   "Back",
                   style: Styles.textStyleBlackMedium.copyWith(

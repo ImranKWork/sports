@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sports_trending/app/modules/home/views/home_view.dart';
 
 import '../../../../source/color_assets.dart';
+import '../../../../source/image_assets.dart';
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_button.dart';
@@ -572,7 +574,9 @@ class _ChallengesDetailsState extends State<ChallengesDetails> {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(() => ChallengesDetails());
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
                                 shape: RoundedRectangleBorder(
@@ -607,16 +611,59 @@ class _ChallengesDetailsState extends State<ChallengesDetails> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(Constant.size12),
         child: CommonButton(
-          label: "View Results",
+          label: "Join Challenge",
           onClick: () {
-            //  Get.to(() => EditProfileView());
+            _showVideoDialog();
           },
         ),
       ),
     );
   }
 
-  // Function to create Time Blocks (Column)
+  void _showVideoDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevents tap outside to dismiss
+      useSafeArea: true,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => false, // Disables back button
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: ColorAssets.white,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(ImageAssets.celebration, scale: 3),
+                SizedBox(height: 5),
+                Text("Congratulations!!", style: Styles.textStyleBlackMedium),
+                SizedBox(height: Constant.size10),
+                Text(
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
+                  style: Styles.textStyleWhite14.copyWith(fontSize: 12),
+                  maxLines: 3,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: Constant.size20),
+                Padding(
+                  padding: EdgeInsets.only(left: 38.0, right: 38),
+                  child: CommonButton(
+                    label: 'View History',
+                    onClick: () {
+                      Get.offAll(() => HomeView(initialIndex: 0));
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget buildTimeBlock(String value, String unit) {
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -291,7 +291,6 @@ class LoginView extends StatelessWidget {
                                   )
                                   : const SizedBox(),
 
-                              // Password Input
                               if (controller.selectedIndex.value == 0) ...[
                                 Text(
                                   languageController.getLabel(
