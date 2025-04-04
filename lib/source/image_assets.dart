@@ -36,6 +36,10 @@ class ImageAssets {
   static String coin = "assets/icons/coin.png";
   static String videoSmall = "assets/icons/video_small.png";
   static String notification = "assets/icons/notifications.png";
+  static String myVideos = "assets/icons/my_videos.png";
+  static String subs = "assets/icons/subscription.png";
+  static String logouts = "assets/icons/logouts.png";
+
   static String notificationPreference =
       "assets/icons/notification_preferences.png";
 
@@ -60,4 +64,5 @@ class ImageAssets {
   static String question = "assets/images/questionfilled.png";
   static String wallet = "assets/images/wallet.png";
   static String celebration = "assets/images/celebration.png";
+  static String notifications = "assets/images/noti.png";
 }

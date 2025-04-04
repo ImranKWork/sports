@@ -4,7 +4,9 @@ import 'package:sports_trending/app/modules/edit_profile/controllers/edit_profil
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/language/views/language_view.dart';
 import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
+import 'package:sports_trending/app/modules/profile/views/notification_pref.dart';
 import 'package:sports_trending/app/modules/user_profile/views/user_profile_view.dart';
+import 'package:sports_trending/app/modules/wallet/views/st_coins.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/source/image_assets.dart';
@@ -12,11 +14,14 @@ import 'package:sports_trending/source/styles.dart';
 import 'package:sports_trending/utils/image_picker_controller.dart';
 
 import '../../../../utils/screen_util.dart';
+import '../../../../widgets/common_button.dart';
 import '../../../../widgets/common_header.dart';
 import '../../../../widgets/common_svg_images.dart';
 import '../../help_support/views/help_support_view.dart';
 import '../../wallet/views/wallet_page.dart';
 import '../controllers/profile_controller.dart';
+import 'change_passwd.dart';
+import 'my_videos.dart';
 
 class ProfileView extends GetView<ProfileController> {
   ProfileView({super.key});
@@ -196,7 +201,9 @@ class CommonTileList extends StatelessWidget {
           iconPath: ImageAssets.user,
         ),
         CommonTile(
-          onTap: () {},
+          onTap: () {
+            Get.to(() => ChangePasswd());
+          },
           text: languageController.getLabel("change_password"),
           iconPath: ImageAssets.lock,
         ),
@@ -211,12 +218,28 @@ class CommonTileList extends StatelessWidget {
           iconPath: ImageAssets.trophy,
         ),
         CommonTile(
-          onTap: () {},
-          text: languageController.getLabel("stcoins_wallet"),
-          iconPath: ImageAssets.coinSt,
+          onTap: () {
+            Get.to(() => MyVideos());
+          },
+          text: languageController.getLabel("My Videos"),
+          iconPath: ImageAssets.myVideos,
         ),
         CommonTile(
           onTap: () {},
+          text: languageController.getLabel("Subscription Plans"),
+          iconPath: ImageAssets.subs,
+        ),
+        CommonTile(
+          onTap: () {
+            Get.to(() => StCoins());
+          },
+          text: languageController.getLabel("STCoins Wallet"),
+          iconPath: ImageAssets.coinSt,
+        ),
+        CommonTile(
+          onTap: () {
+            //  Get.to(() => NotificationPref());
+          },
           text: languageController.getLabel("notification"),
           iconPath: ImageAssets.notification,
         ),
@@ -236,7 +259,9 @@ class CommonTileList extends StatelessWidget {
           iconPath: ImageAssets.languages,
         ),
         CommonTile(
-          onTap: () {},
+          onTap: () {
+            Get.to(() => NotificationPref());
+          },
           text: languageController.getLabel("notification_preferences_label"),
           iconPath: ImageAssets.notificationPreference,
         ),
@@ -250,14 +275,85 @@ class CommonTileList extends StatelessWidget {
 
         CommonTile(
           onTap: () {
-            // FirebaseAuth.instance.signOut();
-            // await GoogleSignIn().signOut();
-            // await FacebookAuth.instance.logOut(); //
-            // SharedPref.clearData();
-            //
-            // Get.offAllNamed('/login');
-            loginController.logout();
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  backgroundColor: ColorAssets.white,
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(ImageAssets.logouts, scale: 3),
+                      SizedBox(height: 5),
+
+                      Text(
+                        "Are you sure you want to logout?",
+                        style: Styles.textStyleBlackMedium,
+                      ),
+
+                      SizedBox(height: Constant.size10),
+
+                      Text(
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
+                        style: Styles.textStyleWhite14.copyWith(fontSize: 12),
+                        maxLines: 3,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: Constant.size20),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
+                            child: CommonButton(
+                              label: 'Yes, Logout',
+                              onClick: () {
+                                loginController.logout();
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
+                            child: OutlinedButton(
+                              onPressed: () {
+                                Get.back(); // Close the dialog
+                              },
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: ColorAssets.themeColorOrange,
+                                ), // Border color
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 35,
+                                  vertical: 16,
+                                ),
+                              ),
+                              child: Text(
+                                'Cancel',
+                                style: Styles.textStyleWhiteSemiBold.copyWith(
+                                  fontSize: FontSize.s14,
+                                  color: ColorAssets.themeColorOrange,
+                                ), // Text color
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           },
+
           text: languageController.getLabel("logout"),
           iconPath: ImageAssets.logout,
         ),

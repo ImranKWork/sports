@@ -4,6 +4,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/challenges_details/views/challenges_details.dart';
 import 'package:sports_trending/app/modules/home/views/premium_videos.dart';
 import 'package:sports_trending/app/modules/home/views/video_player_screen.dart';
+import 'package:sports_trending/app/modules/home/views/view_winner.dart';
+import 'package:sports_trending/app/modules/search/views/comment_list.dart';
 import 'package:sports_trending/app/modules/wallet/views/wallet_page.dart';
 
 import '../../../../source/color_assets.dart';
@@ -25,7 +27,6 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
-  final List<String> categories = ["All", "Basketball", "Football", "Tennis"];
   final RxString selectedCategory = ''.obs;
 
   final HomeController controller = Get.put(HomeController());
@@ -278,7 +279,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                 ),
                 SizedBox(height: Constant.size15),
 
-                Text("Winner", style: Styles.textStyleWhite16),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => ViewWinner());
+                  },
+                  child: Text("Winner", style: Styles.textStyleWhite16),
+                ),
 
                 Text("Cristofer Vetrovs", style: Styles.textStyleBlackMedium),
                 SizedBox(height: Constant.size5),
@@ -955,7 +961,15 @@ void _showCommentSection(BuildContext context) {
                       SizedBox(width: 10),
                       Text("Comments", style: Styles.buttonTextStyle18),
                       Spacer(),
-                      Text("View 10 Comments", style: Styles.textBlueHeader),
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => CommentList());
+                        },
+                        child: Text(
+                          "View 10 Comments",
+                          style: Styles.textBlueHeader,
+                        ),
+                      ),
                       SizedBox(width: 10),
                     ],
                   ),

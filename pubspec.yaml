@@ -65,7 +65,11 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   youtube_explode_dart: ^2.0.0
+<<<<<<< HEAD
   flutter_secure_storage: ^9.0.0
+=======
+  flutter_switch:
+>>>>>>> bb1c4d5 (bug fixes)
 
 #  flutter_exoplayer: ^0.6.1
   shimmer: ^3.0.0

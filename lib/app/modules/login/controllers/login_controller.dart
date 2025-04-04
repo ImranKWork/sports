@@ -31,7 +31,21 @@ class LoginController extends GetxController {
   Rx<AuthErrorModel?> authError = Rx<AuthErrorModel?>(null);
   DateTime? otpAuthResendTime;
   final internetController = Get.put(InternetController());
+  final formKey = GlobalKey<FormState>();
 
+  final oldPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  @override
+  void onClose() {
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.onClose();
+  }
+
+  final ApiProvider apiService = ApiProvider();
   @override
   void onInit() {
     super.onInit();
@@ -44,9 +58,6 @@ class LoginController extends GetxController {
       "Loaded Password: ${SharedPref.getString(PrefsKey.password)}",
     ); // Debugging
   }
-
-  final formKey = GlobalKey<FormState>();
-  final ApiProvider apiService = ApiProvider();
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -242,6 +253,91 @@ class LoginController extends GetxController {
         );
       }
     }
+  }
+
+  Future<void> changePassword() async {
+    if (!formKey.currentState!.validate()) {
+      debugPrint("Form not valid!");
+      return;
+    }
+
+    final oldPassword = oldPasswordController.text.trim();
+    final newPassword = newPasswordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      Get.snackbar(
+        "Error",
+        "User not signed in",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // If user doesn't have an email (e.g., phone login)
+    if (user.email == null) {
+      Get.snackbar(
+        "Unsupported",
+        "Change password is available only for email login users.",
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (newPassword != confirmPassword) {
+      Get.snackbar(
+        "Error",
+        "Passwords do not match",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: oldPassword,
+      );
+
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+
+      Get.snackbar(
+        "Success",
+        "Password updated successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      oldPasswordController.clear();
+      newPasswordController.clear();
+      confirmPasswordController.clear();
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar(
+        "Error",
+        e.message ?? "Something went wrong",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Something went wrong",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  bool isValidPassword(String password) {
+    String pattern = r'^(?=.*[a-z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(password);
   }
 
   Future<void> sendOTP(String phoneNumber, {bool isResend = false}) async {
@@ -640,12 +736,6 @@ class LoginController extends GetxController {
       Get.snackbar("Twitter Login Error", e.toString());
     }
   }
-}
-
-bool isValidPassword(String password) {
-  String pattern = r'^(?=.*[a-z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$';
-  RegExp regex = RegExp(pattern);
-  return regex.hasMatch(password);
 }
 
 // class InstagramAuth {

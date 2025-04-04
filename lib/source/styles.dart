@@ -9,6 +9,7 @@ class Styles {
     fontSize: FontSize.s14,
     fontFamily: StringAssets.fontFamilyArchivo,
   );
+
   static TextStyle textStyleWhite14 = TextStyle(
     color: ColorAssets.darkGrey,
     fontSize: FontSize.s14,
