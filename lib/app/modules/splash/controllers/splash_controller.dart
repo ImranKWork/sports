@@ -3,7 +3,6 @@ import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/core/shared_preference.dart';
-
 import '../../onboarding/views/onboarding_view.dart';
 
 class SplashController extends GetxController {
