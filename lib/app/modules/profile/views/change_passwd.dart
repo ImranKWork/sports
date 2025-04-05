@@ -120,6 +120,8 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   controller: loginController.newPasswordController,
                   obscureText: _isNewHidden,
                   textInputAction: TextInputAction.done,
+                  style: Styles.textStyleBlackMedium,
+
                   decoration: InputDecoration(
                     hintText: "Enter New Password",
                     hintStyle: Styles.textStyleWhite14.copyWith(fontSize: 12),
@@ -173,6 +175,8 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   controller: loginController.confirmPasswordController,
                   obscureText: _isConfirmHidden,
                   textInputAction: TextInputAction.done,
+                  style: Styles.textStyleBlackMedium,
+
                   decoration: InputDecoration(
                     hintText: "Confirm New Password",
                     hintStyle: Styles.textStyleWhite14.copyWith(fontSize: 12),

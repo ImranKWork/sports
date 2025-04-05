@@ -83,8 +83,7 @@ class EditProfileController extends GetxController {
     String name = nameController.text.trim();
     String email = emailController.text.trim();
     String phoneWithoutCode = mobileController.text.trim().replaceAll(" ", "");
-    String phone =
-        "${countryCode.value.trim()}$phoneWithoutCode"; // ✅ Added country code
+    String phone = "${countryCode.value.trim()}$phoneWithoutCode";
     String bio = bioController.text.trim();
     String lang = SharedPref.getString(PrefsKey.language, "");
     String profilePhoto = SharedPref.getString(PrefsKey.profilePhoto, "");

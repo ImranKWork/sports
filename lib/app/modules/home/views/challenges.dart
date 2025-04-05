@@ -110,11 +110,9 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
                       borderRadius: BorderRadius.circular(10),
                       items:
                           [
-                            'Last Week',
-                            'Last Month',
-                            'Last 3 Months',
-                            'Last 6 Months',
-                            'Custom',
+                            'All challenges',
+                            'New Challenges',
+                            'Joined challenges',
                           ].map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
