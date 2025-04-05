@@ -82,7 +82,6 @@ class LanguageController extends GetxController {
     } catch (e) {
       isLoading(false);
 
-      // Catch any errors that occur during the API call or data processing
       Get.snackbar(
         "Error",
         "An unexpected error occurred. Please try again later.",

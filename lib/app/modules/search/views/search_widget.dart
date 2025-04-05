@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/app/modules/search/views/filter_page.dart';
+import 'package:sports_trending/app/modules/search/views/search_result.dart';
 
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
@@ -119,32 +120,37 @@ class SearchWidget extends StatelessWidget {
               itemCount: searchItems.length,
               itemBuilder: (context, index) {
                 final item = searchItems[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Row(
-                    children: [
-                      Image.asset(item["image"]!, width: 80, height: 85),
-                      SizedBox(width: Constant.size10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item["title"]!,
-                            style: Styles.textMetalHeader.copyWith(
-                              color: ColorAssets.black,
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(() => SearchResult());
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      children: [
+                        Image.asset(item["image"]!, width: 80, height: 85),
+                        SizedBox(width: Constant.size10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item["title"]!,
+                              style: Styles.textMetalHeader.copyWith(
+                                color: ColorAssets.black,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            item["details"]!,
-                            style: Styles.textStyleWhite16.copyWith(
-                              color: ColorAssets.darkGrey,
-                              fontSize: 12,
+                            SizedBox(height: 4),
+                            Text(
+                              item["details"]!,
+                              style: Styles.textStyleWhite16.copyWith(
+                                color: ColorAssets.darkGrey,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

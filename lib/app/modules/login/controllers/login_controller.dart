@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/login/controllers/otp_verification_controller.dart';
+import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/app/modules/login/views/otp_verification.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/model/login/auth_error_model.dart';
@@ -32,16 +33,15 @@ class LoginController extends GetxController {
   DateTime? otpAuthResendTime;
   final internetController = Get.put(InternetController());
   final formKey = GlobalKey<FormState>();
-
   final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
   @override
   void onClose() {
-    oldPasswordController.dispose();
-    newPasswordController.dispose();
-    confirmPasswordController.dispose();
+    // oldPasswordController.dispose();
+    // newPasswordController.dispose();
+    // confirmPasswordController.dispose();
     super.onClose();
   }
 
@@ -142,6 +142,276 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     final isConnected = await internetController.checkInternet();
+    if (!isConnected) {
+      Get.snackbar(
+        "Internet Error",
+        "No internet connection",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorAssets.error,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (selectedIndex.value == 0) {
+      // Email login
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+
+      if (email.isEmpty || !GetUtils.isEmail(email)) {
+        Get.snackbar(
+          "Email Error",
+          "Please enter a valid email.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      if (password.isEmpty ||
+          password.length < 6 ||
+          !isValidPassword(password)) {
+        Get.snackbar(
+          "Password Error",
+          "Password must be at least 6 characters and contain uppercase, lowercase, digit, and special character.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      isLoading(true);
+      try {
+        final user = await loginWithEmail(email: email, password: password);
+        if (user != null) {
+          await saveRememberMe(email, password);
+          await updateUser(user, isLoginWithEmail: true);
+        } else {
+          Get.snackbar(
+            "Login Failed",
+            "Invalid email or password",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: ColorAssets.error,
+            colorText: Colors.white,
+          );
+        }
+      } catch (e) {
+        Get.snackbar(
+          "Error",
+          "Login failed: ${e.toString()}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+      } finally {
+        isLoading(false);
+      }
+    } else {
+      // Phone login
+      if (otpAuthResendTime == null ||
+          DateTime.now().isAfter(otpAuthResendTime!)) {
+        final rawPhone = mobileController.text.trim().replaceAll(
+          RegExp(r'\s+'),
+          '',
+        );
+        final phone = "${countryCode.value.trim()}$rawPhone";
+
+        if (rawPhone.isEmpty) {
+          Get.snackbar(
+            "Validation Error",
+            "Please enter phone number",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: ColorAssets.error,
+            colorText: Colors.white,
+          );
+          return;
+        }
+
+        await sendOTP(phone);
+      } else {
+        final remaining =
+            otpAuthResendTime!.difference(DateTime.now()).inSeconds;
+        Get.snackbar(
+          "Wait",
+          "Please wait $remaining seconds to resend OTP.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+      }
+    }
+  }
+
+  /*
+  Future<void> login() async {
+    final isConnected = await internetController.checkInternet();
+    if (!isConnected) {
+      Get.snackbar(
+        "Internet Error",
+        "No internet connection",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorAssets.error,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (selectedIndex.value == 0) {
+      // Email login
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+
+      if (email.isEmpty || !GetUtils.isEmail(email)) {
+        Get.snackbar(
+          "Email Error",
+          "Please enter a valid email.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      if (password.isEmpty ||
+          password.length < 6 ||
+          !isValidPassword(password)) {
+        Get.snackbar(
+          "Password Error",
+          "Password must be at least 6 characters and contain uppercase, lowercase, digit, and special character.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      isLoading(true);
+      try {
+        final user = await loginWithEmail(email: email, password: password);
+        if (user != null) {
+          await saveRememberMe(email, password);
+          await updateUser(user, isLoginWithEmail: true);
+        } else {
+          Get.snackbar(
+            "Login Failed",
+            "Invalid email or password",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: ColorAssets.error,
+            colorText: Colors.white,
+          );
+        }
+      } catch (e) {
+        Get.snackbar(
+          "Error",
+          "Login failed: ${e.toString()}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+      } finally {
+        isLoading(false);
+      }
+    } else {
+      // Phone login
+      if (otpAuthResendTime == null ||
+          DateTime.now().isAfter(otpAuthResendTime!)) {
+        final phone = fullPhoneNumber.replaceAll(" ", "");
+        if (phone.isEmpty) {
+          Get.snackbar(
+            "Validation Error",
+            "Please enter phone number",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: ColorAssets.error,
+            colorText: Colors.white,
+          );
+          return;
+        }
+        await sendOTP(phone);
+      } else {
+        final remaining =
+            otpAuthResendTime!.difference(DateTime.now()).inSeconds;
+        Get.snackbar(
+          "Wait",
+          "Please wait $remaining seconds to resend OTP.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+      }
+    }
+  }
+*/
+
+  Future<void> changePassword() async {
+    if (!formKey.currentState!.validate()) return;
+
+    final oldPassword = oldPasswordController.text.trim();
+    final newPassword = newPasswordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+    final user = _auth.currentUser;
+
+    if (user == null || user.email == null) {
+      Get.snackbar(
+        "Error",
+        "Password change is only supported for email login.",
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (newPassword != confirmPassword) {
+      Get.snackbar(
+        "Error",
+        "New password and confirm password do not match.",
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: oldPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+      await user.reload();
+
+      oldPasswordController.clear();
+      newPasswordController.clear();
+      confirmPasswordController.clear();
+
+      Get.snackbar(
+        "Success",
+        "Password updated successfully. Please log in again.",
+        backgroundColor: ColorAssets.themeColorOrange,
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+
+      await Future.delayed(const Duration(seconds: 2));
+      await FirebaseAuth.instance.signOut();
+      Get.offAll(() => LoginView());
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar(
+        "Error",
+        e.message ?? "An unexpected error occurred.",
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+      );
+    }
+  }
+  /*
+  Future<void> login() async {
+    final isConnected = await internetController.checkInternet();
 
     if (!isConnected) {
       Get.snackbar(
@@ -153,7 +423,8 @@ class LoginController extends GetxController {
       );
       return;
     }
-    // email login
+
+    // Email login
     if (selectedIndex.value == 0) {
       String email = emailController.text.trim();
       String password = passwordController.text.trim();
@@ -200,6 +471,7 @@ class LoginController extends GetxController {
         );
         return;
       }
+
       if (!isValidPassword(password)) {
         Get.snackbar(
           "Password Error",
@@ -213,23 +485,41 @@ class LoginController extends GetxController {
 
       isLoading(true);
 
-      UserCredential? user = await loginWithEmail(
-        email: email,
-        password: password,
-      );
+      try {
+        UserCredential? user = await loginWithEmail(
+          email: email,
+          password: password,
+        );
 
-      if (user != null) {
-        await saveRememberMe(email, password);
-
-        debugPrint("user loginWithEmail : $user");
-        await updateUser(user, isLoginWithEmail: true);
+        if (user != null) {
+          await saveRememberMe(email, password);
+          debugPrint("User loginWithEmail : $user");
+          await updateUser(user, isLoginWithEmail: true);
+        } else {
+          Get.snackbar(
+            "Login Failed",
+            "Invalid email or password",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: ColorAssets.error,
+            colorText: Colors.white,
+          );
+        }
+      } catch (e) {
+        Get.snackbar(
+          "Error",
+          "Login failed. ${e.toString()}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorAssets.error,
+          colorText: Colors.white,
+        );
+      } finally {
+        isLoading(false);
       }
-
-      isLoading(false);
     } else {
+      // Phone login
       if (otpAuthResendTime == null ||
           DateTime.now().isAfter(otpAuthResendTime!)) {
-        String phone = mobileController.text.trim().replaceAll(" ", "");
+        String phone = fullPhoneNumber.replaceAll(" ", "");
 
         if (phone.isEmpty) {
           Get.snackbar(
@@ -246,16 +536,16 @@ class LoginController extends GetxController {
       } else {
         Get.snackbar(
           "Error",
-          "Please wait until ${otpAuthResendTime!.difference(DateTime.now()).inSeconds} seconds to retry login.",
+          "Please wait ${otpAuthResendTime!.difference(DateTime.now()).inSeconds} seconds to retry login.",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.error,
           colorText: Colors.white,
         );
       }
     }
-  }
+  }*/
 
-  Future<void> changePassword() async {
+  /* Future<void> changePassword() async {
     if (!formKey.currentState!.validate()) {
       debugPrint("Form not valid!");
       return;
@@ -264,7 +554,6 @@ class LoginController extends GetxController {
     final oldPassword = oldPasswordController.text.trim();
     final newPassword = newPasswordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
-
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -273,16 +562,17 @@ class LoginController extends GetxController {
         "User not signed in",
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
-    // If user doesn't have an email (e.g., phone login)
     if (user.email == null) {
       Get.snackbar(
         "Unsupported",
         "Change password is available only for email login users.",
         backgroundColor: Colors.orange,
+        snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
       );
       return;
@@ -293,6 +583,7 @@ class LoginController extends GetxController {
         "Error",
         "Passwords do not match",
         backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
       );
       return;
@@ -306,22 +597,27 @@ class LoginController extends GetxController {
 
       await user.reauthenticateWithCredential(credential);
       await user.updatePassword(newPassword);
-
-      Get.snackbar(
-        "Success",
-        "Password updated successfully",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      await user.reload();
 
       oldPasswordController.clear();
       newPasswordController.clear();
       confirmPasswordController.clear();
+
+      Get.defaultDialog(
+        title: "Success",
+        middleText: "Password changed successfully.\nPlease log in again.",
+        textConfirm: "OK",
+        onConfirm: () async {
+          await FirebaseAuth.instance.signOut();
+          Get.offAll(() => LoginView()); // Navigate to login screen
+        },
+      );
     } on FirebaseAuthException catch (e) {
       Get.snackbar(
         "Error",
         e.message ?? "Something went wrong",
         backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
       );
     } catch (e) {
@@ -329,11 +625,12 @@ class LoginController extends GetxController {
         "Error",
         "Something went wrong",
         backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
       );
     }
   }
-
+*/
   bool isValidPassword(String password) {
     String pattern = r'^(?=.*[a-z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$';
     RegExp regex = RegExp(pattern);

@@ -14,6 +14,7 @@ import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_button.dart';
 import '../../../../widgets/common_header.dart';
+import '../../wallet/views/unlock_premium_video.dart';
 import '../controllers/home_controller.dart';
 import 'challenges.dart';
 import 'imgae_pageindicator.dart';
@@ -901,7 +902,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 child: CommonButton(
                   label: 'Unlock Now',
                   onClick: () {
-                    Get.back();
+                    Get.off(() => UnlockPremiumVideo());
                   },
                 ),
               ),

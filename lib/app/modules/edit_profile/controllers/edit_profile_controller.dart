@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,7 @@ import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/utils/internet_controller.dart';
+
 import '../../../../model/sign_up/sign_up_response.dart';
 import '../../../../providers/api_provider.dart';
 import '../../../../source/color_assets.dart';
@@ -18,6 +20,7 @@ class EditProfileController extends GetxController {
   var isLoading = false.obs;
   var profileImage = "".obs;
   final ApiProvider apiService = ApiProvider();
+  var countryCode = "+91".obs;
 
   final internetController = Get.put(InternetController());
 
@@ -54,10 +57,12 @@ class EditProfileController extends GetxController {
     String email = SharedPref.getString(PrefsKey.email, "");
     String phone = SharedPref.getString(PrefsKey.phoneNo, "");
     String bio = SharedPref.getString(PrefsKey.bio, "");
+
     nameController = TextEditingController(text: name);
     emailController = TextEditingController(text: email);
     mobileController = TextEditingController(text: phone);
     bioController = TextEditingController(text: bio);
+
     profileImage.value = SharedPref.getString(PrefsKey.profilePhoto, "");
   }
 
@@ -74,18 +79,21 @@ class EditProfileController extends GetxController {
       );
       return;
     }
+
     String name = nameController.text.trim();
     String email = emailController.text.trim();
-    String phone = mobileController.text.trim();
+    String phoneWithoutCode = mobileController.text.trim().replaceAll(" ", "");
+    String phone =
+        "${countryCode.value.trim()}$phoneWithoutCode"; // ✅ Added country code
     String bio = bioController.text.trim();
     String lang = SharedPref.getString(PrefsKey.language, "");
     String profilePhoto = SharedPref.getString(PrefsKey.profilePhoto, "");
     String userId = SharedPref.getString(PrefsKey.userId, "");
-    List<String> nameParts = name.trim().split(" ");
 
+    List<String> nameParts = name.split(" ");
     String firstName = nameParts.isNotEmpty ? nameParts[0] : "";
     String lastName =
-        nameParts.length > 1 ? nameParts.sublist(1).join(" ") : " ";
+        nameParts.length > 1 ? nameParts.sublist(1).join(" ") : "";
 
     if (email.isNotEmpty && !GetUtils.isEmail(email)) {
       Get.snackbar(
@@ -117,14 +125,83 @@ class EditProfileController extends GetxController {
       final Map<String, dynamic> responseData = jsonDecode(update!.body);
       final signUpData = SignUpResponseModel.fromJson(responseData);
 
-      // Save the user info using a helper method
       Get.put(LoginController()).saveUserInfo(signUpData);
+
       Future.delayed(const Duration(seconds: 1), () {
         Get.off(() => HomeView());
       });
     }
   }
 
+  /* Future<void> save() async {
+    final isConnected = await internetController.checkInternet();
+
+    if (!isConnected) {
+      Get.snackbar(
+        "Internet Error",
+        "No internet connection",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorAssets.error,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    String name = nameController.text.trim();
+    String email = emailController.text.trim();
+    String phone = mobileController.text.trim();
+    String countryCode =
+        this.countryCode.value; // From GetX observable or variable
+    String fullPhone = "$countryCode$phone";
+
+    String bio = bioController.text.trim();
+    String lang = SharedPref.getString(PrefsKey.language, "");
+    String profilePhoto = SharedPref.getString(PrefsKey.profilePhoto, "");
+    String userId = SharedPref.getString(PrefsKey.userId, "");
+
+    List<String> nameParts = name.trim().split(" ");
+    String firstName = nameParts.isNotEmpty ? nameParts[0] : "";
+    String lastName =
+        nameParts.length > 1 ? nameParts.sublist(1).join(" ") : " ";
+
+    if (email.isNotEmpty && !GetUtils.isEmail(email)) {
+      Get.snackbar(
+        "Invalid Email",
+        "Please enter a valid email!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: ColorAssets.error,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    isLoading(true);
+
+    final update = await updateProfile(
+      firstName,
+      lastName,
+      email,
+      lang,
+      bio,
+      fullPhone, // Pass full phone with country code
+      userId,
+      profilePhoto,
+    );
+
+    isLoading(false);
+
+    if (update?.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(update!.body);
+      final signUpData = SignUpResponseModel.fromJson(responseData);
+
+      Get.put(LoginController()).saveUserInfo(signUpData);
+
+      Future.delayed(const Duration(seconds: 1), () {
+        Get.off(() => HomeView());
+      });
+    }
+  }
+*/
   updatePhoto(String profilePhoto, String userId) async {
     isLoading.value = true;
     final response = await apiService.updateProfilePhoto(userId, profilePhoto);

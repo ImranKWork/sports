@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:sports_trending/app/modules/edit_profile/views/edit_profile_view.dart';
@@ -15,7 +14,7 @@ import '../../../../widgets/common_header.dart';
 import '../controllers/user_profile_controller.dart';
 
 class UserProfileView extends GetView<UserProfileController> {
-   UserProfileView({super.key});
+  UserProfileView({super.key});
 
   final LanguageController languageController = Get.find();
 
@@ -62,13 +61,16 @@ class UserProfileView extends GetView<UserProfileController> {
                   ),
                   child:
                       profileImage.isNotEmpty
-                          ? ClipOval(
-                            child: Image.network(
-                              profileImage,
-                              width: Constant.size100,
-                              height: Constant.size100,
-                              fit: BoxFit.cover,
-                            ),
+                          ? CircleAvatar(
+                            radius: Constant.size50,
+                            backgroundImage: NetworkImage(profileImage),
+
+                            // child: Image.network(
+                            //   profileImage,
+                            //   // width: Constant.size100,
+                            //   // height: Constant.size100,
+                            //   fit: BoxFit.contain,
+                            // ),
                           )
                           : CircleAvatar(
                             radius: Constant.size50,
@@ -96,7 +98,7 @@ class UserProfileView extends GetView<UserProfileController> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(Constant.size15),
         child: CommonButton(
-          label:  languageController.getLabel('user_profile'),
+          label: languageController.getLabel('user_profile'),
           onClick: () {
             Get.to(() => EditProfileView());
           },
@@ -118,12 +120,16 @@ class CommonTileList extends StatelessWidget {
     return Column(
       children: [
         SizedBox(height: Constant.size10),
-        CommonTile(text1:  languageController.getLabel("name"), text2: name, iconPath: ImageAssets.user),
+        CommonTile(
+          text1: languageController.getLabel("name"),
+          text2: name,
+          iconPath: ImageAssets.user,
+        ),
 
         CommonDivider(),
 
         CommonTile(
-          text1:  languageController.getLabel('stcoins_balance'),
+          text1: languageController.getLabel('stcoins_balance'),
           text2: "2510 Coins",
           iconPath: ImageAssets.coin,
         ),
@@ -147,7 +153,7 @@ class CommonTileList extends StatelessWidget {
         ),
         CommonDivider(),
         CommonTile(
-          text1:languageController.getLabel('challenges_completed'),
+          text1: languageController.getLabel('challenges_completed'),
           text2: "212 Challenges",
           iconPath: ImageAssets.challenges,
         ),

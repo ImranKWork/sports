@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/source/image_assets.dart';
@@ -65,11 +64,7 @@ class OnboardingView extends GetView<OnboardingController> {
                       right: Constant.size20,
                       child: TextButton(
                         onPressed: () {
-                          languageController.onDonePressed();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomeView()),
-                          );
+                          languageController.onSkipPressed();
                         },
                         child: Text(
                           languageController.getLabel("skip"),

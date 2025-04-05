@@ -65,4 +65,13 @@ class ImageAssets {
   static String wallet = "assets/images/wallet.png";
   static String celebration = "assets/images/celebration.png";
   static String notifications = "assets/images/noti.png";
+  static String coins1 = "assets/images/coins1.png";
+  static String coins2 = "assets/images/coins2.png";
+  static String coins3 = "assets/images/coins3.png";
+  static String coins4 = "assets/images/coins4.png";
+  static String coins5 = "assets/images/coins5.png";
+
+  static String arrow = "assets/images/arrow.png";
+  static String fire = "assets/images/fire.png";
+  static String delete = "assets/images/delete.png";
 }

@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/app/modules/edit_profile/controllers/edit_profile_controller.dart';
+import 'package:sports_trending/app/modules/home/views/challenges.dart';
+import 'package:sports_trending/app/modules/home/views/leader_board.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/language/views/language_view.dart';
 import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
@@ -18,6 +21,7 @@ import '../../../../widgets/common_button.dart';
 import '../../../../widgets/common_header.dart';
 import '../../../../widgets/common_svg_images.dart';
 import '../../help_support/views/help_support_view.dart';
+import '../../login/views/login_view.dart';
 import '../../wallet/views/wallet_page.dart';
 import '../controllers/profile_controller.dart';
 import 'change_passwd.dart';
@@ -208,12 +212,16 @@ class CommonTileList extends StatelessWidget {
           iconPath: ImageAssets.lock,
         ),
         CommonTile(
-          onTap: () {},
+          onTap: () {
+            Get.to(() => LeaderBoard());
+          },
           text: languageController.getLabel("leaderboard_label"),
           iconPath: ImageAssets.leaderboard,
         ),
         CommonTile(
-          onTap: () {},
+          onTap: () {
+            Get.to(() => ChallengesWidget());
+          },
           text: languageController.getLabel("challenges_history"),
           iconPath: ImageAssets.trophy,
         ),
@@ -356,6 +364,49 @@ class CommonTileList extends StatelessWidget {
 
           text: languageController.getLabel("logout"),
           iconPath: ImageAssets.logout,
+        ),
+        CommonTile(
+          onTap: () async {
+            try {
+              final user = FirebaseAuth.instance.currentUser;
+
+              if (user != null) {
+                await user.delete();
+
+                await SharedPref.clearData();
+
+                Get.offAll(() => LoginView());
+
+                Get.snackbar(
+                  "Account Deleted",
+                  "Your account has been deleted successfully.",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: ColorAssets.themeColorOrange,
+                  colorText: Colors.white,
+                );
+              }
+            } on FirebaseAuthException catch (e) {
+              if (e.code == 'requires-recent-login') {
+                Get.snackbar(
+                  "Re-authentication Required",
+                  "Please log in again to delete your account.",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.orange,
+                  colorText: Colors.white,
+                );
+              } else {
+                Get.snackbar(
+                  "Error",
+                  e.message ?? "Failed to delete account",
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                );
+              }
+            }
+          },
+          text: languageController.getLabel("Delete Account"),
+          iconPath: ImageAssets.delete,
         ),
       ],
     );

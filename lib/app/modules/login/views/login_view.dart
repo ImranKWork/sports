@@ -211,16 +211,92 @@ class LoginView extends StatelessWidget {
                                             .copyWith(fontSize: FontSize.s14),
                                       ),
                                       SizedBox(height: 5),
-                                      // CustomTextFormField(
-                                      //   input: TextInputAction.next,
-                                      //   textInputType: TextInputType.phone,
-                                      //
-                                      //   controller: controller.mobileController,
-                                      //   placeHolder:
-                                      //       "${languageController.getLabel("phone_empty")} (Ex: +1 XXXXXXXXXX)",
-                                      //   disableFloatingLabel: true,
-                                      // ),
-                                      IntlPhoneField(
+                                      Theme(
+                                        data: ThemeData(
+                                          dividerColor:
+                                              ColorAssets.themeColorOrange,
+                                          dialogTheme: DialogTheme(
+                                            backgroundColor: Colors.white,
+                                          ),
+                                        ),
+                                        child: IntlPhoneField(
+                                          controller:
+                                              controller.mobileController,
+                                          textInputAction: TextInputAction.next,
+                                          keyboardType: TextInputType.phone,
+                                          decoration: InputDecoration(
+                                            fillColor: Colors.white,
+                                            filled: true,
+                                            hintText:
+                                                "Enter phone (Ex: XXXXXXXXXX)",
+                                            hintStyle: Styles.textBlackHeader,
+
+                                            border: UnderlineInputBorder(),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: ColorAssets.white,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    Constant.size8,
+                                                  ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Colors.white,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    Constant.size8,
+                                                  ),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Colors.red,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    Constant.size8,
+                                                  ),
+                                            ),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        Constant.size8,
+                                                      ),
+                                                ),
+                                            counterText: "",
+                                          ),
+                                          initialCountryCode: 'IN',
+                                          disableLengthCheck: true,
+                                          showDropdownIcon: false,
+                                          onChanged: (phone) {
+                                            controller.countryCode.value =
+                                                phone.countryCode;
+                                          },
+                                          validator: (phone) {
+                                            if (phone == null ||
+                                                phone.number.isEmpty) {
+                                              return 'Phone number is required';
+                                            } else if (phone.number.length <
+                                                    10 ||
+                                                phone.number.length > 15) {
+                                              return 'Enter a valid phone number';
+                                            } else if (!RegExp(
+                                              r'^\d+$',
+                                            ).hasMatch(phone.number)) {
+                                              return 'Phone number should contain only digits';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+
+                                      /*    IntlPhoneField(
                                         controller: controller.mobileController,
                                         textInputAction: TextInputAction.next,
                                         keyboardType: TextInputType.phone,
@@ -288,8 +364,7 @@ class LoginView extends StatelessWidget {
                                           }
                                           return null;
                                         },
-                                      ),
-
+                                      ),*/
                                       SizedBox(height: Constant.size15),
                                     ],
                                   )
