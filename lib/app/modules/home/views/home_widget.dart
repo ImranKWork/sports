@@ -984,7 +984,7 @@ void _showCommentSection(BuildContext context) {
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                     controller: scrollController,
                     physics: BouncingScrollPhysics(),
-                    itemCount: 10, // Replace with actual comment count
+                    itemCount: 10,
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: Image.asset(ImageAssets.img6),

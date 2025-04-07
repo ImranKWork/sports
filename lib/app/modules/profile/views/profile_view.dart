@@ -8,6 +8,7 @@ import 'package:sports_trending/app/modules/language/controllers/language_contro
 import 'package:sports_trending/app/modules/language/views/language_view.dart';
 import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
 import 'package:sports_trending/app/modules/profile/views/notification_pref.dart';
+import 'package:sports_trending/app/modules/profile/views/refer_your_friends.dart';
 import 'package:sports_trending/app/modules/user_profile/views/user_profile_view.dart';
 import 'package:sports_trending/app/modules/wallet/views/st_coins.dart';
 import 'package:sports_trending/core/shared_preference.dart';
@@ -243,6 +244,13 @@ class CommonTileList extends StatelessWidget {
           },
           text: languageController.getLabel("STCoins Wallet"),
           iconPath: ImageAssets.coinSt,
+        ),
+        CommonTile(
+          onTap: () {
+            Get.to(() => ReferYourFriends());
+          },
+          text: languageController.getLabel("Refer & Earn"),
+          iconPath: ImageAssets.refer,
         ),
         CommonTile(
           onTap: () {

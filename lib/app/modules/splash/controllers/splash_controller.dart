@@ -3,8 +3,10 @@ import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/core/shared_preference.dart';
+
 import '../../onboarding/views/onboarding_view.dart';
 
+/*
 class SplashController extends GetxController {
   final languageController = Get.find<LanguageController>();
 
@@ -38,5 +40,68 @@ class SplashController extends GetxController {
       }
     }
     // });
+  }
+}
+*/
+
+class SplashController extends GetxController {
+  final languageController = Get.find<LanguageController>();
+
+  @override
+  void onReady() {
+    super.onReady();
+    navigateToNextScreen();
+  }
+
+  // Future<void> navigateToNextScreen() async {
+  //   await Future.delayed(const Duration(seconds: 2));
+  //
+  //   bool isRemembered = SharedPref.getBool(PrefsKey.rememberMe) ?? false;
+  //   bool isLoggedIn = SharedPref.getBool(PrefsKey.isLoggedIn) ?? false;
+  //   bool hasSeenOnboarding = SharedPref.getBool(PrefsKey.onboarding) ?? false;
+  //
+  //   await languageController.loadLabels();
+  //
+  //   if (isRemembered || isLoggedIn) {
+  //     Get.offAll(() => HomeView());
+  //   } else if (hasSeenOnboarding) {
+  //     Get.off(
+  //       () => LoginView(),
+  //       transition: Transition.fade,
+  //       duration: const Duration(milliseconds: 800),
+  //     );
+  //   } else {
+  //     Get.off(
+  //       () => OnboardingView(),
+  //       transition: Transition.rightToLeft,
+  //       duration: const Duration(milliseconds: 800),
+  //     );
+  //   }
+  // }
+  Future<void> navigateToNextScreen() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    bool isRemembered = await SharedPref.getBool(PrefsKey.rememberMe) ?? false;
+    bool isLoggedIn = await SharedPref.getBool(PrefsKey.isLoggedIn) ?? false;
+    bool hasSeenOnboarding =
+        await SharedPref.getBool(PrefsKey.onboarding) ?? false;
+
+    await languageController.loadLabels();
+
+    if (isRemembered || isLoggedIn) {
+      Get.offAll(() => HomeView());
+    } else if (hasSeenOnboarding) {
+      Get.off(
+        () => LoginView(),
+        transition: Transition.fade,
+        duration: const Duration(milliseconds: 800),
+      );
+    } else {
+      Get.off(
+        () => OnboardingView(),
+        transition: Transition.rightToLeft,
+        duration: const Duration(milliseconds: 800),
+      );
+    }
   }
 }

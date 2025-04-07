@@ -74,4 +74,8 @@ class ImageAssets {
   static String arrow = "assets/images/arrow.png";
   static String fire = "assets/images/fire.png";
   static String delete = "assets/images/delete.png";
+  static String refer = "assets/images/refer.png";
+  static String refer2 = "assets/images/refer2.png";
+  static String photo = "assets/images/photo.png";
+  static String send2 = "assets/images/send2.png";
 }

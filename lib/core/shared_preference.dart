@@ -1,8 +1,7 @@
 import 'dart:async' show Future;
 
 import 'package:get_storage/get_storage.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class PrefsKey {
   static const isLoggedIn = "key_IsLoggedIn";
@@ -93,5 +92,10 @@ abstract class SharedPref {
   // Best to clean up by calling this function in the State object's dispose() function.
   static void dispose() {
     _prefsInstance = null;
+  }
+
+  static Future<void> setBool(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
   }
 }
