@@ -473,10 +473,10 @@ class LoginView extends StatelessWidget {
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: InkWell(
-                                              // onTap:
-                                              //     () =>
-                                              //         controller
-                                              //             .toggleRememberMe(),
+                                              onTap:
+                                                  () =>
+                                                      controller
+                                                          .toggleRememberMe(),
                                               child: Text(
                                                 languageController.getLabel(
                                                   "remember_me",
