@@ -256,27 +256,49 @@ class _MyVideosState extends State<MyVideos> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white24,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Text(
-                            "FIFA World Cup",
-                            style: Styles.textStyleWhiteSemiBold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          video['title'] ?? 'No Title',
-                          style: Styles.textStyleWhiteSemiBold,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        video['title'] != null &&
+                                video['title'].toString().trim().isNotEmpty
+                            ? Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: SizedBox(
+                                width: Get.width / 1,
+                                child: Text(
+                                  video['title'],
+                                  style: Styles.textStyleWhiteMedium.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )
+                            : SizedBox.shrink(),
+
+                        SizedBox(height: Constant.size8),
+                        video['description'] != null &&
+                                video['description']
+                                    .toString()
+                                    .trim()
+                                    .isNotEmpty
+                            ? SizedBox(
+                              width: Get.width / 1.7,
+                              child: Text(
+                                video['description'],
+                                style: Styles.textStyleWhiteSemiBold,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                            : SizedBox.shrink(),
+
                         SizedBox(height: 6),
                         (() {
                           final tags =
@@ -312,7 +334,7 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          video['appLikes']?.toString() ?? '0',
+                          video['sourceLikes']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: 10),
@@ -326,7 +348,7 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          video['appComments']?.toString() ?? '0',
+                          video['sourceComments']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: 10),
@@ -337,7 +359,7 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          video['appShares']?.toString() ?? '0',
+                          video['sourceSharess']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                       ],

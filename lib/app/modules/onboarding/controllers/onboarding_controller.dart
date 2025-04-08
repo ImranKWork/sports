@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/app/app_pages/app_pages.dart';
-import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 

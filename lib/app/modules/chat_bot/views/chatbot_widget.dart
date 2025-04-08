@@ -7,6 +7,7 @@ import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_header.dart';
 import '../../wallet/views/wallet_page.dart';
+import 'ai.dart';
 
 class ChatBotWidget extends StatefulWidget {
   const ChatBotWidget({super.key});
@@ -29,7 +30,12 @@ class _ChatBotWidgetState extends State<ChatBotWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.asset(ImageAssets.headerLogo, scale: 3),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => AI());
+                  },
+                  child: Image.asset(ImageAssets.headerLogo, scale: 3),
+                ),
                 GestureDetector(
                   onTap: () {
                     Get.to(() => WalletPage());

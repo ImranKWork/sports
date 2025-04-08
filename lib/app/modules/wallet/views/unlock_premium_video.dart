@@ -105,7 +105,7 @@ class _UnlockPremiumVideoState extends State<UnlockPremiumVideo> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   double totalWidth = constraints.maxWidth;
-                  double sectionWidth = totalWidth / 5; // updated to 6 sections
+                  double sectionWidth = totalWidth / 5;
 
                   return Stack(
                     children: [
@@ -122,7 +122,7 @@ class _UnlockPremiumVideoState extends State<UnlockPremiumVideo> {
                               style: Styles.textStyleBlackRegular,
                               textAlign: TextAlign.center,
                             ),
-                            Image.asset(ImageAssets.arrow, scale: 2.8),
+                            Image.asset(ImageAssets.arrow, scale: 2),
                             SizedBox(height: Constant.size5),
                           ],
                         ),

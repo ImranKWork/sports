@@ -745,44 +745,51 @@ class _HomeWidgetState extends State<HomeWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 15,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white24,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Text(
-                              "FIFA World Cup",
-                              style: Styles.textStyleWhiteSemiBold,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
+                          video['title'] != null &&
+                                  video['title'].toString().trim().isNotEmpty
+                              ? Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white24,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: SizedBox(
+                                  width: Get.width / 2,
+                                  child: Text(
+                                    video['title'],
+                                    style: Styles.textStyleWhiteMedium.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                              : SizedBox.shrink(),
+
                           SizedBox(height: Constant.size8),
-                          SizedBox(
-                            width: Get.width / 1.7,
-                            child: Text(
-                              video['title'] ?? 'No Title',
-                              style: Styles.textStyleWhiteSemiBold,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
+                          video['description'] != null &&
+                                  video['description']
+                                      .toString()
+                                      .trim()
+                                      .isNotEmpty
+                              ? SizedBox(
+                                width: Get.width / 1.7,
+                                child: Text(
+                                  video['description'],
+                                  style: Styles.textStyleWhiteSemiBold,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                              : SizedBox.shrink(),
+
                           SizedBox(height: Constant.size8),
-                          /*Text(
-                            (video['videoContent']?['snippet']?['tags']
-                                        as List<dynamic>?)
-                                    ?.map((tag) => '#$tag ')
-                                    .join(' ') ??
-                                '',
-                            style: Styles.textStyleWhiteNormal.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),*/
+
                           (() {
                             final tags =
                                 (video['videoContent']?['snippet']?['tags']
@@ -791,15 +798,20 @@ class _HomeWidgetState extends State<HomeWidget> {
                                     .join(' ');
 
                             if (tags != null && tags.isNotEmpty) {
-                              return Text(
-                                tags,
-                                style: Styles.textStyleWhiteNormal.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
+                              return SizedBox(
+                                width: Get.width / 1.7,
+                                child: Text(
+                                  tags,
+                                  style: Styles.textStyleWhiteNormal.copyWith(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  maxLines: 5,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               );
                             } else {
-                              return SizedBox(); // No tags, return empty widget
+                              return SizedBox();
                             }
                           })(),
                         ],
@@ -818,7 +830,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size5),
                         Text(
-                          video['appLikes']?.toString() ?? '0',
+                          video['sourceLikes']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: Constant.size10),
@@ -832,7 +844,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size5),
                         Text(
-                          video['appComments']?.toString() ?? '0',
+                          video['sourceComments']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: Constant.size10),
@@ -843,7 +855,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size5),
                         Text(
-                          video['appShares']?.toString() ?? '0',
+                          video['sourceSharess']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                       ],
@@ -1028,14 +1040,11 @@ void _showCommentSection(BuildContext context) {
                             ),
 
                             filled: true,
-                            fillColor:
-                                Colors.white, // ✅ **Pure White Background**
+                            fillColor: Colors.white,
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 15,
                               vertical: 10,
                             ),
-
-                            // ✅ Border with Color
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(

@@ -74,12 +74,61 @@ class EditProfileView extends GetView<EditProfileController> {
                   style: Styles.textStyleBlackMedium,
                 ),
                 SizedBox(height: Constant.size16),
-                CustomTextFormField(
+                // CustomTextFormField(
+                //   controller: controller.emailController,
+                //   isBorder: true,
+                //   isEditable: false,
+                //   fillColor: Colors.transparent,
+                //   borderColor: ColorAssets.lightGreyVariant1,
+                //   textInputType: TextInputType.emailAddress,
+                //   validator: (value) {
+                //     if (value == null || value.trim().isEmpty) {
+                //       return "Email is required";
+                //     } else if (!GetUtils.isEmail(value.trim())) {
+                //       return "Enter a valid email";
+                //     }
+                //     return null;
+                //   },
+                // ),
+                TextFormField(
                   controller: controller.emailController,
-                  isBorder: true,
-                  fillColor: Colors.transparent,
-                  borderColor: ColorAssets.lightGreyVariant1,
-                  textInputType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.emailAddress,
+                  readOnly: true,
+                  enabled: false, // Disables the field
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    hintText: "Email",
+                    hintStyle: Styles.textStyleDarkGreyNormal,
+                    counterText: "",
+                    contentPadding: EdgeInsets.all(10),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: ColorAssets.themeColorOrange,
+                      ),
+                      borderRadius: BorderRadius.circular(Constant.size8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(Constant.size8),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(Constant.size8),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(Constant.size8),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(Constant.size8),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(Constant.size8),
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return "Email is required";
@@ -89,6 +138,7 @@ class EditProfileView extends GetView<EditProfileController> {
                     return null;
                   },
                 ),
+
                 SizedBox(height: Constant.size24),
                 Text(
                   languageController.getLabel("phone_header"),

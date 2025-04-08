@@ -27,6 +27,7 @@ import '../../wallet/views/wallet_page.dart';
 import '../controllers/profile_controller.dart';
 import 'change_passwd.dart';
 import 'my_videos.dart';
+import 'notification.dart';
 
 class ProfileView extends GetView<ProfileController> {
   ProfileView({super.key});
@@ -254,7 +255,7 @@ class CommonTileList extends StatelessWidget {
         ),
         CommonTile(
           onTap: () {
-            //  Get.to(() => NotificationPref());
+            Get.to(() => NotificationPage());
           },
           text: languageController.getLabel("notification"),
           iconPath: ImageAssets.notification,
@@ -443,16 +444,19 @@ class CommonTile extends StatelessWidget {
           vertical: Constant.size15,
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              iconPath,
-              scale: 2.5,
-              // height: Constant.size30,
-              // width: Constant.size30,
-              color: ColorAssets.darkGrey,
+            SizedBox(
+              height: Constant.size24,
+              width: Constant.size24,
+              child: Image.asset(
+                iconPath,
+                fit: BoxFit.contain,
+                color: ColorAssets.darkGrey,
+              ),
             ),
-            Padding(
-              padding: EdgeInsets.only(left: Constant.size7),
+            SizedBox(width: Constant.size15),
+            Expanded(
               child: Text(
                 text,
                 style: Styles.textStyleBlackMedium.copyWith(
