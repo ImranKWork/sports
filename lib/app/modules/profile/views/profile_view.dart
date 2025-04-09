@@ -313,12 +313,12 @@ class CommonTileList extends StatelessWidget {
 
                       SizedBox(height: Constant.size10),
 
-                      Text(
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
-                        style: Styles.textStyleWhite14.copyWith(fontSize: 12),
-                        maxLines: 3,
-                        textAlign: TextAlign.center,
-                      ),
+                      // Text(
+                      //   "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
+                      //   style: Styles.textStyleWhite14.copyWith(fontSize: 12),
+                      //   maxLines: 3,
+                      //   textAlign: TextAlign.center,
+                      // ),
                       SizedBox(height: Constant.size20),
                       Row(
                         children: [

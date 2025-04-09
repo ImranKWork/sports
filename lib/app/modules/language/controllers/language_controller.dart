@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/core/shared_preference.dart';
+import 'package:sports_trending/model/sign_up/sign_up_response.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/utils/internet_controller.dart';
 
@@ -37,12 +38,33 @@ class LanguageController extends GetxController {
     Get.to(() => LoginView());
   }
 
-  void onDonePressed() {
+  void onDonePressed(firstName, lastname, email, token) {
     SharedPref.setValue(PrefsKey.language, selectedLanguageCode.value);
-    updateUser(selectedLanguageCode.value);
+    updateUser(firstName, lastname, email, token);
   }
 
-  Future<void> updateUser(String lang) async {
+  saveUserInfo(SignUpResponseModel signUpResponse) async {
+    SharedPref.setValue(PrefsKey.isLoggedIn, true);
+    SharedPref.setValue(PrefsKey.userId, signUpResponse.data.id);
+    SharedPref.setValue(PrefsKey.fName, signUpResponse.data.firstname);
+    SharedPref.setValue(PrefsKey.lName, signUpResponse.data.lastname);
+    SharedPref.setValue(PrefsKey.email, signUpResponse.data.email);
+    if (signUpResponse.data.phoneNumber.isNotEmpty) {
+      SharedPref.setValue(PrefsKey.phoneNo, signUpResponse.data.phoneNumber);
+    }
+    SharedPref.setValue(PrefsKey.language, signUpResponse.data.language);
+    SharedPref.setValue(
+      PrefsKey.profilePhoto,
+      signUpResponse.data.profileImage,
+    );
+    SharedPref.setValue(PrefsKey.bio, signUpResponse.data.bio);
+    SharedPref.setValue(
+      PrefsKey.memberSince,
+      signUpResponse.data.createdAt.toIso8601String(),
+    );
+  }
+
+  Future<void> updateUser(firstName, lastname, email, token) async {
     final isConnected = await internetController.checkInternet();
 
     if (!isConnected) {
@@ -56,16 +78,22 @@ class LanguageController extends GetxController {
       return;
     }
     isLoading(true);
-
+    var uid = SharedPref.getString(PrefsKey.key_uid);
     try {
       final register = await apiService.updateUser(
         firstName,
-        lastName,
+        lastname,
         email,
-        lang,
+        uid,
+        language: selectedLanguageCode.value,
         token: token,
       );
       if (register.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(register.body);
+        final signUpData = SignUpResponseModel.fromJson(responseData);
+
+        // Save the user info using a helper method
+        saveUserInfo(signUpData);
         Future.delayed(const Duration(seconds: 1), () {
           Get.offAll(() => HomeView());
         });

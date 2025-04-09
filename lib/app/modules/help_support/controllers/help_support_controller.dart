@@ -18,8 +18,10 @@ class HelpSupportController extends GetxController {
   var selectedIndex = 0.obs;
   var selectedContent = "".obs;
   var content = "".obs;
+  var termcontent = "".obs;
   final faqPageKey = "Frquently";
   final privacyPolicyPageKey = "Privacy_Policy";
+  final termsPolicyPageKey = "Term_Policy";
   final ApiProvider apiService = ApiProvider();
   var faqList = <FAQModel>[].obs;
 
@@ -28,6 +30,7 @@ class HelpSupportController extends GetxController {
     super.onInit();
     selectedContent.value = privacyPolicyPageKey;
     getSpecificPage();
+    gettermcPage();
   }
 
   void changeTab(int index) {
@@ -59,6 +62,29 @@ class HelpSupportController extends GetxController {
           data["data"]["faq"].map((item) => FAQModel.fromJson(item)),
         );
         faqList.value = faqData;
+      }
+    } catch (e) {
+      debugPrint("error:$e");
+      Get.snackbar("Error", "Failed to load labels : $e");
+    } finally {
+      isLoading(false);
+    }
+    isLoading(false);
+  }
+
+  Future<void> gettermcPage() async {
+    try {
+      isLoading(true);
+      final response = await ApiProvider().getSpecificPage(termsPolicyPageKey);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("faq data: ${response.body}");
+        termcontent.value = data["data"]["pageContent"];
+        // var faqData = List<FAQModel>.from(
+        //   data["data"]["faq"].map((item) => FAQModel.fromJson(item)),
+        // );
+        // faqList.value = faqData;
       }
     } catch (e) {
       debugPrint("error:$e");

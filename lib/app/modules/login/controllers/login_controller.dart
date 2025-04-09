@@ -46,6 +46,7 @@ class LoginController extends GetxController {
   }
 
   final ApiProvider apiService = ApiProvider();
+
   @override
   void onInit() {
     super.onInit();
@@ -53,10 +54,10 @@ class LoginController extends GetxController {
     checkRememberedUser();
     emailController.text = SharedPref.getString(PrefsKey.email) ?? "";
     passwordController.text = SharedPref.getString(PrefsKey.password) ?? "";
-    print("Loaded Email: ${SharedPref.getString(PrefsKey.email)}"); // Debugging
-    print(
-      "Loaded Password: ${SharedPref.getString(PrefsKey.password)}",
-    ); // Debugging
+    // print("Loaded Email: ${SharedPref.getString(PrefsKey.email)}"); // Debugging
+    // print(
+    //   "Loaded Password: ${SharedPref.getString(PrefsKey.password)}",
+    // ); // Debugging
   }
 
   void togglePasswordVisibility() {
@@ -112,7 +113,9 @@ class LoginController extends GetxController {
     SharedPref.setValue(PrefsKey.fName, signUpResponse.data.firstname);
     SharedPref.setValue(PrefsKey.lName, signUpResponse.data.lastname);
     SharedPref.setValue(PrefsKey.email, signUpResponse.data.email);
-    SharedPref.setValue(PrefsKey.phoneNo, signUpResponse.data.phoneNumber);
+    if (signUpResponse.data.phoneNumber.isNotEmpty) {
+      SharedPref.setValue(PrefsKey.phoneNo, signUpResponse.data.phoneNumber);
+    }
     SharedPref.setValue(PrefsKey.language, signUpResponse.data.language);
     SharedPref.setValue(
       PrefsKey.profilePhoto,
@@ -131,12 +134,12 @@ class LoginController extends GetxController {
     if (isRemembered == true) {
       emailController.text = SharedPref.getString(PrefsKey.email) ?? "";
       passwordController.text = SharedPref.getString(PrefsKey.password) ?? "";
-      print(
-        "Loaded Email: ${SharedPref.getString(PrefsKey.email)}",
-      ); // Debugging
-      print(
-        "Loaded Password: ${SharedPref.getString(PrefsKey.password)}",
-      ); // Debugging
+      // print(
+      //   "Loaded Email: ${SharedPref.getString(PrefsKey.email)}",
+      // ); // Debugging
+      // print(
+      //   "Loaded Password: ${SharedPref.getString(PrefsKey.password)}",
+      // ); // Debugging
     }
   }
 
@@ -907,19 +910,22 @@ class LoginController extends GetxController {
 
     // Use the null-coalescing operator to provide default values if necessary
     await SharedPref.setValue(PrefsKey.accessToken, accessToken);
+    await SharedPref.setValue(PrefsKey.key_uid, user.user?.uid.toString());
 
     // Safely assign firstName and lastName, defaulting to an empty string if necessary
     String firstName = nameParts.isNotEmpty ? nameParts[0] : "";
     String lastName =
         nameParts.length > 1 ? nameParts.sublist(1).join(" ") : "";
-
+    // getProfileById();
     try {
       // Call updateUser API, ensuring no null values are passed for email and language
       final response = await apiService.updateUser(
         firstName,
         lastName,
-        user.user?.email ?? "", // Default to empty string if email is null
-        "en", // Assuming language is always "en", can be modified if dynamic
+        user.user?.email ?? "",
+        user.user?.uid,
+         // Default to empty string if email is null
+        // Assuming language is always "en", can be modified if dynamic
         // Default empty string for any other field
       );
 
@@ -968,6 +974,44 @@ class LoginController extends GetxController {
       );
     }
     isLoading(false);
+  }
+
+  Future getProfileById() async {
+    final userId = SharedPref.getString(PrefsKey.userId);
+    isLoading(true);
+
+    try {
+      final response = await apiService.getProfileById(userId);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final signUpData = SignUpResponseModel.fromJson(responseData);
+        debugPrint("profile info : $signUpData");
+        SharedPref.setValue(PrefsKey.language, signUpData.data.language);
+        // Save the user info using a helper method
+        //saveUserInfo(signUpData);
+        debugPrint("name : ${SharedPref.getString(PrefsKey.fName)}");
+      } else {
+        Get.snackbar(
+          "Error",
+          "Failed to fetch user information",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+      isLoading(false);
+    } catch (e) {
+      isLoading(false);
+      // Catch any errors that occur during the API call or data processing
+      Get.snackbar(
+        "Error",
+        "An unexpected error occurred. Please try again later.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   Future<void> signInWithTwitter() async {

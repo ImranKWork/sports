@@ -143,21 +143,32 @@ class LanguageView extends StatelessWidget {
                       : CommonButton(
                         label: controller.getLabel("done"),
                         onClick: () {
-                          if (controller.selectedLanguage.value.isEmpty) {
-                            Get.snackbar("Error", "Please select a language");
-                            return;
+                          if (fromSignup) {
+                            controller.onDonePressed(
+                              firstName,
+                              lastName,
+                              email,
+                              accessToken,
+                            );
+                          } else {
+                            Get.back();
                           }
 
-                          controller.isLoading.value = true;
-                          Future.delayed(const Duration(seconds: 1), () {
-                            controller.isLoading.value = false;
+                          //if (controller.selectedLanguage.value.isEmpty) {
+                          //   Get.snackbar("Error", "Please select a language");
+                          //   return;
+                          // }
 
-                            if (fromSignup) {
-                              Get.offAll(() => HomeView());
-                            } else {
-                              Get.back();
-                            }
-                          });
+                          //controller.isLoading.value = true;
+                          // Future.delayed(const Duration(seconds: 1), () {
+                          //   controller.isLoading.value = false;
+
+                          //   if (fromSignup) {
+                          //     Get.offAll(() => HomeView());
+                          //   } else {
+                          //     Get.back();
+                          //   }
+                          // });
                         },
                       ),
             ),

@@ -21,7 +21,7 @@ class SplashController extends GetxController {
     bool? hasSeenOnboarding = SharedPref.getBool(PrefsKey.onboarding);
     await languageController.loadLabels();
     // Future.delayed(Duration(seconds: 0), () {
-    if (isRemembered || isLoggedIn) {
+    if (isLoggedIn) {
       Get.offAll(() => HomeView());
     } else {
       if (hasSeenOnboarding) {

@@ -47,25 +47,35 @@ class ApiProvider {
     String fName,
     String lName,
     String email,
-    String language, {
+    String? uid, {
+    String? language,
     String? socialToken,
     String? token,
   }) async {
     String? token = await FirebaseMessaging.instance.getToken() ?? " ";
     String? deviceId = await AppUtils.getDeviceDetails() ?? "";
-    String? language = SharedPref.getString(PrefsKey.language);
+    // String? language = SharedPref.getString(PrefsKey.language);
     final url = Uri.parse('${ApiUtils.BASE_URL}/auth/update-user');
     final accessToken =
         token.isNotEmpty ? token : SharedPref.getString(PrefsKey.accessToken);
 
     final response = await http.post(
       url,
-      body: jsonEncode({
-        "firstname": fName,
-        "lastname": lName,
-        "email": email,
-        "language": language,
-      }),
+      body:
+          language != null
+              ? jsonEncode({
+                "firstname": fName,
+                "lastname": lName,
+                "email": email,
+                "language": language,
+                "userId": uid,
+              })
+              : jsonEncode({
+                "firstname": fName,
+                "lastname": lName,
+                "email": email,
+                "userId": uid,
+              }),
 
       headers: {
         ApiUtils.DEVICE_ID: deviceId,

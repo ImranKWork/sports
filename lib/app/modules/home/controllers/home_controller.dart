@@ -113,6 +113,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     fetchCategories();
+    Get.put(ProfileController()).getProfileById();
     super.onInit();
   }
 }

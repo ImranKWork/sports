@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:sports_trending/app/modules/edit_profile/views/emailUpdate.dart';
+import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
+import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/widgets/common_button.dart';
 import 'package:sports_trending/widgets/common_header.dart' show CommonAppBar;
@@ -19,6 +22,7 @@ class EditProfileView extends GetView<EditProfileController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.setEditProfileData();
     return Scaffold(
       backgroundColor: ColorAssets.white,
       resizeToAvoidBottomInset: true,
@@ -138,6 +142,34 @@ class EditProfileView extends GetView<EditProfileController> {
                     return null;
                   },
                 ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        String email = SharedPref.getString(PrefsKey.email, "");
+                        if (controller.emailController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Email is required")),
+                          );
+                        } else if (!GetUtils.isEmail(
+                          controller.emailController.text.trim(),
+                        )) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Enter a valid email")),
+                          );
+                        } else {
+                          Get.off(() => UpdateEmailPage());
+                        }
+                      },
+                      child: Text(
+                        languageController.getLabel("Change"),
+                        style: Styles.textStyleBlackMedium,
+                      ),
+                    ),
+                  ],
+                ),
 
                 SizedBox(height: Constant.size24),
                 Text(
@@ -154,10 +186,14 @@ class EditProfileView extends GetView<EditProfileController> {
                     controller: controller.mobileController,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.phone,
-                    initialCountryCode: 'IN',
+                    initialCountryCode: controller.countryN.value,
                     disableLengthCheck: true,
                     showDropdownIcon: true,
+                    onCountryChanged: ((value) {
+                      controller.countryN.value = value.code.toString();
 
+                      controller.mobileController.text = "";
+                    }),
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
@@ -191,6 +227,8 @@ class EditProfileView extends GetView<EditProfileController> {
                     ),
                     onChanged: (phone) {
                       controller.countryCode.value = phone.countryCode;
+                      controller.countryN.value =
+                          phone.countryISOCode.toString();
                     },
                     validator: (phone) {
                       if (phone == null || phone.number.isEmpty) {

@@ -21,6 +21,7 @@ class EditProfileController extends GetxController {
   var profileImage = "".obs;
   final ApiProvider apiService = ApiProvider();
   var countryCode = "+91".obs;
+  var countryN = "IN".obs;
 
   final internetController = Get.put(InternetController());
 
@@ -57,6 +58,10 @@ class EditProfileController extends GetxController {
     String email = SharedPref.getString(PrefsKey.email, "");
     String phone = SharedPref.getString(PrefsKey.phoneNo, "");
     String bio = SharedPref.getString(PrefsKey.bio, "");
+    var cdf = SharedPref.getString(PrefsKey.phoneNocountry, "");
+    if (cdf.isNotEmpty) {
+      countryN.value = cdf.toString();
+    }
 
     nameController = TextEditingController(text: name);
     emailController = TextEditingController(text: email);
@@ -123,6 +128,8 @@ class EditProfileController extends GetxController {
     if (update?.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(update!.body);
       final signUpData = SignUpResponseModel.fromJson(responseData);
+      await SharedPref.setValue(PrefsKey.phoneNo, phoneWithoutCode);
+      await SharedPref.setValue(PrefsKey.phoneNocountry, countryN.value);
 
       Get.put(LoginController()).saveUserInfo(signUpData);
 

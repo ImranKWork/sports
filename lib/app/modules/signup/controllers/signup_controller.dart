@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:sports_trending/app/modules/language/views/language_view.dart';
+import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/providers/api_provider.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/utils/internet_controller.dart';
@@ -218,15 +219,16 @@ class SignupController extends GetxController {
     if (register?.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(register!.body);
       final signUpData = SignUpResponseModel.fromJson(responseData);
-
-      clearControllerValue();
+      var uid = responseData["data"]["uid"];
+      await SharedPref.setValue(PrefsKey.key_uid, uid.toString());
+      // clearControllerValue();
       Future.delayed(const Duration(seconds: 1), () {
         Get.offAll(
           () => LanguageView(
             firstName: firstName,
             lastName: lastName,
             email: email,
-            accessToken: signUpData.message,
+            accessToken: responseData["token"],
             fromSignup: true,
           ),
         );

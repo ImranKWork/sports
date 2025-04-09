@@ -5,6 +5,7 @@ import 'package:sports_trending/app/modules/language/controllers/language_contro
 import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/app/modules/signup/controllers/signup_controller.dart';
 import 'package:sports_trending/app/modules/signup/views/privacy_policy_view.dart';
+import 'package:sports_trending/app/modules/signup/views/terms_policy.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/source/image_assets.dart';
 import 'package:sports_trending/source/styles.dart';
@@ -210,7 +211,7 @@ class SignUpView extends StatelessWidget {
                                     recognizer:
                                         TapGestureRecognizer()
                                           ..onTap = () {
-                                            Get.to(() => PrivacyPolicyView());
+                                            Get.to(() => TermsPolicyView());
                                           },
                                     style: Styles.textStyleWhiteNormal.copyWith(
                                       decoration: TextDecoration.underline,

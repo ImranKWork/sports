@@ -6,6 +6,7 @@ abstract class PrefsKey {
   static const isLoggedIn = "key_IsLoggedIn";
   static const isCaraSoulIn = "key_IsCaraSoulIn";
   static const accessToken = "key_AccessToken";
+  static const key_uid = "key_uid";
   static const refreshToken = "key_RefreshToken";
   static const tokenType = "key_tokenType";
   static const userData = "key_userData";
@@ -30,6 +31,7 @@ abstract class PrefsKey {
   static const fName = "key_fName";
   static const lName = "key_lName";
   static const phoneNo = "key_PhoneNo";
+  static const phoneNocountry = "key_PhoneNo_country";
 }
 
 abstract class SharedPref {
