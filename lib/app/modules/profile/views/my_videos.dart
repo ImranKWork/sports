@@ -21,6 +21,17 @@ class MyVideos extends StatefulWidget {
 class _MyVideosState extends State<MyVideos> {
   final HomeController controller = Get.put(HomeController());
   final RxString selectedCategory = ''.obs;
+  String formatNumber(int number) {
+    if (number >= 1000000000) {
+      return '${(number / 1000000000).toStringAsFixed(1)}B';
+    } else if (number >= 1000000) {
+      return '${(number / 1000000).toStringAsFixed(1)}M';
+    } else if (number >= 1000) {
+      return '${(number / 1000).toStringAsFixed(1)}K';
+    } else {
+      return number.toString();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -334,7 +345,10 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          video['sourceLikes']?.toString() ?? '0',
+                          formatNumber(
+                            int.tryParse(video['sourceLikes'].toString()) ?? 0,
+                          ),
+                          //  video['sourceLikes']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: 10),
@@ -348,7 +362,10 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          video['sourceComments']?.toString() ?? '0',
+                          formatNumber(
+                            int.tryParse(video['sourceComments'].toString()) ??
+                                0,
+                          ),
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: 10),
@@ -359,7 +376,10 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          video['sourceSharess']?.toString() ?? '0',
+                          formatNumber(
+                            int.tryParse(video['sourceSharess'].toString()) ??
+                                0,
+                          ),
                           style: Styles.textStyleWhiteMedium,
                         ),
                       ],

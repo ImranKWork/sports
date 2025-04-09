@@ -104,6 +104,18 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
     super.dispose();
   }
 
+  String formatNumber(int number) {
+    if (number >= 1000000000) {
+      return '${(number / 1000000000).toStringAsFixed(1)}B';
+    } else if (number >= 1000000) {
+      return '${(number / 1000000).toStringAsFixed(1)}M';
+    } else if (number >= 1000) {
+      return '${(number / 1000).toStringAsFixed(1)}K';
+    } else {
+      return number.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -226,7 +238,10 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                       width: 22,
                     ),
                     Text(
-                      videoData['appLikes']?.toString() ?? '0',
+                      formatNumber(
+                        int.tryParse(videoData['sourceLikes'].toString()) ?? 0,
+                      ),
+                      //   videoData['sourceLikes']?.toString() ?? '0',
                       style: Styles.textStyleWhiteMedium,
                     ),
                     const SizedBox(height: 20),
@@ -239,7 +254,11 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                       ),
                     ),
                     Text(
-                      videoData['appComments']?.toString() ?? '0',
+                      formatNumber(
+                        int.tryParse(videoData['sourceComments'].toString()) ??
+                            0,
+                      ),
+                      // videoData['sourceComments']?.toString() ?? '0',
                       style: Styles.textStyleWhiteMedium,
                     ),
                     const SizedBox(height: 20),
@@ -249,7 +268,11 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                       width: 25,
                     ),
                     Text(
-                      videoData['appShares']?.toString() ?? '0',
+                      formatNumber(
+                        int.tryParse(videoData['sourceSharess'].toString()) ??
+                            0,
+                      ),
+                      //   videoData['sourceSharess']?.toString() ?? '0',
                       style: Styles.textStyleWhiteMedium,
                     ),
                   ],

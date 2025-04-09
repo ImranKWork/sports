@@ -42,6 +42,17 @@ class _HomeWidgetState extends State<HomeWidget> {
     "assets/images/playing_football.jpg",
   ];
   final PageController _pageController = PageController();
+  String formatNumber(int number) {
+    if (number >= 1000000000) {
+      return '${(number / 1000000000).toStringAsFixed(1)}B';
+    } else if (number >= 1000000) {
+      return '${(number / 1000000).toStringAsFixed(1)}M';
+    } else if (number >= 1000) {
+      return '${(number / 1000).toStringAsFixed(1)}K';
+    } else {
+      return number.toString();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -830,7 +841,10 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size5),
                         Text(
-                          video['sourceLikes']?.toString() ?? '0',
+                          formatNumber(
+                            int.tryParse(video['sourceLikes'].toString()) ?? 0,
+                          ),
+                          // video['sourceLikes']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: Constant.size10),
@@ -844,7 +858,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size5),
                         Text(
-                          video['sourceComments']?.toString() ?? '0',
+                          formatNumber(
+                            int.tryParse(video['sourceComments'].toString()) ??
+                                0,
+                          ),
+
+                          //   video['sourceComments']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: Constant.size10),
@@ -855,7 +874,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size5),
                         Text(
-                          video['sourceSharess']?.toString() ?? '0',
+                          formatNumber(
+                            int.tryParse(video['sourceSharess'].toString()) ??
+                                0,
+                          ),
+                          // video['sourceSharess']?.toString() ?? '0',
                           style: Styles.textStyleWhiteMedium,
                         ),
                       ],
