@@ -250,7 +250,10 @@ class LanguageController extends GetxController {
     }
   }*/
   String getLabel(String key, {String lang = "en"}) {
-    String storedLang = SharedPref.getString(PrefsKey.language) ?? "en";
+    String storedLang =
+        SharedPref.getString(PrefsKey.language).isEmpty
+            ? "en"
+            : SharedPref.getString(PrefsKey.language);
 
     if (labels.isNotEmpty &&
         labels[storedLang] != null &&

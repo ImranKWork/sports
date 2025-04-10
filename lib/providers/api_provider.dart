@@ -210,7 +210,9 @@ class ApiProvider {
 
   Future<http.Response> fetchLabels() async {
     debugPrint("calling fetch label api");
-    final url = Uri.parse('${ApiUtils.BASE_URL}/admin/get-label');
+    final url = Uri.parse(
+      '${ApiUtils.BASE_URL}/admin/get-label?pageNumber=1&limit=10000',
+    );
 
     final response = await http.get(
       url,

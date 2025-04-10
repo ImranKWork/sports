@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:sports_trending/app/modules/edit_profile/views/emailUpdate.dart';
+import 'package:sports_trending/app/modules/edit_profile/views/phoneUpdate.dart';
 import 'package:sports_trending/app/modules/home/views/home_view.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/core/shared_preference.dart';
@@ -20,9 +21,12 @@ class EditProfileView extends GetView<EditProfileController> {
   final EditProfileController controller = Get.put(EditProfileController());
   final LanguageController languageController = Get.find();
 
+  String phonen = "";
+
   @override
   Widget build(BuildContext context) {
     controller.setEditProfileData();
+    String phone = SharedPref.getString(PrefsKey.phoneNo, "");
     return Scaffold(
       backgroundColor: ColorAssets.white,
       resizeToAvoidBottomInset: true,
@@ -170,7 +174,6 @@ class EditProfileView extends GetView<EditProfileController> {
                     ),
                   ],
                 ),
-
                 SizedBox(height: Constant.size24),
                 Text(
                   languageController.getLabel("phone_header"),
@@ -188,10 +191,11 @@ class EditProfileView extends GetView<EditProfileController> {
                     keyboardType: TextInputType.phone,
                     initialCountryCode: controller.countryN.value,
                     disableLengthCheck: true,
+                    enabled: phone.isNotEmpty ? false : true,
                     showDropdownIcon: true,
                     onCountryChanged: ((value) {
                       controller.countryN.value = value.code.toString();
-                      controller.mobileController.text = "";
+                      //controller.mobileController.text = "";
                     }),
                     decoration: InputDecoration(
                       fillColor: Colors.white,
@@ -240,10 +244,68 @@ class EditProfileView extends GetView<EditProfileController> {
                       if (!RegExp(r'^\d+$').hasMatch(phone.number)) {
                         return 'Phone number should contain only digits';
                       }
+
                       return null;
                     },
                   ),
                 ),
+                SizedBox(height: 10),
+                phone.isNotEmpty
+                    ? Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (controller.mobileController.text.isNotEmpty) {
+                              Get.off(
+                                () => PhoneNumberUpdateScreen(
+                                  controller.mobileController.text,
+                                  controller.countryN.value,
+                                  0,
+                                  controller.countryCode.value
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Enter a Phone number")),
+                              );
+                            }
+                          },
+                          child: Text(
+                            languageController.getLabel("Update"),
+                            style: Styles.textStyleBlackMedium,
+                          ),
+                        ),
+                      ],
+                    )
+                    : Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (controller.mobileController.text.isNotEmpty) {
+                              Get.off(
+                                () => PhoneNumberUpdateScreen(
+                                  controller.mobileController.text,
+                                  controller.countryN.value,
+                                  1,
+                                  controller.countryCode.value
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Enter a Phone number")),
+                              );
+                            }
+                          },
+                          child: Text(
+                            languageController.getLabel("Verify"),
+                            style: Styles.textStyleBlackMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+
                 SizedBox(height: Constant.size24),
                 Text(
                   languageController.getLabel("bio_header"),

@@ -23,7 +23,11 @@ class EditProfileController extends GetxController {
   final ApiProvider apiService = ApiProvider();
   var countryCode = "+91".obs;
   var countryN = "IN".obs;
+<<<<<<< Updated upstream
   final LanguageController languageController = Get.find();
+=======
+  var numberc = "".obs;
+>>>>>>> Stashed changes
 
   final internetController = Get.put(InternetController());
 
