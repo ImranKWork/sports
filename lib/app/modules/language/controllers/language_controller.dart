@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/app/modules/home/views/home_view.dart';
@@ -7,7 +8,10 @@ import 'package:sports_trending/app/modules/login/views/login_view.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/model/sign_up/sign_up_response.dart';
 import 'package:sports_trending/source/color_assets.dart';
+import 'package:sports_trending/utils/api_utils.dart';
+import 'package:sports_trending/utils/app_utils.dart';
 import 'package:sports_trending/utils/internet_controller.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../../providers/api_provider.dart';
 import '../../signup/controllers/signup_controller.dart';
@@ -34,13 +38,76 @@ class LanguageController extends GetxController {
 
   void onSkipPressed() {
     SharedPref.setValue(PrefsKey.language, defaultSelectedCode.value);
-
     Get.to(() => LoginView());
+  }
+
+  Future<http.Response> updateProfile(
+    String language,
+    String userId,
+    context,
+  ) async {
+    isLoading(true);
+    final url = Uri.parse('${ApiUtils.BASE_URL}/user/$userId');
+    String token = await FirebaseMessaging.instance.getToken() ?? "";
+    String deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+    debugPrint("uid :$userId");
+
+    Map<String, dynamic> requestBody = {};
+    var uid = SharedPref.getString(PrefsKey.key_uid);
+
+    if (language.isNotEmpty) requestBody["language"] = language;
+
+    requestBody["userId"] = uid;
+
+    if (requestBody.isNotEmpty) {
+      final response = await http.put(
+        url,
+        body: jsonEncode(requestBody),
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+
+          ApiUtils.AUTHORIZATION: accessToken,
+        },
+      );
+      debugPrint("request : $requestBody}");
+
+      if (response.statusCode == 200) {
+        isLoading(false);
+        debugPrint("response : ${response.body}");
+        Get.back();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getLabel("lang_update"))),
+          snackBarAnimationStyle: AnimationStyle(
+            duration: Duration(seconds: 1),
+          ),
+        );
+        return response;
+      } else if (response.statusCode == 400) {
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+        throw Exception("Failed");
+      }
+    } else {
+      isLoading(false);
+      throw Exception("Failed");
+    }
   }
 
   void onDonePressed(firstName, lastname, email, token) {
     SharedPref.setValue(PrefsKey.language, selectedLanguageCode.value);
     updateUser(firstName, lastname, email, token);
+  }
+
+  void onDonePressed2(context) {
+    SharedPref.setValue(PrefsKey.language, selectedLanguageCode.value);
+    String userId = SharedPref.getString(PrefsKey.userId, "");
+
+    updateProfile(selectedLanguageCode.value, userId, context);
   }
 
   saveUserInfo(SignUpResponseModel signUpResponse) async {
@@ -51,6 +118,10 @@ class LanguageController extends GetxController {
     SharedPref.setValue(PrefsKey.email, signUpResponse.data.email);
     if (signUpResponse.data.phoneNumber.isNotEmpty) {
       SharedPref.setValue(PrefsKey.phoneNo, signUpResponse.data.phoneNumber);
+      SharedPref.setValue(
+        PrefsKey.phoneNocountry,
+        signUpResponse.data.countryCode,
+      );
     }
     SharedPref.setValue(PrefsKey.language, signUpResponse.data.language);
     SharedPref.setValue(

@@ -53,42 +53,29 @@ class UserProfileView extends GetView<UserProfileController> {
                 bottom: Constant.size20,
               ),
               children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: Constant.size10,
-                    left: Constant.size130,
-                    right: Constant.size130,
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      child:
-                          profileImage.isNotEmpty
-                              ? ClipOval(
-                                child: Image.network(
-                                  profileImage,
-                                  height: 100,
-                                  width: 100,
-                                  fit: BoxFit.fill,
-                                ),
-                                // child: Image.network(
-                                //   profileImage,
-                                //   // width: Constant.size100,
-                                //   // height: Constant.size100,
-                                //   fit: BoxFit.contain,
-                                // ),
-                              )
-                              : CircleAvatar(
-                                radius: Constant.size50,
-                                backgroundColor: ColorAssets.lightGrey,
-                                child: Icon(
-                                  Icons.person,
-                                  color: ColorAssets.themeColorOrange,
-                                ),
-                              ),
-                    ),
-                  ),
+                Center(
+                  child: profileImage.isNotEmpty
+                      ? ClipOval(
+                        child: Image.network(
+                          profileImage,
+                          height: 100,
+                          width: 100,
+                        ),
+                        // child: Image.network(
+                        //   profileImage,
+                        //   // width: Constant.size100,
+                        //   // height: Constant.size100,
+                        //   fit: BoxFit.contain,
+                        // ),
+                      )
+                      : CircleAvatar(
+                        radius: Constant.size50,
+                        backgroundColor: ColorAssets.lightGrey,
+                        child: Icon(
+                          Icons.person,
+                          color: ColorAssets.themeColorOrange,
+                        ),
+                      ),
                 ),
 
                 NameAndMemberSinceWidget(),

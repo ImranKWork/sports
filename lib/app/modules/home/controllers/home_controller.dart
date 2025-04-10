@@ -34,7 +34,7 @@ class HomeController extends GetxController {
       selectedCategoryId.value = categoryId;
 
       var url = Uri.parse(
-        '${ApiUtils.BASE_URL}/v1/get-youtube-videos?keyWordId=$categoryId&pageNumber=1&limit=20',
+        '${ApiUtils.BASE_URL}/v1/get-youtube-videos?keyWordId=$categoryId&pageNumber=1&limit=1000',
       );
 
       var response = await http.get(

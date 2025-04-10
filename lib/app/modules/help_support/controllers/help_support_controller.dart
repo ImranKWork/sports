@@ -37,12 +37,12 @@ class HelpSupportController extends GetxController {
     selectedIndex.value = index;
     if (index == 0) {
       selectedContent.value = privacyPolicyPageKey;
-    } else if (index == 1) {
+    } else if (index == 2) {
       selectedContent.value = faqPageKey;
     } else {
       selectedContent.value = "";
     }
-    if (index == 0 || index == 1) {
+    if (index == 0 || index == 2) {
       getSpecificPage();
     }
   }

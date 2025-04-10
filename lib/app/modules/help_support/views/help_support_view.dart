@@ -69,8 +69,9 @@ class HelpSupportView extends GetView<HelpSupportController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _buildTabButton("Privacy Policy", 0),
-                              _buildTabButton("FAQ's", 1),
-                              _buildTabButton("Contact Us", 2),
+                              _buildTabButton("Terms & Conditions", 1),
+                              _buildTabButton("FAQ's", 2),
+                              _buildTabButton("Contact Us", 3),
                             ],
                           ),
                         ),
@@ -98,6 +99,8 @@ class HelpSupportView extends GetView<HelpSupportController> {
                                       controller.selectedIndex.value == 0
                                           ? HtmlWidget(controller.content.value)
                                           : controller.selectedIndex.value == 1
+                                          ? HtmlWidget(controller.termcontent.value)
+                                          : controller.selectedIndex.value == 2
                                           ? _faq()
                                           : _contactUs(),
                                 ),
@@ -118,7 +121,7 @@ class HelpSupportView extends GetView<HelpSupportController> {
       onTap: () => controller.changeTab(index),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: Constant.size16,
+          horizontal: Constant.size6,
           vertical: Constant.size10,
         ),
         decoration: BoxDecoration(

@@ -108,7 +108,7 @@ class ProfileController extends GetxController {
           ListTile(
             leading: Icon(Icons.photo_library),
             title: Text(
-              "Select with Galley",
+              "Select with Gallery",
               style: Styles.textStyleBlackMedium.copyWith(
                 fontSize: FontSize.s14,
               ),
@@ -131,9 +131,12 @@ class ProfileController extends GetxController {
 
       cancel: Padding(
         padding: EdgeInsets.symmetric(horizontal: Constant.size80),
-        child: CommonButton(label: "Cancel", onClick: (){
-          Get.back();
-        }),
+        child: CommonButton(
+          label: "Cancel",
+          onClick: () {
+            Get.back();
+          },
+        ),
       ),
       cancelTextColor: ColorAssets.white,
     );

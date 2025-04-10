@@ -46,6 +46,7 @@ class SignUpData {
   String bio;
   String phoneNumber;
   String profileImage;
+  String countryCode;
 
   SignUpData({
     required this.id,
@@ -62,6 +63,7 @@ class SignUpData {
     required this.bio,
     required this.phoneNumber,
     required this.profileImage,
+    required this.countryCode,
   });
 
   factory SignUpData.fromJson(Map<String, dynamic> json) => SignUpData(
@@ -83,6 +85,7 @@ class SignUpData {
     bio: json["bio"] ?? "",
     phoneNumber: json["phoneNumber"] ?? "",
     profileImage: json["profileImage"] ?? "", // Default to empty string if phoneNumber is null
+    countryCode: json["countryCode"] ?? "", // Default to empty string if phoneNumber is null
   );
 
   Map<String, dynamic> toJson() => {
@@ -100,5 +103,6 @@ class SignUpData {
     "bio" : bio,
     "phoneNumber": phoneNumber,
     "profileImage": profileImage,
+    "countryCode": countryCode,
   };
 }

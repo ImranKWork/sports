@@ -107,6 +107,7 @@ class LoginController extends GetxController {
     }
   }
 */
+
   saveUserInfo(SignUpResponseModel signUpResponse) async {
     SharedPref.setValue(PrefsKey.isLoggedIn, true);
     SharedPref.setValue(PrefsKey.userId, signUpResponse.data.id);
@@ -412,6 +413,7 @@ class LoginController extends GetxController {
       );
     }
   }
+  
   /*
   Future<void> login() async {
     final isConnected = await internetController.checkInternet();

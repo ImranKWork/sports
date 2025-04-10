@@ -160,7 +160,7 @@ class EditProfileView extends GetView<EditProfileController> {
                             SnackBar(content: Text("Enter a valid email")),
                           );
                         } else {
-                          Get.off(() => UpdateEmailPage());
+                          Get.off(() => UpdateEmailPage(email));
                         }
                       },
                       child: Text(
@@ -191,7 +191,6 @@ class EditProfileView extends GetView<EditProfileController> {
                     showDropdownIcon: true,
                     onCountryChanged: ((value) {
                       controller.countryN.value = value.code.toString();
-
                       controller.mobileController.text = "";
                     }),
                     decoration: InputDecoration(

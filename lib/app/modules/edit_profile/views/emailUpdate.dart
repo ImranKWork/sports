@@ -1,13 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
+import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/widgets/common_button.dart';
 import 'package:sports_trending/widgets/custom_text_form_field.dart';
 
 class UpdateEmailPage extends StatefulWidget {
+  String email = "";
+
+  UpdateEmailPage(this.email);
+
   @override
   _UpdateEmailPageState createState() => _UpdateEmailPageState();
 }
@@ -17,6 +25,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isWaitingForVerification = false;
   Timer? _emailCheckTimer;
+  final LoginController loginController = Get.find();
 
   @override
   void dispose() {
@@ -35,6 +44,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
       setState(() {
         _isWaitingForVerification = true;
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -70,18 +80,37 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
         }
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send verification: $e")),
-      );
-    }
+      if (e.toString().contains("Log in again before retrying this request")) {
+        loginController.logout();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("For security reasons, please log in again.")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to send verification: $e")),
+        );
+      }
+    } //requires-recent-login
   }
 
   void onSaveChanges() {
     if (_formKey.currentState!.validate()) {
       final newEmail = _emailController.text.trim();
-      sendEmailVerificationAndMonitor(newEmail);
+      if (widget.email == newEmail) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "This is your Current Email, Please enter a different one",
+            ),
+          ),
+        );
+      } else {
+        sendEmailVerificationAndMonitor(newEmail);
+      }
     }
   }
+
+  final LanguageController languageController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +134,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                         placeHolder: "Enter email",
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return "Email is required";
+                            return languageController.getLabel("email_empty");
                           } else if (!GetUtils.isEmail(value.trim())) {
                             return "Enter a valid email";
                           }
@@ -114,7 +143,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                       ),
                       SizedBox(height: 20),
                       CommonButton(
-                        label: "Save",
+                        label: languageController.getLabel("save_changes"),
                         onClick: () {
                           onSaveChanges();
                         },

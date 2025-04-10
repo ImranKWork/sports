@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/app/modules/home/views/home_view.dart'; // ✅ Add this if not imported
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
+import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/source/image_assets.dart';
 import 'package:sports_trending/source/styles.dart';
@@ -31,6 +32,10 @@ class LanguageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String lang = SharedPref.getString(PrefsKey.language, "");
+    if (lang.isNotEmpty) {
+      controller.selectedLanguageCode.value = lang;
+    }
     return Scaffold(
       backgroundColor: ColorAssets.white,
       body: Padding(
@@ -55,7 +60,6 @@ class LanguageView extends StatelessWidget {
               ),
             ),
             SizedBox(height: Constant.size20),
-
             /// Language selection list
             Column(
               children:
@@ -72,8 +76,8 @@ class LanguageView extends StatelessWidget {
                           padding: EdgeInsets.all(Constant.size12),
                           decoration: BoxDecoration(
                             color:
-                                controller.selectedLanguage.value ==
-                                        language["name"]
+                                controller.selectedLanguageCode.value ==
+                                        language["code"]
                                     ? Colors.orange.shade100
                                     : Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(
@@ -81,8 +85,8 @@ class LanguageView extends StatelessWidget {
                             ),
                             border: Border.all(
                               color:
-                                  controller.selectedLanguage.value ==
-                                          language["name"]
+                                  controller.selectedLanguageCode.value ==
+                                          language["code"]
                                       ? ColorAssets.themeColorOrange
                                       : Colors.transparent,
                               width: 1.5,
@@ -110,13 +114,13 @@ class LanguageView extends StatelessWidget {
                                 ),
                               ),
                               Icon(
-                                controller.selectedLanguage.value ==
-                                        language["name"]
+                                controller.selectedLanguageCode.value ==
+                                        language["code"]
                                     ? Icons.check_circle
                                     : Icons.radio_button_unchecked,
                                 color:
-                                    controller.selectedLanguage.value ==
-                                            language["name"]
+                                    controller.selectedLanguageCode.value ==
+                                            language["code"]
                                         ? ColorAssets.themeColorOrange
                                         : ColorAssets.darkGrey,
                               ),
@@ -151,7 +155,7 @@ class LanguageView extends StatelessWidget {
                               accessToken,
                             );
                           } else {
-                            Get.back();
+                            controller.onDonePressed2(context);
                           }
 
                           //if (controller.selectedLanguage.value.isEmpty) {

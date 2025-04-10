@@ -135,7 +135,6 @@ class ProfileView extends GetView<ProfileController> {
                                                           .value,
                                                       width: 100,
                                                       height: 100,
-                                                      fit: BoxFit.fill,
                                                     ),
                                                   )
                                                   : CircleAvatar(
@@ -147,7 +146,6 @@ class ProfileView extends GetView<ProfileController> {
                                                           BorderRadius.circular(
                                                             Constant.size50,
                                                           ),
-
                                                       child: Icon(
                                                         Icons.person,
                                                         color:
@@ -268,7 +266,7 @@ class CommonTileList extends StatelessWidget {
                 lastName: '',
                 email: '',
                 accessToken: '',
-                fromSignup: true,
+                fromSignup: false,
               ),
             );
           },
@@ -414,7 +412,7 @@ class CommonTileList extends StatelessWidget {
               }
             }
           },
-          text: languageController.getLabel("Delete Account"),
+          text: languageController.getLabel("delete_account"),
           iconPath: ImageAssets.delete,
         ),
       ],

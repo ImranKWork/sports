@@ -160,6 +160,7 @@ class ApiProvider {
     String phoneNo,
     String userId,
     String profilePhoto,
+    String countryCode,
   ) async {
     final url = Uri.parse('${ApiUtils.BASE_URL}/user/$userId');
     String token = await FirebaseMessaging.instance.getToken() ?? "";
@@ -168,6 +169,7 @@ class ApiProvider {
     debugPrint("uid :$userId");
 
     Map<String, dynamic> requestBody = {};
+    var uid = SharedPref.getString(PrefsKey.key_uid);
 
     if (fName.isNotEmpty) requestBody["firstname"] = fName;
     if (lName.isNotEmpty) requestBody["lastname"] = lName;
@@ -175,7 +177,9 @@ class ApiProvider {
     if (language.isNotEmpty) requestBody["language"] = language;
     if (bio.isNotEmpty) requestBody["bio"] = bio;
     if (profilePhoto.isNotEmpty) requestBody["file"] = profilePhoto;
-    if (phoneNo.isNotEmpty) requestBody["phoneNo"] = phoneNo;
+    if (phoneNo.isNotEmpty) requestBody["phoneNumber"] = phoneNo;
+    if (phoneNo.isNotEmpty) requestBody["countryCode"] = countryCode;
+    requestBody["userId"] = uid;
 
     if (requestBody.isNotEmpty) {
       final response = await http.put(

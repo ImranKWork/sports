@@ -5,6 +5,7 @@ import 'package:sports_trending/app/modules/challenges_details/views/challenges_
 import 'package:sports_trending/app/modules/home/views/premium_videos.dart';
 import 'package:sports_trending/app/modules/home/views/video_player_screen.dart';
 import 'package:sports_trending/app/modules/home/views/view_winner.dart';
+import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
 import 'package:sports_trending/app/modules/search/views/comment_list.dart';
 import 'package:sports_trending/app/modules/wallet/views/wallet_page.dart';
 
@@ -31,6 +32,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   final RxString selectedCategory = ''.obs;
 
   final HomeController controller = Get.put(HomeController());
+  final LanguageController languageController = Get.find();
 
   final List<String> images = [
     "assets/images/world_cup.png",
@@ -106,7 +108,10 @@ class _HomeWidgetState extends State<HomeWidget> {
               children: [
                 SizedBox(width: Constant.size10),
 
-                Text("Viral Videos", style: Styles.buttonTextStyle18),
+                Text(
+                  languageController.getLabel("viral_videos"),
+                  style: Styles.buttonTextStyle18,
+                ),
                 Spacer(),
                 GestureDetector(
                   onTap: () {
@@ -117,7 +122,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                       ),
                     );
                   },
-                  child: Text("View All", style: Styles.textBlueHeader),
+                  child: Text(languageController.getLabel("view_all"), style: Styles.textBlueHeader),
                 ),
                 SizedBox(width: Constant.size10),
               ],
@@ -131,13 +136,13 @@ class _HomeWidgetState extends State<HomeWidget> {
               children: [
                 SizedBox(width: Constant.size10),
 
-                Text("Challenges", style: Styles.buttonTextStyle18),
+                Text(languageController.getLabel("challenges"), style: Styles.buttonTextStyle18),
                 Spacer(),
                 GestureDetector(
                   onTap: () {
                     Get.to(() => ChallengesWidget());
                   },
-                  child: Text("View All", style: Styles.textBlueHeader),
+                  child: Text(languageController.getLabel("view_all"), style: Styles.textBlueHeader),
                 ),
                 SizedBox(width: Constant.size10),
               ],
@@ -229,13 +234,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                   children: [
                     SizedBox(width: Constant.size5),
 
-                    Text("Leaderboards", style: Styles.buttonTextStyle18),
+                    Text(languageController.getLabel("leaderboards"), style: Styles.buttonTextStyle18),
                     Spacer(),
                     GestureDetector(
                       onTap: () {
                         Get.to(() => LeaderBoard());
                       },
-                      child: Text("View All", style: Styles.textBlueHeader),
+                      child: Text(languageController.getLabel("view_all"), style: Styles.textBlueHeader),
                     ),
                     SizedBox(width: Constant.size5),
                   ],

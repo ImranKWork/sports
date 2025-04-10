@@ -88,7 +88,7 @@ class EditProfileController extends GetxController {
     String name = nameController.text.trim();
     String email = emailController.text.trim();
     String phoneWithoutCode = mobileController.text.trim().replaceAll(" ", "");
-    String phone = "${countryCode.value.trim()}$phoneWithoutCode";
+    String phone = phoneWithoutCode;
     String bio = bioController.text.trim();
     String lang = SharedPref.getString(PrefsKey.language, "");
     String profilePhoto = SharedPref.getString(PrefsKey.profilePhoto, "");
@@ -121,6 +121,7 @@ class EditProfileController extends GetxController {
       phone,
       userId,
       profilePhoto,
+      countryCode.value.trim(),
     );
 
     isLoading(false);
@@ -249,6 +250,7 @@ class EditProfileController extends GetxController {
     String phoneNo,
     String userId,
     String profilePhoto,
+    String countryCode,
   ) async {
     isLoading.value = true;
     try {
@@ -261,6 +263,7 @@ class EditProfileController extends GetxController {
         phoneNo,
         userId,
         profilePhoto,
+        countryCode,
       );
 
       if (response.statusCode == 200) {
