@@ -5,8 +5,10 @@ import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/widgets/common_button.dart';
 import 'package:sports_trending/widgets/common_header.dart' show CommonAppBar;
 import 'package:sports_trending/widgets/custom_text_form_field.dart';
+
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
+import '../../language/controllers/language_controller.dart';
 import '../controllers/help_support_controller.dart';
 
 class HelpSupportView extends GetView<HelpSupportController> {
@@ -15,6 +17,7 @@ class HelpSupportView extends GetView<HelpSupportController> {
   final HelpSupportController helpSupportController = Get.put(
     HelpSupportController(),
   );
+  final LanguageController languageController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,8 @@ class HelpSupportView extends GetView<HelpSupportController> {
                 icon: Icon(Icons.arrow_back, color: Colors.white),
               ),
               Text(
-                "Help & Support",
+                languageController.getLabel("help_supp"),
+
                 style: Styles.textStyleWhiteBold.copyWith(
                   fontSize: FontSize.s18,
                 ),
@@ -68,10 +72,26 @@ class HelpSupportView extends GetView<HelpSupportController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _buildTabButton("Privacy Policy", 0),
-                              _buildTabButton("Terms & Conditions", 1),
-                              _buildTabButton("FAQ's", 2),
-                              _buildTabButton("Contact Us", 3),
+                              _buildTabButton(
+                                languageController.getLabel("privacy_policy"),
+
+                                0,
+                              ),
+                              _buildTabButton(
+                                languageController.getLabel("terms_conditions"),
+
+                                1,
+                              ),
+                              _buildTabButton(
+                                languageController.getLabel("faq"),
+
+                                2,
+                              ),
+                              _buildTabButton(
+                                languageController.getLabel("contact_us"),
+
+                                3,
+                              ),
                             ],
                           ),
                         ),
@@ -99,7 +119,9 @@ class HelpSupportView extends GetView<HelpSupportController> {
                                       controller.selectedIndex.value == 0
                                           ? HtmlWidget(controller.content.value)
                                           : controller.selectedIndex.value == 1
-                                          ? HtmlWidget(controller.termcontent.value)
+                                          ? HtmlWidget(
+                                            controller.termcontent.value,
+                                          )
                                           : controller.selectedIndex.value == 2
                                           ? _faq()
                                           : _contactUs(),
@@ -150,7 +172,7 @@ class HelpSupportView extends GetView<HelpSupportController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Frequently asked question",
+          languageController.getLabel("frequently_asked_question"),
           style: Styles.textStyleBlackMedium.copyWith(
             fontSize: Constant.size18,
           ),
@@ -178,7 +200,7 @@ class HelpSupportView extends GetView<HelpSupportController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Contact us",
+          languageController.getLabel("contact_us"),
           style: Styles.textStyleBlackMedium.copyWith(
             fontSize: Constant.size18,
           ),
@@ -199,12 +221,15 @@ class HelpSupportView extends GetView<HelpSupportController> {
                 SizedBox(height: Constant.size16),
                 Center(
                   child: Text(
-                    "Get In Touch With Us",
+                    languageController.getLabel("touch_with_us"),
                     style: Styles.textStyleBlackMedium,
                   ),
                 ),
                 SizedBox(height: Constant.size16),
-                Text("Name", style: Styles.textStyleBlackMedium),
+                Text(
+                  languageController.getLabel("name"),
+                  style: Styles.textStyleBlackMedium,
+                ),
                 SizedBox(height: Constant.size16),
                 CustomTextFormField(
                   controller: helpSupportController.nameController,
@@ -215,7 +240,10 @@ class HelpSupportView extends GetView<HelpSupportController> {
                   borderColor: ColorAssets.lightGreyVariant1,
                 ),
                 SizedBox(height: Constant.size24),
-                Text("Email", style: Styles.textStyleBlackMedium),
+                Text(
+                  languageController.getLabel("email_header"),
+                  style: Styles.textStyleBlackMedium,
+                ),
                 SizedBox(height: Constant.size16),
                 CustomTextFormField(
                   disableFloatingLabel: false,
@@ -226,7 +254,10 @@ class HelpSupportView extends GetView<HelpSupportController> {
                   borderColor: ColorAssets.lightGreyVariant1,
                 ),
                 SizedBox(height: Constant.size24),
-                Text("Message", style: Styles.textStyleBlackMedium),
+                Text(
+                  languageController.getLabel("message"),
+                  style: Styles.textStyleBlackMedium,
+                ),
                 SizedBox(height: Constant.size16),
                 CustomTextFormField(
                   input: TextInputAction.next,
@@ -252,7 +283,7 @@ class HelpSupportView extends GetView<HelpSupportController> {
                             ),
                           )
                           : CommonButton(
-                            label: "Send Message",
+                            label: languageController.getLabel("send_message"),
                             onClick: () {
                               controller.sendMessage();
                             },

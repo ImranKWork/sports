@@ -9,6 +9,7 @@ import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_button.dart';
 import '../../../../widgets/common_header.dart';
+import '../../language/controllers/language_controller.dart';
 
 class ChangePasswd extends StatefulWidget {
   const ChangePasswd({super.key});
@@ -19,6 +20,8 @@ class ChangePasswd extends StatefulWidget {
 
 class _ChangePasswdState extends State<ChangePasswd> {
   final loginController = Get.put(LoginController(), permanent: true);
+  final LanguageController languageController = Get.find();
+
   bool _isOldHidden = true;
   bool _isNewHidden = true;
   bool _isConfirmHidden = true;
@@ -51,7 +54,7 @@ class _ChangePasswdState extends State<ChangePasswd> {
                 ),
                 SizedBox(width: Constant.size30),
                 Text(
-                  "Change Password",
+                  languageController.getLabel("change_password"),
                   style: Styles.textStyleBlackMedium.copyWith(
                     color: ColorAssets.white,
                   ),
@@ -70,7 +73,10 @@ class _ChangePasswdState extends State<ChangePasswd> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: Constant.size10),
-                Text("Old Password", style: Styles.textBlackHeader),
+                Text(
+                  languageController.getLabel("old_password"),
+                  style: Styles.textBlackHeader,
+                ),
                 SizedBox(height: Constant.size15),
                 TextFormField(
                   controller: loginController.oldPasswordController,
@@ -78,7 +84,7 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   textInputAction: TextInputAction.done,
                   style: Styles.textStyleBlackMedium,
                   decoration: InputDecoration(
-                    hintText: "Enter Password",
+                    hintText: languageController.getLabel("enter_pwd"),
                     hintStyle: Styles.textStyleWhite14.copyWith(fontSize: 12),
                     contentPadding: const EdgeInsets.only(right: 14, left: 8),
 
@@ -111,10 +117,17 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   ),
                   validator:
                       (value) =>
-                          value!.isEmpty ? "Please enter old password" : null,
+                          value!.isEmpty
+                              ? languageController.getLabel(
+                                "please_enter_old_password",
+                              )
+                              : null,
                 ),
                 SizedBox(height: Constant.size20),
-                Text("New Password", style: Styles.textBlackHeader),
+                Text(
+                  languageController.getLabel("new_pwd"),
+                  style: Styles.textBlackHeader,
+                ),
                 SizedBox(height: Constant.size15),
                 TextFormField(
                   controller: loginController.newPasswordController,
@@ -123,7 +136,7 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   style: Styles.textStyleBlackMedium,
 
                   decoration: InputDecoration(
-                    hintText: "Enter New Password",
+                    hintText: languageController.getLabel("enter_new_pwd"),
                     hintStyle: Styles.textStyleWhite14.copyWith(fontSize: 12),
 
                     suffixIcon: IconButton(
@@ -157,19 +170,24 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter new password";
+                      return languageController.getLabel(
+                        "please_enter_new_password",
+                      );
                     }
                     if (value.length < 6) {
-                      return "Password must be at least 6 characters";
+                      return languageController.getLabel("pwd_must_char");
                     }
                     if (!loginController.isValidPassword(value)) {
-                      return "Password must have upper, lower, digit, special char";
+                      return languageController.getLabel("pwd_must_lower_char");
                     }
                     return null;
                   },
                 ),
                 SizedBox(height: Constant.size20),
-                Text("Confirm New Password", style: Styles.textBlackHeader),
+                Text(
+                  languageController.getLabel("confirm_new_pwd"),
+                  style: Styles.textBlackHeader,
+                ),
                 SizedBox(height: Constant.size15),
                 TextFormField(
                   controller: loginController.confirmPasswordController,
@@ -178,7 +196,8 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   style: Styles.textStyleBlackMedium,
 
                   decoration: InputDecoration(
-                    hintText: "Confirm New Password",
+                    hintText: languageController.getLabel("confirm_new_pwd"),
+
                     hintStyle: Styles.textStyleWhite14.copyWith(fontSize: 12),
 
                     suffixIcon: IconButton(
@@ -212,7 +231,7 @@ class _ChangePasswdState extends State<ChangePasswd> {
                   ),
                   validator: (value) {
                     if (value != loginController.newPasswordController.text) {
-                      return "Passwords do not match";
+                      return languageController.getLabel("pwd_ do_not_match");
                     }
                     return null;
                   },
@@ -232,7 +251,10 @@ class _ChangePasswdState extends State<ChangePasswd> {
                             ),
                           )
                           : CommonButton(
-                            label: "Update Changes",
+                            label: languageController.getLabel(
+                              "update_changes",
+                            ),
+
                             onClick: loginController.changePassword,
                           ),
                 ),

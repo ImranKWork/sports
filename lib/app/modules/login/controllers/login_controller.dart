@@ -17,6 +17,7 @@ import 'package:sports_trending/utils/internet_controller.dart';
 import 'package:twitter_login/twitter_login.dart';
 
 import '../../../../source/color_assets.dart';
+import '../../language/controllers/language_controller.dart';
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
@@ -36,6 +37,7 @@ class LoginController extends GetxController {
   final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final LanguageController languageController = Get.find();
 
   @override
   void onClose() {
@@ -148,8 +150,8 @@ class LoginController extends GetxController {
     final isConnected = await internetController.checkInternet();
     if (!isConnected) {
       Get.snackbar(
-        "Internet Error",
-        "No internet connection",
+        languageController.getLabel("internet_error"),
+        languageController.getLabel("no_internet_con"),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
         colorText: Colors.white,
@@ -164,8 +166,8 @@ class LoginController extends GetxController {
 
       if (email.isEmpty || !GetUtils.isEmail(email)) {
         Get.snackbar(
-          "Email Error",
-          "Please enter a valid email.",
+          languageController.getLabel("email_error"),
+          languageController.getLabel("valid_email"),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.error,
           colorText: Colors.white,
@@ -177,8 +179,9 @@ class LoginController extends GetxController {
           password.length < 6 ||
           !isValidPassword(password)) {
         Get.snackbar(
-          "Password Error",
-          "Password must be at least 6 characters and contain uppercase, lowercase, digit, and special character.",
+          languageController.getLabel("password_error"),
+          languageController.getLabel("pwd_must_lower_char"),
+          //  "Password must be at least 6 characters and contain uppercase, lowercase, digit, and special character.",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.error,
           colorText: Colors.white,
@@ -194,8 +197,8 @@ class LoginController extends GetxController {
           await updateUser(user, isLoginWithEmail: true);
         } else {
           Get.snackbar(
-            "Login Failed",
-            "Invalid email or password",
+            languageController.getLabel("login_failed"),
+            languageController.getLabel("invalid_email_or_password"),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: ColorAssets.error,
             colorText: Colors.white,
@@ -203,7 +206,7 @@ class LoginController extends GetxController {
         }
       } catch (e) {
         Get.snackbar(
-          "Error",
+          languageController.getLabel("error"),
           "Login failed: ${e.toString()}",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.error,
@@ -224,8 +227,9 @@ class LoginController extends GetxController {
 
         if (rawPhone.isEmpty) {
           Get.snackbar(
-            "Validation Error",
-            "Please enter phone number",
+            languageController.getLabel("validation_error"),
+
+            languageController.getLabel("please_enter_phone_number"),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: ColorAssets.error,
             colorText: Colors.white,
@@ -238,7 +242,7 @@ class LoginController extends GetxController {
         final remaining =
             otpAuthResendTime!.difference(DateTime.now()).inSeconds;
         Get.snackbar(
-          "Wait",
+          languageController.getLabel("wait"),
           "Please wait $remaining seconds to resend OTP.",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.error,
@@ -247,106 +251,6 @@ class LoginController extends GetxController {
       }
     }
   }
-
-  /*
-  Future<void> login() async {
-    final isConnected = await internetController.checkInternet();
-    if (!isConnected) {
-      Get.snackbar(
-        "Internet Error",
-        "No internet connection",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: ColorAssets.error,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    if (selectedIndex.value == 0) {
-      // Email login
-      final email = emailController.text.trim();
-      final password = passwordController.text.trim();
-
-      if (email.isEmpty || !GetUtils.isEmail(email)) {
-        Get.snackbar(
-          "Email Error",
-          "Please enter a valid email.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      if (password.isEmpty ||
-          password.length < 6 ||
-          !isValidPassword(password)) {
-        Get.snackbar(
-          "Password Error",
-          "Password must be at least 6 characters and contain uppercase, lowercase, digit, and special character.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      isLoading(true);
-      try {
-        final user = await loginWithEmail(email: email, password: password);
-        if (user != null) {
-          await saveRememberMe(email, password);
-          await updateUser(user, isLoginWithEmail: true);
-        } else {
-          Get.snackbar(
-            "Login Failed",
-            "Invalid email or password",
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: ColorAssets.error,
-            colorText: Colors.white,
-          );
-        }
-      } catch (e) {
-        Get.snackbar(
-          "Error",
-          "Login failed: ${e.toString()}",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-      } finally {
-        isLoading(false);
-      }
-    } else {
-      // Phone login
-      if (otpAuthResendTime == null ||
-          DateTime.now().isAfter(otpAuthResendTime!)) {
-        final phone = fullPhoneNumber.replaceAll(" ", "");
-        if (phone.isEmpty) {
-          Get.snackbar(
-            "Validation Error",
-            "Please enter phone number",
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: ColorAssets.error,
-            colorText: Colors.white,
-          );
-          return;
-        }
-        await sendOTP(phone);
-      } else {
-        final remaining =
-            otpAuthResendTime!.difference(DateTime.now()).inSeconds;
-        Get.snackbar(
-          "Wait",
-          "Please wait $remaining seconds to resend OTP.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-      }
-    }
-  }
-*/
 
   Future<void> changePassword() async {
     if (!formKey.currentState!.validate()) return;
@@ -358,8 +262,10 @@ class LoginController extends GetxController {
 
     if (user == null || user.email == null) {
       Get.snackbar(
-        "Error",
-        "Password change is only supported for email login.",
+        languageController.getLabel("error"),
+        languageController.getLabel(
+          "password_change_is_only_supported_email_login.",
+        ),
         backgroundColor: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
@@ -369,8 +275,8 @@ class LoginController extends GetxController {
 
     if (newPassword != confirmPassword) {
       Get.snackbar(
-        "Error",
-        "New password and confirm password do not match.",
+        languageController.getLabel("error"),
+        languageController.getLabel("new_pwd_dnt_match"),
         backgroundColor: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
@@ -392,8 +298,8 @@ class LoginController extends GetxController {
       confirmPasswordController.clear();
 
       Get.snackbar(
-        "Success",
-        "Password updated successfully. Please log in again.",
+        languageController.getLabel("success"),
+        languageController.getLabel("please_login"),
         backgroundColor: ColorAssets.themeColorOrange,
         snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
@@ -405,237 +311,16 @@ class LoginController extends GetxController {
       Get.offAll(() => LoginView());
     } on FirebaseAuthException catch (e) {
       Get.snackbar(
-        "Error",
-        e.message ?? "An unexpected error occurred.",
+        languageController.getLabel("error"),
+        e.message ?? languageController.getLabel("unexpected_error"),
+
         backgroundColor: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
       );
     }
   }
-  
-  /*
-  Future<void> login() async {
-    final isConnected = await internetController.checkInternet();
 
-    if (!isConnected) {
-      Get.snackbar(
-        "Internet Error",
-        "No internet connection",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: ColorAssets.error,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    // Email login
-    if (selectedIndex.value == 0) {
-      String email = emailController.text.trim();
-      String password = passwordController.text.trim();
-
-      if (email.isEmpty) {
-        Get.snackbar(
-          "Email Error",
-          "Please enter email!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-        return;
-      }
-      if (!GetUtils.isEmail(email)) {
-        Get.snackbar(
-          "Invalid Email",
-          "Please enter a valid email!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      if (password.isEmpty) {
-        Get.snackbar(
-          "Password Error",
-          "Please enter password!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      if (password.length < 6) {
-        Get.snackbar(
-          "Weak Password",
-          "Password must be at least 6 characters!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      if (!isValidPassword(password)) {
-        Get.snackbar(
-          "Password Error",
-          "Password should have at least 1 uppercase, 1 lowercase, 1 digit and 1 special character!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      isLoading(true);
-
-      try {
-        UserCredential? user = await loginWithEmail(
-          email: email,
-          password: password,
-        );
-
-        if (user != null) {
-          await saveRememberMe(email, password);
-          debugPrint("User loginWithEmail : $user");
-          await updateUser(user, isLoginWithEmail: true);
-        } else {
-          Get.snackbar(
-            "Login Failed",
-            "Invalid email or password",
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: ColorAssets.error,
-            colorText: Colors.white,
-          );
-        }
-      } catch (e) {
-        Get.snackbar(
-          "Error",
-          "Login failed. ${e.toString()}",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-      } finally {
-        isLoading(false);
-      }
-    } else {
-      // Phone login
-      if (otpAuthResendTime == null ||
-          DateTime.now().isAfter(otpAuthResendTime!)) {
-        String phone = fullPhoneNumber.replaceAll(" ", "");
-
-        if (phone.isEmpty) {
-          Get.snackbar(
-            "Validation Error",
-            "Please enter phone no!",
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: ColorAssets.error,
-            colorText: Colors.white,
-          );
-          return;
-        }
-
-        await sendOTP(phone);
-      } else {
-        Get.snackbar(
-          "Error",
-          "Please wait ${otpAuthResendTime!.difference(DateTime.now()).inSeconds} seconds to retry login.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorAssets.error,
-          colorText: Colors.white,
-        );
-      }
-    }
-  }*/
-
-  /* Future<void> changePassword() async {
-    if (!formKey.currentState!.validate()) {
-      debugPrint("Form not valid!");
-      return;
-    }
-
-    final oldPassword = oldPasswordController.text.trim();
-    final newPassword = newPasswordController.text.trim();
-    final confirmPassword = confirmPasswordController.text.trim();
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      Get.snackbar(
-        "Error",
-        "User not signed in",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    if (user.email == null) {
-      Get.snackbar(
-        "Unsupported",
-        "Change password is available only for email login users.",
-        backgroundColor: Colors.orange,
-        snackPosition: SnackPosition.BOTTOM,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    if (newPassword != confirmPassword) {
-      Get.snackbar(
-        "Error",
-        "Passwords do not match",
-        backgroundColor: Colors.red,
-        snackPosition: SnackPosition.BOTTOM,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    try {
-      final credential = EmailAuthProvider.credential(
-        email: user.email!,
-        password: oldPassword,
-      );
-
-      await user.reauthenticateWithCredential(credential);
-      await user.updatePassword(newPassword);
-      await user.reload();
-
-      oldPasswordController.clear();
-      newPasswordController.clear();
-      confirmPasswordController.clear();
-
-      Get.defaultDialog(
-        title: "Success",
-        middleText: "Password changed successfully.\nPlease log in again.",
-        textConfirm: "OK",
-        onConfirm: () async {
-          await FirebaseAuth.instance.signOut();
-          Get.offAll(() => LoginView()); // Navigate to login screen
-        },
-      );
-    } on FirebaseAuthException catch (e) {
-      Get.snackbar(
-        "Error",
-        e.message ?? "Something went wrong",
-        backgroundColor: Colors.red,
-        snackPosition: SnackPosition.BOTTOM,
-        colorText: Colors.white,
-      );
-    } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Something went wrong",
-        backgroundColor: Colors.red,
-        snackPosition: SnackPosition.BOTTOM,
-        colorText: Colors.white,
-      );
-    }
-  }
-*/
   bool isValidPassword(String password) {
     String pattern = r'^(?=.*[a-z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$';
     RegExp regex = RegExp(pattern);
@@ -658,7 +343,7 @@ class LoginController extends GetxController {
         },
         verificationFailed: (FirebaseAuthException e) {
           Get.snackbar(
-            "Error",
+            languageController.getLabel("error"),
             e.message ?? "Verification failed",
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
@@ -669,8 +354,8 @@ class LoginController extends GetxController {
         codeSent: (String id, int? resendToken) {
           // verificationId.value = id;
           Get.snackbar(
-            "Success",
-            "OTP Sent",
+            languageController.getLabel("success"),
+            languageController.getLabel("otp_sent"),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: ColorAssets.themeColorOrange,
             colorText: Colors.white,
@@ -696,7 +381,7 @@ class LoginController extends GetxController {
       );
     } catch (e) {
       Get.snackbar(
-        "Error",
+        languageController.getLabel("error"),
         "Failed to send OTP ${e.toString()}",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
@@ -719,7 +404,7 @@ class LoginController extends GetxController {
       isLoading.value = false;
       authError.value = AuthErrorModel.fromFirebaseError(e.code);
       Get.snackbar(
-        "Error",
+        languageController.getLabel("error"),
         authError.value?.message ?? "",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
@@ -797,7 +482,7 @@ class LoginController extends GetxController {
       isLoading(false);
       AuthErrorModel authErrorModel = AuthErrorModel.fromFirebaseError(e.code);
       Get.snackbar(
-        "Error",
+        languageController.getLabel("error"),
         authErrorModel.message ?? "",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
@@ -808,7 +493,7 @@ class LoginController extends GetxController {
       // Handle error and show an error message
       isLoading(false);
       Get.snackbar(
-        "YouTube Login Error", // Show a snackbar with the error message
+        languageController.getLabel("youtb_login"),
         e.toString(),
         snackPosition: SnackPosition.BOTTOM, // Show at the bottom of the screen
         backgroundColor: Colors.red,
@@ -837,7 +522,7 @@ class LoginController extends GetxController {
       isLoading(false);
       AuthErrorModel authErrorModel = AuthErrorModel.fromFirebaseError(e.code);
       Get.snackbar(
-        "Error",
+        languageController.getLabel("error"),
         authErrorModel.message ?? "",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
@@ -847,7 +532,7 @@ class LoginController extends GetxController {
       isLoading.value = false;
       debugPrint("Facebook Login Error: $e");
       Get.snackbar(
-        "Facebook Login Error",
+        languageController.getLabel("fb_login_e"),
         e.toString(),
         snackPosition: SnackPosition.BOTTOM, // Show at the bottom of the screen
         backgroundColor: Colors.red,
@@ -870,7 +555,7 @@ class LoginController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        "Instagram Login Error",
+        languageController.getLabel("insta_login_e"),
         e.toString(),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
@@ -926,7 +611,7 @@ class LoginController extends GetxController {
         lastName,
         user.user?.email ?? "",
         user.user?.uid,
-         // Default to empty string if email is null
+        // Default to empty string if email is null
         // Assuming language is always "en", can be modified if dynamic
         // Default empty string for any other field
       );
@@ -941,8 +626,8 @@ class LoginController extends GetxController {
 
         // Show success notification
         Get.snackbar(
-          "Success",
-          "Login Successfully",
+          languageController.getLabel("success"),
+          languageController.getLabel("login_succ"),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.themeColorOrange,
           colorText: Colors.white,
@@ -955,8 +640,8 @@ class LoginController extends GetxController {
       } else {
         // Handle unsuccessful response if needed
         Get.snackbar(
-          "Error",
-          "Failed to update user information",
+          languageController.getLabel("error"),
+          languageController.getLabel("update_user_info"),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -966,10 +651,9 @@ class LoginController extends GetxController {
     } catch (e) {
       isLoading(false);
 
-      // Catch any errors that occur during the API call or data processing
       Get.snackbar(
-        "Error",
-        "An unexpected error occurred. Please try again later.",
+        languageController.getLabel("error"),
+        languageController.getLabel("unexpected_error"),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -995,8 +679,8 @@ class LoginController extends GetxController {
         debugPrint("name : ${SharedPref.getString(PrefsKey.fName)}");
       } else {
         Get.snackbar(
-          "Error",
-          "Failed to fetch user information",
+          languageController.getLabel("error"),
+          languageController.getLabel("user_info"),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -1007,8 +691,8 @@ class LoginController extends GetxController {
       isLoading(false);
       // Catch any errors that occur during the API call or data processing
       Get.snackbar(
-        "Error",
-        "An unexpected error occurred. Please try again later.",
+        languageController.getLabel("error"),
+        languageController.getLabel("unexpected_error"),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -1044,8 +728,8 @@ class LoginController extends GetxController {
 
         case TwitterLoginStatus.cancelledByUser:
           Get.snackbar(
-            "Error",
-            "Login Cancelled by User",
+            languageController.getLabel("error"),
+            languageController.getLabel("login_cancel"),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: ColorAssets.error,
             colorText: Colors.white,
@@ -1054,8 +738,8 @@ class LoginController extends GetxController {
 
         case TwitterLoginStatus.error:
           Get.snackbar(
-            "Error",
-            "Login Cancelled by User",
+            languageController.getLabel("error"),
+            languageController.getLabel("login_cancel"),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: ColorAssets.error,
             colorText: Colors.white,
@@ -1069,14 +753,14 @@ class LoginController extends GetxController {
       isLoading(false);
       AuthErrorModel authErrorModel = AuthErrorModel.fromFirebaseError(e.code);
       Get.snackbar(
-        "Error",
+        languageController.getLabel("error"),
         authErrorModel.message ?? "",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
         colorText: Colors.white,
       );
     } catch (e) {
-      Get.snackbar("Twitter Login Error", e.toString());
+      Get.snackbar(languageController.getLabel("twiter_log_e"), e.toString());
     }
   }
 }

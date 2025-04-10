@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,9 +10,11 @@ import 'package:sports_trending/model/sign_up/sign_up_response.dart';
 import 'package:sports_trending/providers/api_provider.dart';
 import 'package:sports_trending/utils/image_picker_controller.dart';
 import 'package:sports_trending/widgets/common_button.dart';
+
 import '../../../../source/color_assets.dart';
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
+import '../../language/controllers/language_controller.dart';
 
 class ProfileController extends GetxController {
   final count = 0.obs;
@@ -20,6 +23,7 @@ class ProfileController extends GetxController {
   final loginController = Get.put(LoginController());
   var isLoading = false.obs;
   final ApiProvider apiService = ApiProvider();
+  final LanguageController languageController = Get.find();
 
   @override
   void onInit() {
@@ -57,8 +61,8 @@ class ProfileController extends GetxController {
         debugPrint("name : ${SharedPref.getString(PrefsKey.fName)}");
       } else {
         Get.snackbar(
-          "Error",
-          "Failed to fetch user information",
+          languageController.getLabel("error"),
+          languageController.getLabel("failed_to_fetch_user_information"),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -69,8 +73,10 @@ class ProfileController extends GetxController {
       isLoading(false);
       // Catch any errors that occur during the API call or data processing
       Get.snackbar(
-        "Error",
-        "An unexpected error occurred. Please try again later.",
+        languageController.getLabel("error"),
+        languageController.getLabel(
+          "an_unexpected_error_occurred._please_try_again_later.",
+        ),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -80,14 +86,15 @@ class ProfileController extends GetxController {
 
   showEditProfileDialog() {
     Get.defaultDialog(
-      title: "Change profile",
+      title: languageController.getLabel("change_profile"),
+
       titleStyle: Styles.textStyleBlackMedium.copyWith(fontSize: FontSize.s18),
       content: Column(
         children: [
           ListTile(
             leading: Icon(Icons.camera_alt),
             title: Text(
-              "Select with Camera",
+              languageController.getLabel("select_with_camera"),
               style: Styles.textStyleBlackMedium.copyWith(
                 fontSize: FontSize.s14,
               ),
@@ -108,7 +115,8 @@ class ProfileController extends GetxController {
           ListTile(
             leading: Icon(Icons.photo_library),
             title: Text(
-              "Select with Gallery",
+              languageController.getLabel("select_with_gallery"),
+
               style: Styles.textStyleBlackMedium.copyWith(
                 fontSize: FontSize.s14,
               ),
@@ -132,7 +140,7 @@ class ProfileController extends GetxController {
       cancel: Padding(
         padding: EdgeInsets.symmetric(horizontal: Constant.size80),
         child: CommonButton(
-          label: "Cancel",
+          label: languageController.getLabel("name"),
           onClick: () {
             Get.back();
           },

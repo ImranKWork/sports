@@ -11,6 +11,7 @@ import 'package:sports_trending/utils/internet_controller.dart';
 import '../../../../model/sign_up/sign_up_response.dart';
 import '../../../../providers/api_provider.dart';
 import '../../../../source/color_assets.dart';
+import '../../language/controllers/language_controller.dart';
 
 class EditProfileController extends GetxController {
   var emailController = TextEditingController();
@@ -22,6 +23,7 @@ class EditProfileController extends GetxController {
   final ApiProvider apiService = ApiProvider();
   var countryCode = "+91".obs;
   var countryN = "IN".obs;
+  final LanguageController languageController = Get.find();
 
   final internetController = Get.put(InternetController());
 
@@ -76,8 +78,8 @@ class EditProfileController extends GetxController {
 
     if (!isConnected) {
       Get.snackbar(
-        "Internet Error",
-        "No internet connection",
+        languageController.getLabel("internet_error"),
+        languageController.getLabel("no_internet_con"),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
         colorText: Colors.white,
@@ -101,8 +103,8 @@ class EditProfileController extends GetxController {
 
     if (email.isNotEmpty && !GetUtils.isEmail(email)) {
       Get.snackbar(
-        "Invalid Email",
-        "Please enter a valid email!",
+        languageController.getLabel("invalid_email"),
+        languageController.getLabel("valid_email"),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
         colorText: Colors.white,
@@ -221,8 +223,8 @@ class EditProfileController extends GetxController {
       profileImage.value = signUpData.data.profileImage;
 
       Get.snackbar(
-        "Success",
-        'Profile Updated successfully',
+        languageController.getLabel("success"),
+        languageController.getLabel("profile_update_success"),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.themeColorOrange,
         colorText: Colors.white,
@@ -231,7 +233,7 @@ class EditProfileController extends GetxController {
       return response;
     } else {
       Get.snackbar(
-        "Error",
+        languageController.getLabel("error"),
         response.body,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,
@@ -268,8 +270,8 @@ class EditProfileController extends GetxController {
 
       if (response.statusCode == 200) {
         Get.snackbar(
-          "Success",
-          'Profile Updated successfully',
+          languageController.getLabel("success"),
+          languageController.getLabel("profile_update_success"),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.themeColorOrange,
           colorText: Colors.white,
@@ -277,7 +279,7 @@ class EditProfileController extends GetxController {
         return response;
       } else if (response.statusCode == 400) {
         Get.snackbar(
-          "Error",
+          languageController.getLabel("error"),
           response.body,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.error,
@@ -286,8 +288,8 @@ class EditProfileController extends GetxController {
         return response;
       } else {
         Get.snackbar(
-          "Error",
-          "Edit Profile failed",
+          languageController.getLabel("error"),
+          languageController.getLabel("edit_pro_failed"),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: ColorAssets.error,
           colorText: Colors.white,
@@ -296,7 +298,7 @@ class EditProfileController extends GetxController {
       return response;
     } catch (e) {
       Get.snackbar(
-        "Error",
+        languageController.getLabel("error"),
         "Something went wrong: $e",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: ColorAssets.error,

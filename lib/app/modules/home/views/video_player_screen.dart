@@ -138,15 +138,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           return Stack(
             children: [
               if (_controller != null)
-                // YoutubePlayerBuilder(
-                //   player: YoutubePlayer(
-                //     controller: _controller!,
-                //     aspectRatio: 10 / 22,
-                //   ),
-                //   builder: (context, player) {
-                //     return Center(child: player);
-                //   },
-                // )
+
                 YoutubePlayerBuilder(
                   player: YoutubePlayer(
                     controller: _controller!,
@@ -241,7 +233,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                       formatNumber(
                         int.tryParse(videoData['sourceLikes'].toString()) ?? 0,
                       ),
-                      //   videoData['sourceLikes']?.toString() ?? '0',
                       style: Styles.textStyleWhiteMedium,
                     ),
                     const SizedBox(height: 20),
@@ -258,7 +249,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                         int.tryParse(videoData['sourceComments'].toString()) ??
                             0,
                       ),
-                      // videoData['sourceComments']?.toString() ?? '0',
                       style: Styles.textStyleWhiteMedium,
                     ),
                     const SizedBox(height: 20),
@@ -272,7 +262,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                         int.tryParse(videoData['sourceSharess'].toString()) ??
                             0,
                       ),
-                      //   videoData['sourceSharess']?.toString() ?? '0',
                       style: Styles.textStyleWhiteMedium,
                     ),
                   ],

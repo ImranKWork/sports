@@ -1089,10 +1089,9 @@ void _showCommentSection(BuildContext context) {
                               ),
                             ),
 
-                            // ✅ Send Button & Emoji Inside TextField with Divider
                             suffixIcon: Row(
                               mainAxisSize:
-                                  MainAxisSize.min, // ✅ Keeps it compact
+                                  MainAxisSize.min,
                               children: [
                                 GestureDetector(
                                   onTap: () {},

@@ -229,26 +229,26 @@ class CommonTileList extends StatelessWidget {
           onTap: () {
             Get.to(() => MyVideos());
           },
-          text: languageController.getLabel("My Videos"),
+          text: languageController.getLabel("my_videos"),
           iconPath: ImageAssets.myVideos,
         ),
         CommonTile(
           onTap: () {},
-          text: languageController.getLabel("Subscription Plans"),
+          text: languageController.getLabel("sub_plans"),
           iconPath: ImageAssets.subs,
         ),
         CommonTile(
           onTap: () {
             Get.to(() => StCoins());
           },
-          text: languageController.getLabel("STCoins Wallet"),
+          text: languageController.getLabel("stCoins_wallet"),
           iconPath: ImageAssets.coinSt,
         ),
         CommonTile(
           onTap: () {
             Get.to(() => ReferYourFriends());
           },
-          text: languageController.getLabel("Refer & Earn"),
+          text: languageController.getLabel("refer_earn"),
           iconPath: ImageAssets.refer,
         ),
         CommonTile(
@@ -325,7 +325,7 @@ class CommonTileList extends StatelessWidget {
                               horizontal: 10.0,
                             ),
                             child: CommonButton(
-                              label: 'Yes, Logout',
+                              label: languageController.getLabel("logout"),
                               onClick: () {
                                 loginController.logout();
                               },
@@ -352,7 +352,7 @@ class CommonTileList extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                'Cancel',
+                                languageController.getLabel("cancel"),
                                 style: Styles.textStyleWhiteSemiBold.copyWith(
                                   fontSize: FontSize.s14,
                                   color: ColorAssets.themeColorOrange,
@@ -385,8 +385,8 @@ class CommonTileList extends StatelessWidget {
                 Get.offAll(() => LoginView());
 
                 Get.snackbar(
-                  "Account Deleted",
-                  "Your account has been deleted successfully.",
+                  languageController.getLabel("account_deleted"),
+                  languageController.getLabel("deleted_successfully"),
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: ColorAssets.themeColorOrange,
                   colorText: Colors.white,
@@ -395,16 +395,18 @@ class CommonTileList extends StatelessWidget {
             } on FirebaseAuthException catch (e) {
               if (e.code == 'requires-recent-login') {
                 Get.snackbar(
-                  "Re-authentication Required",
-                  "Please log in again to delete your account.",
+                  languageController.getLabel("re-authentication_required"),
+                  languageController.getLabel("log _in _again_delete_account."),
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.orange,
                   colorText: Colors.white,
                 );
               } else {
                 Get.snackbar(
-                  "Error",
-                  e.message ?? "Failed to delete account",
+                  languageController.getLabel("error"),
+                  e.message ??
+                      languageController.getLabel("failed_to_delete_account"),
+
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.red,
                   colorText: Colors.white,
