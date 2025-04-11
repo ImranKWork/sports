@@ -38,7 +38,6 @@ class SplashView extends GetView<SplashController> {
             fit: BoxFit.cover,
           ),
           SizedBox(height: Constant.size50),
-
           Obx(
             () => Align(
               alignment: Alignment.bottomCenter,

@@ -13,7 +13,7 @@ class HomeController extends GetxController {
   RxInt currentIndex = 0.obs;
   var categories = <Map<String, dynamic>>[].obs;
   RxString selectedCategoryId = ''.obs; // Stores selected category ID
-
+  final RxString selectedCategory = ''.obs;
   var videos = <Map<String, dynamic>>[].obs;
   var isLoading = true.obs;
   var errorMessage = ''.obs;
@@ -34,7 +34,7 @@ class HomeController extends GetxController {
       selectedCategoryId.value = categoryId;
 
       var url = Uri.parse(
-        '${ApiUtils.BASE_URL}/v1/get-youtube-videos?keyWordId=$categoryId&pageNumber=1&limit=1000',
+        '${ApiUtils.BASE_URL}/v1/get-youtube-videos?keyWordId=$categoryId&pageNumber=1&limit=300',
       );
 
       var response = await http.get(
@@ -42,7 +42,7 @@ class HomeController extends GetxController {
         headers: {
           ApiUtils.DEVICE_ID: deviceId,
           ApiUtils.DEVICE_TOKEN: token,
-          ApiUtils.AUTHORIZATION: accessToken,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
           ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
         },
       );
@@ -83,7 +83,7 @@ class HomeController extends GetxController {
         headers: {
           ApiUtils.DEVICE_ID: deviceId,
           ApiUtils.DEVICE_TOKEN: token,
-          ApiUtils.AUTHORIZATION: accessToken,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
           ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
         },
       );
@@ -96,6 +96,7 @@ class HomeController extends GetxController {
           );
 
           if (categories.isNotEmpty) {
+            selectedCategory.value = categories[0]['name'];
             selectedCategoryId.value = categories[0]['_id'];
             fetchVideos(selectedCategoryId.value);
           }
@@ -112,7 +113,7 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    fetchCategories();
+    //fetchCategories();
     Get.put(ProfileController()).getProfileById();
     super.onInit();
   }

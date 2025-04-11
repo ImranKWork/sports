@@ -68,7 +68,6 @@ class LanguageController extends GetxController {
           ApiUtils.DEVICE_ID: deviceId,
           ApiUtils.DEVICE_TOKEN: token,
           ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
-
           ApiUtils.AUTHORIZATION: accessToken,
         },
       );
@@ -77,7 +76,7 @@ class LanguageController extends GetxController {
       if (response.statusCode == 200) {
         isLoading(false);
         debugPrint("response : ${response.body}");
-        Get.back();
+         Get.to(() => HomeView());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(getLabel("lang_update"))),
           snackBarAnimationStyle: AnimationStyle(

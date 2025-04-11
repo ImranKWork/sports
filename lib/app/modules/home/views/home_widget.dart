@@ -29,8 +29,6 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
-  final RxString selectedCategory = ''.obs;
-
   final HomeController controller = Get.put(HomeController());
   final LanguageController languageController = Get.find();
 
@@ -54,6 +52,13 @@ class _HomeWidgetState extends State<HomeWidget> {
     } else {
       return number.toString();
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.fetchCategories();
   }
 
   @override
@@ -122,7 +127,10 @@ class _HomeWidgetState extends State<HomeWidget> {
                       ),
                     );
                   },
-                  child: Text(languageController.getLabel("view_all"), style: Styles.textBlueHeader),
+                  child: Text(
+                    languageController.getLabel("view_all"),
+                    style: Styles.textBlueHeader,
+                  ),
                 ),
                 SizedBox(width: Constant.size10),
               ],
@@ -136,19 +144,24 @@ class _HomeWidgetState extends State<HomeWidget> {
               children: [
                 SizedBox(width: Constant.size10),
 
-                Text(languageController.getLabel("challenges"), style: Styles.buttonTextStyle18),
+                Text(
+                  languageController.getLabel("challenges"),
+                  style: Styles.buttonTextStyle18,
+                ),
                 Spacer(),
                 GestureDetector(
                   onTap: () {
                     Get.to(() => ChallengesWidget());
                   },
-                  child: Text(languageController.getLabel("view_all"), style: Styles.textBlueHeader),
+                  child: Text(
+                    languageController.getLabel("view_all"),
+                    style: Styles.textBlueHeader,
+                  ),
                 ),
                 SizedBox(width: Constant.size10),
               ],
             ),
             SizedBox(height: Constant.size10),
-
             Column(
               children: [
                 SizedBox(
@@ -234,13 +247,19 @@ class _HomeWidgetState extends State<HomeWidget> {
                   children: [
                     SizedBox(width: Constant.size5),
 
-                    Text(languageController.getLabel("leaderboards"), style: Styles.buttonTextStyle18),
+                    Text(
+                      languageController.getLabel("leaderboards"),
+                      style: Styles.buttonTextStyle18,
+                    ),
                     Spacer(),
                     GestureDetector(
                       onTap: () {
                         Get.to(() => LeaderBoard());
                       },
-                      child: Text(languageController.getLabel("view_all"), style: Styles.textBlueHeader),
+                      child: Text(
+                        languageController.getLabel("view_all"),
+                        style: Styles.textBlueHeader,
+                      ),
                     ),
                     SizedBox(width: Constant.size5),
                   ],
@@ -604,8 +623,9 @@ class _HomeWidgetState extends State<HomeWidget> {
         );
       }
 
-      if (selectedCategory.value.isEmpty && controller.categories.isNotEmpty) {
-        selectedCategory.value = controller.categories[0]['name'];
+      if (controller.selectedCategory.value.isEmpty &&
+          controller.categories.isNotEmpty) {
+        controller.selectedCategory.value = controller.categories[0]['name'];
         controller.fetchVideos(controller.categories[0]['_id']);
       }
 
@@ -618,11 +638,12 @@ class _HomeWidgetState extends State<HomeWidget> {
             final category = controller.categories[index]['name'];
             final categoryId =
                 controller.categories[index]['_id']; // Category ID
-            bool isSelected = selectedCategory.value == category;
+            bool isSelected = controller.selectedCategory.value == category;
 
             return GestureDetector(
               onTap: () {
-                selectedCategory.value = category; // Set the selected category
+                controller.selectedCategory.value =
+                    category; // Set the selected category
                 controller.fetchVideos(
                   categoryId,
                 ); // Fetch videos based on the category
@@ -693,7 +714,9 @@ class _HomeWidgetState extends State<HomeWidget> {
           itemCount: controller.videos.length,
           itemBuilder: (context, index) {
             var video = controller.videos[index];
-            String thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? '';
+            String thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? "";
+            String defaultthumbnailUrl =
+                video['thumbnails']?['default']?['url'] ?? '';
 
             return GestureDetector(
               onTap: () {
@@ -715,7 +738,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(17.37),
                       child: Image.network(
-                        thumbnailUrl,
+                        thumbnailUrl.isEmpty
+                            ? defaultthumbnailUrl
+                            : thumbnailUrl,
                         fit: BoxFit.cover,
                         width: Get.width / 1.4,
                         height: 540,
@@ -743,7 +768,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         },
                         errorBuilder: (context, error, stackTrace) {
                           return Image.asset(
-                            'assets/images/world_cup.png',
+                            'assets/images/App Splash.png',
                             fit: BoxFit.cover,
                             width: Get.width / 1.4,
                             height: 540,
@@ -786,6 +811,19 @@ class _HomeWidgetState extends State<HomeWidget> {
                                 ),
                               )
                               : SizedBox.shrink(),
+
+                          // SizedBox(
+                          //   width: Get.width / 2,
+                          //   child: Text(
+                          //     video['type'],
+                          //     style: Styles.textStyleWhiteMedium.copyWith(
+                          //       fontSize: 14,
+                          //       fontWeight: FontWeight.w400,
+                          //     ),
+                          //     maxLines: 1,
+                          //     overflow: TextOverflow.ellipsis,
+                          //   ),
+                          // ),
 
                           SizedBox(height: Constant.size8),
                           video['description'] != null &&
@@ -1090,8 +1128,7 @@ void _showCommentSection(BuildContext context) {
                             ),
 
                             suffixIcon: Row(
-                              mainAxisSize:
-                                  MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 GestureDetector(
                                   onTap: () {},

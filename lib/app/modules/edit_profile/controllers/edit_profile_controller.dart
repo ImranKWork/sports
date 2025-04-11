@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:country_pickers/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -23,11 +24,8 @@ class EditProfileController extends GetxController {
   final ApiProvider apiService = ApiProvider();
   var countryCode = "+91".obs;
   var countryN = "IN".obs;
-<<<<<<< Updated upstream
   final LanguageController languageController = Get.find();
-=======
   var numberc = "".obs;
->>>>>>> Stashed changes
 
   final internetController = Get.put(InternetController());
 
@@ -58,6 +56,13 @@ class EditProfileController extends GetxController {
     bioController.clear();
   }
 
+  String? getIsoFromDialCode(String dialCode) {
+    final country = CountryPickerUtils.getCountryByPhoneCode(
+      dialCode.replaceAll('+', ''),
+    );
+    return country.isoCode; // e.g., "IN"
+  }
+
   setEditProfileData() {
     String name =
         "${SharedPref.getString(PrefsKey.fName, "")} ${SharedPref.getString(PrefsKey.lName, "")}";
@@ -66,7 +71,7 @@ class EditProfileController extends GetxController {
     String bio = SharedPref.getString(PrefsKey.bio, "");
     var cdf = SharedPref.getString(PrefsKey.phoneNocountry, "");
     if (cdf.isNotEmpty) {
-      countryN.value = cdf.toString();
+      countryN.value = getIsoFromDialCode(cdf.toString()).toString();
     }
 
     nameController = TextEditingController(text: name);

@@ -1,6 +1,8 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/utils/screen_util.dart';
+import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../../source/color_assets.dart';
@@ -28,7 +30,8 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   int currentIndex = 0;
   bool isScrolling = false;
   bool isPlaying = true;
-
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
   @override
   void initState() {
     super.initState();
@@ -42,41 +45,67 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
 
   void _initializePlayer(String videoUrl) {
     final String? videoId = YoutubePlayer.convertUrlToId(videoUrl);
+
+    // Check if it's a YouTube video
     if (videoId != null) {
-      _controller?.dispose();
-      _controller = null;
-      setState(() {});
-
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (!mounted) return;
-
-        _controller = YoutubePlayerController(
-          initialVideoId: videoId,
-          flags: const YoutubePlayerFlags(
-            autoPlay: true,
-            mute: false,
-            forceHD: true,
-            loop: false,
-            enableCaption: false,
-            isLive: false,
-          ),
-        )..addListener(() {
-          if (!mounted) return;
-          // Manual Play
-
-          setState(() {
-            isPlaying = _controller!.value.isPlaying;
-          });
-
-          if (_controller!.value.playerState == PlayerState.ended) {
-            _scrollToNextVideo();
-          }
+      _disposeVideoControllers();
+      _controller = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: const YoutubePlayerFlags(
+          autoPlay: true,
+          mute: false,
+          forceHD: true,
+        ),
+      )..addListener(() {
+        setState(() {
+          isPlaying = _controller!.value.isPlaying;
         });
-        _controller!.cue(videoId);
-        setState(() {});
-        _controller?.play();
+
+        if (_controller!.value.playerState == PlayerState.ended) {
+          _scrollToNextVideo();
+        }
+      });
+
+      _controller!.play();
+      setState(() {});
+    } else {
+      // It's an MP4 video
+      _disposeYoutubeController();
+      _videoController = VideoPlayerController.network(videoUrl)
+        ..initialize().then((_) {
+          _chewieController = ChewieController(
+            videoPlayerController: _videoController!,
+            autoPlay: true,
+            looping: false,
+            allowMuting: true,
+            allowPlaybackSpeedChanging: false,
+            showControls: false,
+          );
+          setState(() {});
+        });
+
+      _videoController!.addListener(() {
+        if (_videoController!.value.position >=
+                _videoController!.value.duration &&
+            !_videoController!.value.isPlaying) {
+          _scrollToNextVideo();
+        }
       });
     }
+  }
+
+  void _disposeYoutubeController() {
+    _controller?.pause();
+    _controller?.dispose();
+    _controller = null;
+  }
+
+  void _disposeVideoControllers() {
+    _chewieController?.pause();
+    _chewieController?.dispose();
+    _videoController?.dispose();
+    _chewieController = null;
+    _videoController = null;
   }
 
   void _scrollToNextVideo() {
@@ -99,6 +128,8 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
 
   @override
   void dispose() {
+    _disposeYoutubeController();
+    _disposeVideoControllers();
     _controller?.dispose();
     _pageController.dispose();
     super.dispose();
@@ -138,21 +169,21 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           return Stack(
             children: [
               if (_controller != null)
-
                 YoutubePlayerBuilder(
                   player: YoutubePlayer(
                     controller: _controller!,
                     showVideoProgressIndicator: false,
-                    bottomActions: const [],
                   ),
-                  builder: (context, player) {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      child: player,
-                    );
-                  },
+                  builder:
+                      (context, player) => SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        child: player,
+                      ),
                 )
+              else if (_chewieController != null &&
+                  _chewieController!.videoPlayerController.value.isInitialized)
+                Chewie(controller: _chewieController!)
               else
                 Center(
                   child: CircularProgressIndicator(
@@ -185,22 +216,26 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
 
                       child:
                           (() {
-                            final tags =
-                                (videoData['videoContent']['snippet']['tags']
-                                        as List<dynamic>?)
-                                    ?.map((tag) => '#$tag')
-                                    .join(' ');
-
-                            if (tags != null && tags.isNotEmpty) {
-                              return Text(
-                                tags,
-                                style: Styles.textStyleWhiteNormal.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              );
-                            } else {
+                            if (videoData['type'] == "tik-tok") {
                               return SizedBox();
+                            } else {
+                              final tags =
+                                  (videoData['videoContent']['snippet']['tags']
+                                          as List<dynamic>?)
+                                      ?.map((tag) => '#$tag')
+                                      .join(' ');
+
+                              if (tags != null && tags.isNotEmpty) {
+                                return Text(
+                                  tags,
+                                  style: Styles.textStyleWhiteNormal.copyWith(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                );
+                              } else {
+                                return SizedBox();
+                              }
                             }
                           })(),
                     ),
@@ -208,12 +243,22 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                     SizedBox(
                       width: Get.width / 1.7,
                       child: Text(
-                        videoData['title'] ?? 'No Title',
+                        videoData['title'] ?? '',
                         style: Styles.textStyleWhiteSemiBold,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    // const SizedBox(height: 8),
+                    // SizedBox(
+                    //   width: Get.width / 1.7,
+                    //   child: Text(
+                    //     videoData['type'] ?? '',
+                    //     style: Styles.textStyleWhiteSemiBold,
+                    //     maxLines: 1,
+                    //     overflow: TextOverflow.ellipsis,
+                    //   ),
+                    // ),
                     const SizedBox(height: 8),
                   ],
                 ),

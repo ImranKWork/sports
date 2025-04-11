@@ -244,12 +244,16 @@ class _PhoneNumberUpdateScreenState extends State<PhoneNumberUpdateScreen> {
                     if (_otpSent) {
                       _submitOtp();
                     } else {
-                      if (widget.number == _phoneController.text) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Same number not be acceptable"),
-                          ),
-                        );
+                      if (widget.type == 0) {
+                        if (widget.number == _phoneController.text) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Same number not be acceptable"),
+                            ),
+                          );
+                        } else {
+                          _verifyPhone();
+                        }
                       } else {
                         _verifyPhone();
                       }
