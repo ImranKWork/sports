@@ -12,11 +12,11 @@ import '../../../../source/image_assets.dart';
 import '../../../../source/styles.dart';
 import '../../search/views/comment_list.dart';
 
-class ShortsPlayerScreen extends StatefulWidget {
+class ShortsPlayerMYScreen extends StatefulWidget {
   final List<Map<String, dynamic>> allVideos;
   final int initialIndex;
 
-  const ShortsPlayerScreen({
+  const ShortsPlayerMYScreen({
     super.key,
     required this.allVideos,
     required this.initialIndex,
@@ -26,7 +26,7 @@ class ShortsPlayerScreen extends StatefulWidget {
   _ShortsPlayerScreenState createState() => _ShortsPlayerScreenState();
 }
 
-class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
+class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
   late PageController _pageController;
   final HomeController controller = Get.put(HomeController());
 
@@ -47,7 +47,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
+      _initializePlayer(widget.allVideos[currentIndex]["video"]['videoUrl']);
     });
   }
 
@@ -130,7 +130,9 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         )
         .then((_) {
           isScrolling = false;
-          _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
+          _initializePlayer(
+            widget.allVideos[currentIndex]["video"]['videoUrl'],
+          );
         });
   }
 
@@ -166,13 +168,14 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           if (index != currentIndex) {
             setState(() {
               currentIndex = index;
-              _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
+              _initializePlayer(
+                widget.allVideos[currentIndex]["video"]['videoUrl'],
+              );
             });
           }
-          controller.viewVideos(widget.allVideos[currentIndex]['_id']);
         },
         itemBuilder: (context, index) {
-          final videoData = widget.allVideos[index];
+          final videoData = widget.allVideos[index]["video"];
 
           return Stack(
             children: [
@@ -272,17 +275,17 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                   children: [
                     InkWell(
                       onTap: () async {
-                        if (videoData['isLiked'] == false) {
-                          videoData['isLiked'] = true;
+                        if (widget.allVideos[index]['isLiked'] == false) {
+                          widget.allVideos[index]['isLiked'] = true;
                           setState(() {});
                         } else {
-                          videoData['isLiked'] = false;
+                          widget.allVideos[index]['isLiked'] = false;
                           setState(() {});
                         }
                         var res = await controller.likeVideos(videoData['_id']);
                       },
                       child: Image.asset(
-                        videoData['isLiked']
+                        widget.allVideos[index]['isLiked']
                             ? "assets/images/mdi_heart.png"
                             : "assets/images/like.png",
                         height: 22,

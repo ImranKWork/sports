@@ -12,15 +12,251 @@ import '../../../../utils/app_utils.dart';
 class HomeController extends GetxController {
   RxInt currentIndex = 0.obs;
   var categories = <Map<String, dynamic>>[].obs;
+  var myVideosCategories = [
+    {"name": "Liked Videos", "id": "1"},
+    {"name": "Shared Videos", "id": "2"},
+    {"name": "Commented Videos", "id": "3"},
+    {"name": "Viewed Videos", "id": "4"},
+  ];
+
   RxString selectedCategoryId = ''.obs; // Stores selected category ID
   final RxString selectedCategory = ''.obs;
   var videos = <Map<String, dynamic>>[].obs;
+  var recentsLikesVideos = <Map<String, dynamic>>[].obs;
+  var recentsCommentsVideos = <Map<String, dynamic>>[].obs;
+  var recentsViewedVideos = <Map<String, dynamic>>[].obs;
+  var commentsList = <Map<String, dynamic>>[].obs;
   var isLoading = true.obs;
   var errorMessage = ''.obs;
 
   void setIndex(int index) {
     currentIndex.value = index;
     if (index == 4) Get.put(ProfileController()).getProfileById();
+  }
+
+  likeVideos(String videoId) async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+
+    try {
+      var url = Uri.parse('${ApiUtils.BASE_URL}/v1/video/$videoId/like');
+
+      var response = await http.post(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Home data: ${response.body}");
+        return data;
+        //message Video Liked
+        //likes
+
+        // if (data['data'] != null && data['data']['videosData'] != null) {
+        //   videos.value = List<Map<String, dynamic>>.from(
+        //     data['data']['videosData'],
+        //   );
+        // } else {
+        //   errorMessage.value = "No videos found";
+        // }
+      } else {
+        errorMessage.value = "Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage.value = "Failed to fetch videos: $e";
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  viewVideos(String videoId) async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+
+    try {
+      var url = Uri.parse('${ApiUtils.BASE_URL}/v1/video/$videoId/view');
+
+      var response = await http.post(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Home data: ${response.body}");
+        return data;
+        //message Video Liked
+        //likes
+
+        // if (data['data'] != null && data['data']['videosData'] != null) {
+        //   videos.value = List<Map<String, dynamic>>.from(
+        //     data['data']['videosData'],
+        //   );
+        // } else {
+        //   errorMessage.value = "No videos found";
+        // }
+      } else {
+        errorMessage.value = "Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage.value = "Failed to fetch videos: $e";
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> myCommentsVideos() async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+
+    try {
+      var url = Uri.parse('${ApiUtils.BASE_URL}/v1/my-video/recent-comments');
+
+      var response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Home data: ${response.body}");
+
+        if (data['data'] != null && data['data']['recent_comment'] != null) {
+          recentsCommentsVideos.value = List<Map<String, dynamic>>.from(
+            data['data']['recent_comment'],
+          );
+        } else {
+          errorMessage.value = "No videos found";
+        }
+        //message Video Liked
+        //likes
+
+        // if (data['data'] != null && data['data']['videosData'] != null) {
+        //   videos.value = List<Map<String, dynamic>>.from(
+        //     data['data']['videosData'],
+        //   );
+        // } else {
+        //   errorMessage.value = "No videos found";
+        // }
+      } else {
+        errorMessage.value = "Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage.value = "Failed to fetch videos: $e";
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> myViewedVideos() async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+
+    try {
+      var url = Uri.parse('${ApiUtils.BASE_URL}/v1/my-video/recent-viewed');
+
+      var response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Home data: ${response.body}");
+
+        if (data['data'] != null && data['data']['recent_views'] != null) {
+          recentsViewedVideos.value = List<Map<String, dynamic>>.from(
+            data['data']['recent_views'],
+          );
+        } else {
+          errorMessage.value = "No videos found";
+        }
+        //message Video Liked
+        //likes
+
+        // if (data['data'] != null && data['data']['videosData'] != null) {
+        //   videos.value = List<Map<String, dynamic>>.from(
+        //     data['data']['videosData'],
+        //   );
+        // } else {
+        //   errorMessage.value = "No videos found";
+        // }
+      } else {
+        errorMessage.value = "Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage.value = "Failed to fetch videos: $e";
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> commentVideos(String videoId, comment, [void param2]) async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+
+    try {
+      var url = Uri.parse('${ApiUtils.BASE_URL}/v1/video/$videoId/add-comment');
+
+      var response = await http.post(
+        url,
+        body: {"commentText": comment},
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          // ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 201) {
+        var data = json.decode(response.body);
+        print("Home data: ${response.body}");
+        fetchComments(videoId);
+        //message Video Liked
+        //likes
+
+        // if (data['data'] != null && data['data']['videosData'] != null) {
+        //   videos.value = List<Map<String, dynamic>>.from(
+        //     data['data']['videosData'],
+        //   );
+        // } else {
+        //   errorMessage.value = "No videos found";
+        // }
+      } else {
+        errorMessage.value = "Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage.value = "Failed to fetch videos: $e";
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> fetchVideos(String categoryId) async {
@@ -54,6 +290,96 @@ class HomeController extends GetxController {
         if (data['data'] != null && data['data']['videosData'] != null) {
           videos.value = List<Map<String, dynamic>>.from(
             data['data']['videosData'],
+          );
+        } else {
+          errorMessage.value = "No videos found";
+        }
+      } else {
+        errorMessage.value = "Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage.value = "Failed to fetch videos: $e";
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchComments(String id, [void param2]) async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+    commentsList.value.clear();
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      var url = Uri.parse(
+        '${ApiUtils.BASE_URL}/v1/video/$id/comments?pageNumber=1&limit=100',
+      );
+
+      var response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Home data: ${response.body}");
+
+        if (data['data'] != null && data['data']['comments'] != null) {
+          commentsList.value = List<Map<String, dynamic>>.from(
+            data['data']['comments'],
+          );
+
+          commentsList.refresh();
+          param2;
+        } else {
+          errorMessage.value = "No videos found";
+        }
+      } else {
+        errorMessage.value = "Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage.value = "Failed to fetch videos: $e";
+    } finally {
+      isLoading.value = false;
+      param2;
+    }
+  }
+
+  Future<void> fetchLikedVideos() async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+    recentsLikesVideos.clear();
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      var url = Uri.parse('${ApiUtils.BASE_URL}/v1/my-video/recent-liked');
+
+      var response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Home data: ${response.body}");
+
+        if (data['data'] != null && data['data']['recent_liked'] != null) {
+          recentsLikesVideos.value = List<Map<String, dynamic>>.from(
+            data['data']['recent_liked'],
           );
         } else {
           errorMessage.value = "No videos found";

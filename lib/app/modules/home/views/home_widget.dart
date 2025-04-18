@@ -112,7 +112,6 @@ class _HomeWidgetState extends State<HomeWidget> {
             Row(
               children: [
                 SizedBox(width: Constant.size10),
-
                 Text(
                   languageController.getLabel("viral_videos"),
                   style: Styles.buttonTextStyle18,
@@ -143,7 +142,6 @@ class _HomeWidgetState extends State<HomeWidget> {
             Row(
               children: [
                 SizedBox(width: Constant.size10),
-
                 Text(
                   languageController.getLabel("challenges"),
                   style: Styles.buttonTextStyle18,
