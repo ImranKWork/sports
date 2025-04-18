@@ -2,7 +2,6 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/app/modules/home/controllers/home_controller.dart';
-import 'package:sports_trending/utils/screen_util.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -394,7 +393,7 @@ void _showCommentSection(BuildContext context, HomeController controller, id) {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => CommentList());
+                              Get.to(() => CommentList(id: ''));
                             },
                             child: Text(
                               "View 10 Comments",

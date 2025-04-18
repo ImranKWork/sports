@@ -810,19 +810,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                               )
                               : SizedBox.shrink(),
 
-                          // SizedBox(
-                          //   width: Get.width / 2,
-                          //   child: Text(
-                          //     video['type'],
-                          //     style: Styles.textStyleWhiteMedium.copyWith(
-                          //       fontSize: 14,
-                          //       fontWeight: FontWeight.w400,
-                          //     ),
-                          //     maxLines: 1,
-                          //     overflow: TextOverflow.ellipsis,
-                          //   ),
-                          // ),
-
                           SizedBox(height: Constant.size8),
                           video['description'] != null &&
                                   video['description']
@@ -1040,7 +1027,7 @@ void _showCommentSection(BuildContext context) {
                       Spacer(),
                       GestureDetector(
                         onTap: () {
-                          Get.to(() => CommentList());
+                          Get.to(() => CommentList(id: ''));
                         },
                         child: Text(
                           "View 10 Comments",
@@ -1054,7 +1041,6 @@ void _showCommentSection(BuildContext context) {
 
                 const SizedBox(height: 10),
 
-                /// **Comment List (Scrollable)**
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -1112,15 +1098,13 @@ void _showCommentSection(BuildContext context) {
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color: Colors.grey.shade400, // **Border Color**
+                                color: Colors.grey.shade400,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color:
-                                    ColorAssets
-                                        .themeColorOrange, // **Border color when active**
+                                color: ColorAssets.themeColorOrange,
                                 width: 1.5,
                               ),
                             ),
@@ -1136,7 +1120,6 @@ void _showCommentSection(BuildContext context) {
                                   ),
                                 ),
 
-                                // ✅ **Vertical Divider**
                                 Container(
                                   height: 20,
                                   width: 1.5, // Thin Divider

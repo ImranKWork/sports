@@ -9,8 +9,6 @@ import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../../../widgets/common_header.dart';
 import '../../home/controllers/home_controller.dart';
-import '../../home/views/video_player_screen.dart';
-import '../../search/views/comment_list.dart';
 
 class MyVideos extends StatefulWidget {
   const MyVideos({super.key});
@@ -642,9 +640,9 @@ class _MyVideosState extends State<MyVideos> {
                   );
                 },
               )
-          :controller.recentsCommentsVideos.isEmpty
-              ? Center(child: Text("No Commented Videos found"))
-              :   ListView.builder(
+          : controller.recentsCommentsVideos.isEmpty
+          ? Center(child: Text("No Commented Videos found"))
+          : ListView.builder(
             itemCount: controller.recentsCommentsVideos.length,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -906,7 +904,7 @@ void _showCommentSection(BuildContext context) {
                       Spacer(),
                       GestureDetector(
                         onTap: () {
-                          Get.to(() => CommentList());
+                          //  Get.to(() => CommentList());
                         },
                         child: Text(
                           "View 10 Comments",

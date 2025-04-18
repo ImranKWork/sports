@@ -26,6 +26,7 @@ class HomeController extends GetxController {
   var recentsCommentsVideos = <Map<String, dynamic>>[].obs;
   var recentsViewedVideos = <Map<String, dynamic>>[].obs;
   var commentsList = <Map<String, dynamic>>[].obs;
+
   var isLoading = true.obs;
   var errorMessage = ''.obs;
 
@@ -329,7 +330,8 @@ class HomeController extends GetxController {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        print("Home data: ${response.body}");
+        print("Home datas: ${response.body}");
+        print("access Token: ${accessToken} hh:");
 
         if (data['data'] != null && data['data']['comments'] != null) {
           commentsList.value = List<Map<String, dynamic>>.from(
@@ -349,6 +351,81 @@ class HomeController extends GetxController {
     } finally {
       isLoading.value = false;
       param2;
+    }
+  }
+
+  Future<void> editComment(
+    String videoId,
+    String commentId,
+    String commentText,
+  ) async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+
+    var url = Uri.parse(
+      '${ApiUtils.BASE_URL}/v1/video/$commentId/edit-comment',
+    );
+
+    var body = jsonEncode({"commentText": commentText});
+
+    try {
+      var response = await http.put(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print("Comment edited successfully: ${response.body}");
+        await fetchComments(videoId);
+      } else {
+        print("Failed to edit comment. Status code: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (e) {
+      print("Error editing comment: $e");
+    }
+  }
+
+  Future<void> deleteComment(String videoId, String commentId) async {
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+    final userId = SharedPref.getString(PrefsKey.userId);
+
+    var url = Uri.parse(
+      '${ApiUtils.BASE_URL}/v1/video/$commentId/delete-comment',
+    );
+
+    var body = jsonEncode({"user_id": userId});
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer $accessToken",
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print("Comment deleted successfully");
+        await fetchComments(videoId); // refresh comment list
+      } else {
+        print("Failed to delete comment: ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Error deleting comment: $e");
     }
   }
 
