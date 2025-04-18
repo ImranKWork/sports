@@ -68,6 +68,8 @@ dependencies:
   flutter_switch:
   country_pickers: ^2.0.0
   timeago:
+  share_plus:
+
 
 
 #  flutter_exoplayer: ^0.6.1

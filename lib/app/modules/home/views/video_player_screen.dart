@@ -1,6 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sports_trending/app/modules/home/controllers/home_controller.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
@@ -217,7 +218,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
-
               // Left Bottom Info
               Positioned(
                 bottom: 15,
@@ -317,10 +317,18 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                       style: Styles.textStyleWhiteMedium,
                     ),
                     const SizedBox(height: 20),
-                    Image.asset(
-                      "assets/images/share.png",
-                      height: 25,
-                      width: 25,
+                    InkWell(
+                      onTap: () {
+                        Share.share(
+                          'Check out this video: ${videoData['videoUrl']}',
+                        );
+                        controller.shareVideos(videoData['_id']);
+                      },
+                      child: Image.asset(
+                        "assets/images/share.png",
+                        height: 25,
+                        width: 25,
+                      ),
                     ),
                     Text(
                       formatNumber(
