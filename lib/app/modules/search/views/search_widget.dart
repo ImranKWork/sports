@@ -34,12 +34,11 @@ class _SearchWidgetState extends State<SearchWidget> {
     return n.toString();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // Optionally fetch trending on init
-    searchVideoController.fetchSearchVideos(keyword: "", page: 1, limit: 10);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   searchVideoController.fetchSearchVideos(keyword: "", page: 1, limit: 10);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +81,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                             searchVideoController.fetchSearchVideos(
                               keyword: keyword,
                               page: 1,
-                              limit: 10,
+                              limit: 100,
+                              timeRange: '',
+                              type: '',
+                              sort: '',
                             );
                           },
                           style: TextStyle(
@@ -190,21 +192,21 @@ class _SearchWidgetState extends State<SearchWidget> {
               ),
             );
           } else {
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: searchVideoController.videoResults.length,
-              itemBuilder: (context, index) {
-                final video = searchVideoController.videoResults[index];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "🔥 Trending & Suggested Searches",
-                      style: Styles.buttonTextStyle18,
-                    ),
-                    SizedBox(height: Constant.size15),
-                    GestureDetector(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "🔥 Trending & Suggested Searches",
+                  style: Styles.buttonTextStyle18,
+                ),
+                SizedBox(height: Constant.size15),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: searchVideoController.videoResults.length,
+                  itemBuilder: (context, index) {
+                    final video = searchVideoController.videoResults[index];
+                    return GestureDetector(
                       onTap: () {},
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -247,10 +249,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                );
-              },
+                    );
+                  },
+                ),
+              ],
             );
           }
         }),

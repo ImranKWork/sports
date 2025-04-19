@@ -55,8 +55,6 @@ class ProfileController extends GetxController {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final signUpData = SignUpResponseModel.fromJson(responseData);
         debugPrint("profile info : $signUpData");
-
-        // Save the user info using a helper method
         loginController.saveUserInfo(signUpData);
         debugPrint("name : ${SharedPref.getString(PrefsKey.fName)}");
       } else {
@@ -71,7 +69,6 @@ class ProfileController extends GetxController {
       isLoading(false);
     } catch (e) {
       isLoading(false);
-      // Catch any errors that occur during the API call or data processing
       Get.snackbar(
         languageController.getLabel("error"),
         languageController.getLabel(

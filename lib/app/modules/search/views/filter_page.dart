@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import '../../../../source/color_assets.dart';
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
+import '../../../../widgets/common_button.dart';
 import '../../../../widgets/common_header.dart';
+import '../controller/search_videos_controller.dart';
 
 class FilterPage extends StatefulWidget {
   const FilterPage({super.key});
@@ -14,10 +16,7 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  String? _selectedSort;
-  String? _selectedDateRange;
-  String? _selectedPlatForm;
-
+  final SearchVideoController searchController = Get.find();
   final List<String> _sortOptions = ["Newest", "Most Viewed", "Most Liked"];
   final List<String> _dateRangeOptions = [
     "Last 24h",
@@ -31,6 +30,12 @@ class _FilterPageState extends State<FilterPage> {
     "Instagram",
     "Twitter",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +64,9 @@ class _FilterPageState extends State<FilterPage> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      _selectedSort = null;
+                      searchController.selectedSort.value = '';
+                      searchController.selectedDateRange.value = '';
+                      searchController.selectedPlatForm.value = '';
                     });
                   },
                   child: Text("Clear", style: Styles.textMetalHeader),
@@ -86,12 +93,15 @@ class _FilterPageState extends State<FilterPage> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedSort =
-                                    _selectedSort == option ? null : option;
+                                searchController.selectedSort.value =
+                                    searchController.selectedSort.value ==
+                                            option
+                                        ? ''
+                                        : option;
                               });
                             },
                             child: Image.asset(
-                              _selectedSort == option
+                              searchController.selectedSort.value == option
                                   ? "assets/images/check.png"
                                   : "assets/images/uncheck.png",
                               width: 16,
@@ -104,7 +114,7 @@ class _FilterPageState extends State<FilterPage> {
                             style: Styles.textBlackHeader.copyWith(
                               fontWeight: FontWeight.w400,
                               color:
-                                  _selectedSort == option
+                                  searchController.selectedSort.value == option
                                       ? ColorAssets.black
                                       : Colors.blueGrey,
                             ),
@@ -115,7 +125,6 @@ class _FilterPageState extends State<FilterPage> {
                   }).toList(),
             ),
             SizedBox(height: 15),
-
             Text("Date Range", style: Styles.buttonTextStyle18),
             SizedBox(height: 5),
             Column(
@@ -128,14 +137,15 @@ class _FilterPageState extends State<FilterPage> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedDateRange =
-                                    _selectedDateRange == option
-                                        ? null
+                                searchController.selectedDateRange.value =
+                                    searchController.selectedDateRange.value ==
+                                            option
+                                        ? ''
                                         : option;
                               });
                             },
                             child: Image.asset(
-                              _selectedDateRange == option
+                              searchController.selectedDateRange.value == option
                                   ? "assets/images/check.png"
                                   : "assets/images/uncheck.png",
                               width: 16,
@@ -148,7 +158,8 @@ class _FilterPageState extends State<FilterPage> {
                             style: Styles.textBlackHeader.copyWith(
                               fontWeight: FontWeight.w400,
                               color:
-                                  _selectedSort == option
+                                  searchController.selectedDateRange.value ==
+                                          option
                                       ? ColorAssets.black
                                       : Colors.blueGrey,
                             ),
@@ -159,7 +170,6 @@ class _FilterPageState extends State<FilterPage> {
                   }).toList(),
             ),
             SizedBox(height: 15),
-
             Text("Platform", style: Styles.buttonTextStyle18),
             SizedBox(height: 5),
             Column(
@@ -172,12 +182,15 @@ class _FilterPageState extends State<FilterPage> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedPlatForm =
-                                    _selectedPlatForm == option ? null : option;
+                                searchController.selectedPlatForm.value =
+                                    searchController.selectedPlatForm.value ==
+                                            option
+                                        ? ''
+                                        : option;
                               });
                             },
                             child: Image.asset(
-                              _selectedPlatForm == option
+                              searchController.selectedPlatForm.value == option
                                   ? "assets/images/check.png"
                                   : "assets/images/uncheck.png",
                               width: 16,
@@ -190,7 +203,8 @@ class _FilterPageState extends State<FilterPage> {
                             style: Styles.textBlackHeader.copyWith(
                               fontWeight: FontWeight.w400,
                               color:
-                                  _selectedPlatForm == option
+                                  searchController.selectedPlatForm.value ==
+                                          option
                                       ? ColorAssets.black
                                       : Colors.blueGrey,
                             ),
@@ -200,7 +214,31 @@ class _FilterPageState extends State<FilterPage> {
                     );
                   }).toList(),
             ),
+            SizedBox(height: 20),
           ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: CommonButton(
+          label: 'Apply Filters',
+          onClick: () {
+            if (searchController.selectedSort.value.isNotEmpty &&
+                searchController.selectedDateRange.value.isNotEmpty &&
+                searchController.selectedPlatForm.value.isNotEmpty) {
+              searchController.fetchSearchVideos(
+                keyword: 'search',
+                page: 1,
+                limit: 100,
+                timeRange: searchController.selectedDateRange.value,
+                type: searchController.selectedPlatForm.value,
+                sort: searchController.selectedSort.value,
+              );
+              Get.back();
+            } else {
+              Get.snackbar('Error', 'Please select all filters.');
+            }
+          },
         ),
       ),
     );

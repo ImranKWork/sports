@@ -6,16 +6,28 @@ import 'package:http/http.dart' as http;
 class SearchVideoController extends GetxController {
   var isLoading = false.obs;
   var videoResults = <Map<String, dynamic>>[].obs;
-
+  RxString selectedSort = ''.obs;
+  RxString selectedDateRange = ''.obs;
+  RxString selectedPlatForm = ''.obs;
   Future<void> fetchSearchVideos({
     required String keyword,
     required int page,
     required int limit,
+    required String timeRange,
+    required String type,
+    required String sort,
   }) async {
     isLoading.value = true;
 
+    final encodedKeyword = Uri.encodeComponent(keyword);
     final url = Uri.parse(
-      'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/search/search-video?pageNumber=$page&limit=$limit&keyword=$keyword',
+      'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/search/search-video'
+      '?timeRange=$timeRange'
+      '&pageNumber=$page'
+      '&limit=$limit'
+      '&type=$type'
+      '&sort=$sort'
+      '&keyword=$encodedKeyword',
     );
 
     try {
@@ -23,11 +35,8 @@ class SearchVideoController extends GetxController {
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-
-        // Dynamically parse the response based on actual API structure
         final videosData = jsonData['data']['videosData'] as List;
 
-        // Dynamically map the video data without static content
         videoResults.value =
             videosData.map((video) {
               return {
@@ -41,6 +50,8 @@ class SearchVideoController extends GetxController {
                 'sourceSharess': video['sourceSharess'] ?? 0,
               };
             }).toList();
+
+        print(response.body);
       } else {
         Get.snackbar('Error', 'Failed to load videos: ${response.statusCode}');
       }
