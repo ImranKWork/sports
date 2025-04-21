@@ -49,6 +49,9 @@
                 <data android:scheme="https"
                     android:host="sporttrendning.firebaseapp.com"
                     android:pathPrefix="/__/auth/handler" />
+                <data android:scheme="https"
+                    android:host="sporttrendning.com"
+                    android:pathPrefix="/" />
             </intent-filter>
         </activity>
 

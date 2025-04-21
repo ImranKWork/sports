@@ -184,7 +184,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         },
         itemBuilder: (context, index) {
           final videoData = widget.allVideos[index];
-
           return Stack(
             children: [
               AnimatedSwitcher(

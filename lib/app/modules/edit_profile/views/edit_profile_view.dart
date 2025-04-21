@@ -24,8 +24,6 @@ class EditProfileView extends GetView<EditProfileController> {
 
   String phonen = "";
 
-
-
   @override
   Widget build(BuildContext context) {
     controller.setEditProfileData();
