@@ -42,7 +42,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
     currentIndex = widget.initialIndex;
     _pageController = PageController(
       initialPage: widget.initialIndex,
-      viewportFraction: 1.0, // Ensure full screen per page
+      viewportFraction: 1.0,
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -124,8 +124,8 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
     _pageController
         .animateToPage(
           currentIndex,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOutCubic,
         )
         .then((_) {
           isScrolling = false;
@@ -162,6 +162,9 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
       body: PageView.builder(
         scrollDirection: Axis.vertical,
         controller: _pageController,
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         itemCount: widget.allVideos.length,
         onPageChanged: (index) {
           if (index != currentIndex) {
@@ -180,7 +183,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
             children: [
               if (_controller != null)
                 GestureDetector(
-                  onTap: () {}, // prevent redirection on tap
+                  onTap: () {},
                   child: YoutubePlayerBuilder(
                     player: YoutubePlayer(
                       controller: _controller!,
@@ -199,13 +202,14 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
                 SizedBox.expand(child: Chewie(controller: _chewieController!))
               else
                 Container(
-                  color: Colors.black, // fallback background
+                  color: Colors.black,
                   child: Center(
                     child: CircularProgressIndicator(
                       color: ColorAssets.themeColorOrange,
                     ),
                   ),
                 ),
+
               // Back Button
               Positioned(
                 top: 30,
@@ -220,7 +224,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
                 ),
               ),
 
-              // Left Bottom Info
+              // Bottom Left Info
               Positioned(
                 bottom: 15,
                 left: 10,
@@ -266,7 +270,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
                 ),
               ),
 
-              // Right Bottom Icons
+              // Bottom Right Icons
               Positioned(
                 bottom: 15,
                 right: 10,
@@ -274,14 +278,10 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerMYScreen> {
                   children: [
                     InkWell(
                       onTap: () async {
-                        if (widget.allVideos[index]['isLiked'] == false) {
-                          widget.allVideos[index]['isLiked'] = true;
-                          setState(() {});
-                        } else {
-                          widget.allVideos[index]['isLiked'] = false;
-                          setState(() {});
-                        }
-                        var res = await controller.likeVideos(videoData['_id']);
+                        widget.allVideos[index]['isLiked'] =
+                            !(widget.allVideos[index]['isLiked'] ?? false);
+                        setState(() {});
+                        await controller.likeVideos(videoData['_id']);
                       },
                       child: Image.asset(
                         widget.allVideos[index]['isLiked']
@@ -477,21 +477,6 @@ void _showCommentSection(BuildContext context, HomeController controller, id) {
                                 suffixIcon: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    // GestureDetector(
-                                    //   onTap: () {},
-                                    //   child: Image.asset(
-                                    //     ImageAssets.smile,
-                                    //     scale: 3,
-                                    //   ),
-                                    // ),
-                                    // Container(
-                                    //   height: 20,
-                                    //   width: 1.5,
-                                    //   color: Colors.grey.shade400,
-                                    //   margin: const EdgeInsets.symmetric(
-                                    //     horizontal: 8,
-                                    //   ),
-                                    // ),
                                     InkWell(
                                       onTap: () {
                                         controller.commentVideos(

@@ -20,6 +20,7 @@ class MyVideos extends StatefulWidget {
 class _MyVideosState extends State<MyVideos> {
   final HomeController controller = Get.put(HomeController());
   final RxString selectedMyCategory = ''.obs;
+
   String formatNumber(int number) {
     if (number >= 1000000000) {
       return '${(number / 1000000000).toStringAsFixed(1)}B';
@@ -97,8 +98,8 @@ class _MyVideosState extends State<MyVideos> {
                   ),
                   child: Center(
                     child: Container(
-                      width: 60, // Placeholder width for text
-                      height: 16, // Placeholder height for text
+                      width: 60,
+                      height: 16,
                       color: Colors.grey[300],
                     ),
                   ),
@@ -122,14 +123,12 @@ class _MyVideosState extends State<MyVideos> {
           itemCount: controller.myVideosCategories.length,
           itemBuilder: (context, index) {
             final category = controller.myVideosCategories[index]['name'];
-            final categoryId =
-                controller.myVideosCategories[index]['_id']; // Category ID
+            final categoryId = controller.myVideosCategories[index]['_id'];
             bool isSelected = selectedMyCategory.value == category;
 
             return GestureDetector(
               onTap: () {
-                selectedMyCategory.value =
-                    category.toString(); // Set the selected category
+                selectedMyCategory.value = category.toString();
                 if (category == "Liked Videos") {
                   controller.fetchLikedVideos();
                 } else if (category == "Commented Videos") {
@@ -137,7 +136,6 @@ class _MyVideosState extends State<MyVideos> {
                 } else if (category == "Viewed Videos") {
                   controller.myViewedVideos();
                 }
-                // Fetch videos based on the category
               },
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 2),
@@ -145,9 +143,8 @@ class _MyVideosState extends State<MyVideos> {
                 decoration: BoxDecoration(
                   color:
                       isSelected
-                          ? ColorAssets
-                              .themeColorOrange // Selected color
-                          : ColorAssets.grey1, // Unselected color
+                          ? ColorAssets.themeColorOrange
+                          : ColorAssets.grey1,
                   borderRadius: BorderRadius.circular(46),
                 ),
                 child: Center(
@@ -279,8 +276,6 @@ class _MyVideosState extends State<MyVideos> {
                               ),
                             ),
                           ),
-
-                          // Bottom Left Text
                           Positioned(
                             bottom: 10,
                             left: 10,
@@ -507,8 +502,6 @@ class _MyVideosState extends State<MyVideos> {
                               ),
                             ),
                           ),
-
-                          // Bottom Left Text
                           Positioned(
                             bottom: 10,
                             left: 10,
@@ -585,8 +578,6 @@ class _MyVideosState extends State<MyVideos> {
                               ],
                             ),
                           ),
-
-                          // Bottom Right Icons
                           Positioned(
                             bottom: 10,
                             right: 10,
@@ -730,7 +721,6 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                       ),
 
-                      // Bottom Left Text
                       Positioned(
                         bottom: 10,
                         left: 10,
@@ -804,7 +794,6 @@ class _MyVideosState extends State<MyVideos> {
                         ),
                       ),
 
-                      // Bottom Right Icons
                       Positioned(
                         bottom: 10,
                         right: 10,

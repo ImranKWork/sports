@@ -135,7 +135,8 @@ class ProfileView extends GetView<ProfileController> {
                                                           .value,
                                                       width: 100,
                                                       height: 100,
-                                                      filterQuality: FilterQuality.high,
+                                                      filterQuality:
+                                                          FilterQuality.high,
                                                     ),
                                                   )
                                                   : CircleAvatar(

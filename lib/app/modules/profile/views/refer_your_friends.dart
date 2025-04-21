@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sports_trending/source/image_assets.dart';
-
 import '../../../../source/color_assets.dart';
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';

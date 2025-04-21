@@ -33,6 +33,8 @@ class _CommentListState extends State<CommentList> {
 
   @override
   Widget build(BuildContext context) {
+    final profileImage = SharedPref.getString(PrefsKey.profilePhoto, "");
+
     return Scaffold(
       backgroundColor: ColorAssets.white,
       appBar: CommonAppBar(
@@ -93,7 +95,23 @@ class _CommentListState extends State<CommentList> {
             final currentUserId = SharedPref.getString(PrefsKey.userId, "");
 
             return ListTile(
-              leading: Image.asset(ImageAssets.img6, scale: 3),
+              leading:
+                  profileImage.isNotEmpty
+                      ? ClipOval(
+                        child: Image.network(
+                          profileImage,
+                          height: 40,
+                          width: 40,
+                        ),
+                      )
+                      : CircleAvatar(
+                        radius: Constant.size40,
+                        backgroundColor: ColorAssets.lightGrey,
+                        child: Icon(
+                          Icons.person,
+                          color: ColorAssets.themeColorOrange,
+                        ),
+                      ),
               title: Row(
                 children: [
                   Text(
@@ -155,7 +173,18 @@ class _CommentListState extends State<CommentList> {
           ),
           child: Row(
             children: [
-              Image.asset(ImageAssets.img6, height: 40, width: 40),
+              profileImage.isNotEmpty
+                  ? ClipOval(
+                    child: Image.network(profileImage, height: 40, width: 40),
+                  )
+                  : CircleAvatar(
+                    radius: Constant.size40,
+                    backgroundColor: ColorAssets.lightGrey,
+                    child: Icon(
+                      Icons.person,
+                      color: ColorAssets.themeColorOrange,
+                    ),
+                  ),
               SizedBox(width: Constant.size5),
               Expanded(
                 child: TextField(

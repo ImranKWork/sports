@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,6 +13,7 @@ import '../../../../core/shared_preference.dart';
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
 import '../../../../source/styles.dart';
+import '../../../../utils/screen_util.dart';
 import '../../search/views/comment_list.dart';
 
 class ShortsPlayerScreen extends StatefulWidget {
@@ -32,21 +35,20 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   final HomeController controller = Get.put(HomeController());
 
   YoutubePlayerController? _controller;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
+
   int currentIndex = 0;
   bool isScrolling = false;
   bool isPlaying = true;
-  VideoPlayerController? _videoController;
-  ChewieController? _chewieController;
+
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     currentIndex = widget.initialIndex;
-    _pageController = PageController(
-      initialPage: widget.initialIndex,
-      viewportFraction: 1.0, // Ensure full screen per page
-    );
-
+    _pageController = PageController(initialPage: currentIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
     });
@@ -55,8 +57,10 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   void _initializePlayer(String videoUrl) {
     final String? videoId = YoutubePlayer.convertUrlToId(videoUrl);
 
+    _disposeYoutubeController();
+    _disposeVideoControllers();
+
     if (videoId != null) {
-      _disposeVideoControllers();
       _controller = YoutubePlayerController(
         initialVideoId: videoId,
         flags: const YoutubePlayerFlags(
@@ -68,19 +72,20 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           enableCaption: false,
         ),
       )..addListener(() {
-        setState(() {
-          isPlaying = _controller!.value.isPlaying;
-        });
+        if (mounted) {
+          setState(() {
+            isPlaying = _controller!.value.isPlaying;
+          });
 
-        if (_controller!.value.playerState == PlayerState.ended) {
-          _scrollToNextVideo();
+          if (_controller!.value.playerState == PlayerState.ended) {
+            _scrollToNextVideo();
+          }
         }
       });
 
       _controller!.play();
       setState(() {});
     } else {
-      _disposeYoutubeController();
       _videoController = VideoPlayerController.network(videoUrl)
         ..initialize().then((_) {
           _chewieController = ChewieController(
@@ -103,20 +108,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
     }
   }
 
-  void _disposeYoutubeController() {
-    _controller?.pause();
-    _controller?.dispose();
-    _controller = null;
-  }
-
-  void _disposeVideoControllers() {
-    _chewieController?.pause();
-    _chewieController?.dispose();
-    _videoController?.dispose();
-    _chewieController = null;
-    _videoController = null;
-  }
-
   void _scrollToNextVideo() {
     if (isScrolling || currentIndex >= widget.allVideos.length - 1) return;
 
@@ -135,12 +126,18 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         });
   }
 
-  @override
-  void dispose() {
-    _disposeYoutubeController();
-    _disposeVideoControllers();
-    _pageController.dispose();
-    super.dispose();
+  void _disposeYoutubeController() {
+    _controller?.pause();
+    _controller?.dispose();
+    _controller = null;
+  }
+
+  void _disposeVideoControllers() {
+    _chewieController?.pause();
+    _chewieController?.dispose();
+    _videoController?.dispose();
+    _chewieController = null;
+    _videoController = null;
   }
 
   String formatNumber(int number) {
@@ -156,55 +153,74 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   }
 
   @override
+  void dispose() {
+    _debounce?.cancel();
+    _disposeYoutubeController();
+    _disposeVideoControllers();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView.builder(
-        scrollDirection: Axis.vertical,
         controller: _pageController,
+        scrollDirection: Axis.vertical,
+        physics: const PageScrollPhysics(),
         itemCount: widget.allVideos.length,
         onPageChanged: (index) {
-          if (index != currentIndex) {
-            setState(() {
-              currentIndex = index;
-              _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-            });
-          }
-          controller.viewVideos(widget.allVideos[currentIndex]['_id']);
+          if (_debounce?.isActive ?? false) _debounce?.cancel();
+          _debounce = Timer(const Duration(milliseconds: 200), () {
+            if (index != currentIndex) {
+              setState(() {
+                currentIndex = index;
+                _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
+              });
+              controller.viewVideos(widget.allVideos[currentIndex]['_id']);
+            }
+          });
         },
         itemBuilder: (context, index) {
           final videoData = widget.allVideos[index];
 
           return Stack(
             children: [
-              if (_controller != null)
-                GestureDetector(
-                  onTap: () {}, // prevent redirection on tap
-                  child: YoutubePlayerBuilder(
-                    player: YoutubePlayer(
-                      controller: _controller!,
-                      showVideoProgressIndicator: false,
-                    ),
-                    builder:
-                        (context, player) => SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
-                          child: player,
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child:
+                    _controller != null
+                        ? YoutubePlayerBuilder(
+                          key: ValueKey('youtube-${videoData['_id']}'),
+                          player: YoutubePlayer(
+                            controller: _controller!,
+                            showVideoProgressIndicator: false,
+                          ),
+                          builder:
+                              (context, player) =>
+                                  SizedBox.expand(child: player),
+                        )
+                        : (_chewieController != null &&
+                            _chewieController!
+                                .videoPlayerController
+                                .value
+                                .isInitialized)
+                        ? SizedBox.expand(
+                          key: ValueKey('chewie-${videoData['_id']}'),
+                          child: Chewie(controller: _chewieController!),
+                        )
+                        : Container(
+                          key: const ValueKey('loading'),
+                          color: Colors.black,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: ColorAssets.themeColorOrange,
+                            ),
+                          ),
                         ),
-                  ),
-                )
-              else if (_chewieController != null &&
-                  _chewieController!.videoPlayerController.value.isInitialized)
-                SizedBox.expand(child: Chewie(controller: _chewieController!))
-              else
-                Container(
-                  color: Colors.black, // fallback background
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: ColorAssets.themeColorOrange,
-                    ),
-                  ),
-                ),
+              ),
+
               // Back Button
               Positioned(
                 top: 30,
@@ -218,37 +234,28 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
-              // Left Bottom Info
+
+              // Video Details Bottom Left
               Positioned(
                 bottom: 15,
                 left: 10,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: Get.width / 1.7,
-                      child:
-                          (() {
-                            if (videoData['type'] == "tik-tok") {
-                              return const SizedBox();
-                            } else {
-                              final tags =
-                                  (videoData['videoContent']['snippet']['tags']
-                                          as List<dynamic>?)
-                                      ?.map((tag) => '#$tag')
-                                      .join(' ') ??
-                                  '';
-                              return tags.isNotEmpty
-                                  ? Text(
-                                    tags,
-                                    style: Styles.textStyleWhiteNormal.copyWith(
-                                      fontSize: 12,
-                                    ),
-                                  )
-                                  : const SizedBox();
-                            }
-                          })(),
-                    ),
+                    if (videoData['type'] != "tik-tok")
+                      SizedBox(
+                        width: Get.width / 1.7,
+                        child: Text(
+                          (videoData['videoContent']['snippet']['tags']
+                                      as List<dynamic>?)
+                                  ?.map((tag) => '#$tag')
+                                  .join(' ') ??
+                              '',
+                          style: Styles.textStyleWhiteNormal.copyWith(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 8),
                     SizedBox(
                       width: Get.width / 1.7,
@@ -264,7 +271,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                 ),
               ),
 
-              // Right Bottom Icons
+              // Action Buttons Bottom Right
               Positioned(
                 bottom: 15,
                 right: 10,
@@ -272,14 +279,9 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                   children: [
                     InkWell(
                       onTap: () async {
-                        if (videoData['isLiked'] == false) {
-                          videoData['isLiked'] = true;
-                          setState(() {});
-                        } else {
-                          videoData['isLiked'] = false;
-                          setState(() {});
-                        }
-                        var res = await controller.likeVideos(videoData['_id']);
+                        videoData['isLiked'] = !(videoData['isLiked'] ?? false);
+                        setState(() {});
+                        await controller.likeVideos(videoData['_id']);
                       },
                       child: Image.asset(
                         videoData['isLiked']
@@ -355,6 +357,7 @@ void _showCommentSection(
 ) {
   TextEditingController commentController = TextEditingController();
   final String currentUserId = SharedPref.getString(PrefsKey.userId, "");
+  final profileImage = SharedPref.getString(PrefsKey.profilePhoto, "");
 
   controller.fetchComments(id);
 
@@ -451,7 +454,23 @@ void _showCommentSection(
                         String commentUserId = item["user_id"] ?? "";
 
                         return ListTile(
-                          leading: Image.asset(ImageAssets.img6),
+                          leading:
+                              profileImage.isNotEmpty
+                                  ? ClipOval(
+                                    child: Image.network(
+                                      profileImage,
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                  )
+                                  : CircleAvatar(
+                                    radius: Constant.size40,
+                                    backgroundColor: ColorAssets.lightGrey,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: ColorAssets.themeColorOrange,
+                                    ),
+                                  ),
                           title: Row(
                             children: [
                               Text(
@@ -524,7 +543,23 @@ void _showCommentSection(
                   ),
                   child: Row(
                     children: [
-                      Image.asset(ImageAssets.img6, height: 40, width: 40),
+                      profileImage.isNotEmpty
+                          ? ClipOval(
+                            child: Image.network(
+                              profileImage,
+                              height: 40,
+                              width: 40,
+                            ),
+                          )
+                          : CircleAvatar(
+                            radius: Constant.size40,
+                            backgroundColor: ColorAssets.lightGrey,
+                            child: Icon(
+                              Icons.person,
+                              color: ColorAssets.themeColorOrange,
+                            ),
+                          ),
+                      //  Image.asset(ImageAssets.img6, height: 40, width: 40),
                       const SizedBox(width: 5),
                       Expanded(
                         child: TextField(
@@ -566,10 +601,7 @@ void _showCommentSection(
                                   curve: Curves.easeOut,
                                 );
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: Image.asset(ImageAssets.send, scale: 3),
-                              ),
+                              child: Image.asset(ImageAssets.send, scale: 3),
                             ),
                           ),
                         ),

@@ -54,28 +54,29 @@ class UserProfileView extends GetView<UserProfileController> {
               ),
               children: [
                 Center(
-                  child: profileImage.isNotEmpty
-                      ? ClipOval(
-                        child: Image.network(
-                          profileImage,
-                          height: 100,
-                          width: 100,
-                        ),
-                        // child: Image.network(
-                        //   profileImage,
-                        //   // width: Constant.size100,
-                        //   // height: Constant.size100,
-                        //   fit: BoxFit.contain,
-                        // ),
-                      )
-                      : CircleAvatar(
-                        radius: Constant.size50,
-                        backgroundColor: ColorAssets.lightGrey,
-                        child: Icon(
-                          Icons.person,
-                          color: ColorAssets.themeColorOrange,
-                        ),
-                      ),
+                  child:
+                      profileImage.isNotEmpty
+                          ? ClipOval(
+                            child: Image.network(
+                              profileImage,
+                              height: 100,
+                              width: 100,
+                            ),
+                            // child: Image.network(
+                            //   profileImage,
+                            //   // width: Constant.size100,
+                            //   // height: Constant.size100,
+                            //   fit: BoxFit.contain,
+                            // ),
+                          )
+                          : CircleAvatar(
+                            radius: Constant.size50,
+                            backgroundColor: ColorAssets.lightGrey,
+                            child: Icon(
+                              Icons.person,
+                              color: ColorAssets.themeColorOrange,
+                            ),
+                          ),
                 ),
 
                 NameAndMemberSinceWidget(),
