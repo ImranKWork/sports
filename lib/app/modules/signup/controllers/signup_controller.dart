@@ -221,8 +221,6 @@ class SignupController extends GetxController {
       final signUpData = SignUpResponseModel.fromJson(responseData);
       var uid = responseData["data"]["uid"];
       await SharedPref.setValue(PrefsKey.key_uid, uid.toString());
-      await SharedPref.setValue(PrefsKey.refercode, "");
-
       // clearControllerValue();
       Future.delayed(const Duration(seconds: 1), () {
         Get.offAll(

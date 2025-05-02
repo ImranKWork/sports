@@ -18,6 +18,7 @@ class ColorAssets {
   static Color grey5 = const Color(0xFFB6B6B6);
 
   static Color pink = const Color(0xFFFFE9D6);
+  static Color green = const Color(0xFF059669);
 
   static Color darkGrey = const Color(0xFF666666);
   static Color error = const Color(0xFFE53935);

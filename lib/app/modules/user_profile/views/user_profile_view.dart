@@ -17,13 +17,10 @@ class UserProfileView extends GetView<UserProfileController> {
   UserProfileView({super.key});
 
   final LanguageController languageController = Get.find();
-  final UserProfileController controller = Get.put(UserProfileController());
 
   @override
   Widget build(BuildContext context) {
     final profileImage = SharedPref.getString(PrefsKey.profilePhoto, "");
-    controller.getProfile();
-
     return Scaffold(
       backgroundColor: ColorAssets.white,
       appBar: CommonAppBar(
@@ -107,54 +104,53 @@ class CommonTileList extends StatelessWidget {
   CommonTileList({super.key});
 
   final LanguageController languageController = Get.find();
-  final UserProfileController controller = Get.put(UserProfileController());
 
   @override
   Widget build(BuildContext context) {
     final name =
         "${SharedPref.getString(PrefsKey.fName)} ${SharedPref.getString(PrefsKey.lName)}";
-    return Obx(() {
-      return Column(
-        children: [
-          SizedBox(height: Constant.size10),
-          CommonTile(
-            text1: languageController.getLabel("name"),
-            text2: name,
-            iconPath: ImageAssets.user,
-          ),
-          CommonDivider(),
-          CommonTile(
-            text1: languageController.getLabel('stcoins_balance'),
-            text2: "2510 Coins",
-            iconPath: ImageAssets.coin,
-          ),
-          CommonDivider(),
-          CommonTile(
-            text1: languageController.getLabel('total_videos_watched'),
-            text2: "${controller.totalWached.value} Videos",
-            iconPath: ImageAssets.videoSmall,
-          ),
-          CommonDivider(),
-          CommonTile(
-            text1: languageController.getLabel('comments_made'),
-            text2: "${controller.totalComments.value} Comments",
-            iconPath: ImageAssets.comments,
-          ),
-          CommonDivider(),
-          CommonTile(
-            text1: languageController.getLabel('likes_given'),
-            text2: "${controller.totalLikes.value} Likes",
-            iconPath: ImageAssets.like,
-          ),
-          CommonDivider(),
-          CommonTile(
-            text1: languageController.getLabel('challenges_completed'),
-            text2: "212 Challenges",
-            iconPath: ImageAssets.challenges,
-          ),
-        ],
-      );
-    });
+    return Column(
+      children: [
+        SizedBox(height: Constant.size10),
+        CommonTile(
+          text1: languageController.getLabel("name"),
+          text2: name,
+          iconPath: ImageAssets.user,
+        ),
+
+        CommonDivider(),
+
+        CommonTile(
+          text1: languageController.getLabel('stcoins_balance'),
+          text2: "2510 Coins",
+          iconPath: ImageAssets.coin,
+        ),
+        CommonDivider(),
+        CommonTile(
+          text1: languageController.getLabel('total_videos_watched'),
+          text2: "240 Videos",
+          iconPath: ImageAssets.videoSmall,
+        ),
+        CommonDivider(),
+        CommonTile(
+          text1: languageController.getLabel('comments_made'),
+          text2: "240 Comments",
+          iconPath: ImageAssets.comments,
+        ),
+        CommonDivider(),
+        CommonTile(
+          text1: languageController.getLabel('likes_given'),
+          text2: "212 Likes",
+          iconPath: ImageAssets.like,
+        ),
+        CommonDivider(),
+        CommonTile(
+          text1: languageController.getLabel('challenges_completed'),
+          text2: "212 Challenges",
+          iconPath: ImageAssets.challenges,
+        ),
+      ],
+    );
   }
 }
 

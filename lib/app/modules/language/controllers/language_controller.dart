@@ -76,7 +76,7 @@ class LanguageController extends GetxController {
       if (response.statusCode == 200) {
         isLoading(false);
         debugPrint("response : ${response.body}");
-        Get.to(() => HomeView());
+         Get.to(() => HomeView());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(getLabel("lang_update"))),
           snackBarAnimationStyle: AnimationStyle(
@@ -162,11 +162,6 @@ class LanguageController extends GetxController {
         final Map<String, dynamic> responseData = jsonDecode(register.body);
         final signUpData = SignUpResponseModel.fromJson(responseData);
 
-        await SharedPref.setValue(
-          PrefsKey.referralCode,
-          responseData["data"]["referralCode"],
-        );
-
         // Save the user info using a helper method
         saveUserInfo(signUpData);
         Future.delayed(const Duration(seconds: 1), () {
@@ -198,6 +193,7 @@ class LanguageController extends GetxController {
 
   Future<void> loadLabels() async {
     final isConnected = await internetController.checkInternet();
+
     if (!isConnected) {
       Get.snackbar(
         "Internet Error",
@@ -210,15 +206,15 @@ class LanguageController extends GetxController {
     }
 
     // isLoading(true);
+
     String? storedLabels = SharedPref.getString(PrefsKey.labels);
     String? storedVersion = SharedPref.getString(PrefsKey.version);
 
-    // if (storedVersion != latestVersion.value) {
-    //   labels.value = json.decode(storedLabels);
-    // } else {
-     
-    // }
-     await fetchLabels();
+    if (storedVersion != latestVersion.value) {
+      labels.value = json.decode(storedLabels);
+    } else {
+      await fetchLabels();
+    }
     // isLoading(false);
   }
 

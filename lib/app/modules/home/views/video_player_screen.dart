@@ -4,7 +4,6 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/home/controllers/home_controller.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
@@ -79,9 +78,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           });
 
           if (_controller!.value.playerState == PlayerState.ended) {
-            if (!isBottomSheetOpen) {
-              _scrollToNextVideo();
-            }
+            _scrollToNextVideo();
           }
         }
       });
@@ -105,9 +102,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         if (_videoController!.value.position >=
                 _videoController!.value.duration &&
             !_videoController!.value.isPlaying) {
-          if (!isBottomSheetOpen) {
-            _scrollToNextVideo();
-          }
+          _scrollToNextVideo();
         }
       });
     }
@@ -189,6 +184,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         },
         itemBuilder: (context, index) {
           final videoData = widget.allVideos[index];
+
           return Stack(
             children: [
               AnimatedSwitcher(
@@ -196,9 +192,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                 child:
                     _controller != null
                         ? YoutubePlayerBuilder(
-                          key: ValueKey(
-                            _controller!.initialVideoId,
-                          ), // ✅ Forces full rebuild
+                          key: ValueKey('youtube-${videoData['_id']}'),
                           player: YoutubePlayer(
                             controller: _controller!,
                             showVideoProgressIndicator: false,
@@ -326,21 +320,11 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                     ),
                     const SizedBox(height: 20),
                     InkWell(
-                      onTap: () async {
-                        String thumbnailUrl =
-                            videoData['thumbnails']?['maxres']?['url'] ?? "";
-                        String defaultthumbnailUrl =
-                            videoData['thumbnails']?['default']?['url'] ?? '';
+                      onTap: () {
                         Share.share(
-                          'Check out this video: https://sport-trending.softuvo.click/share/${videoData['_id']}',
+                          'Check out this video: ${videoData['videoUrl']}',
                         );
-
-                        var data = await controller.shareVideos(
-                          videoData['_id'],
-                        );
-                        var sharec = data["shares"];
-                        videoData['sourceSharess'] = sharec;
-                        setState(() {});
+                        controller.shareVideos(videoData['_id']);
                       },
                       child: Image.asset(
                         "assets/images/share.png",
@@ -366,8 +350,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   }
 }
 
-bool isBottomSheetOpen = false;
-
 void _showCommentSection(
   BuildContext context,
   HomeController controller,
@@ -378,9 +360,6 @@ void _showCommentSection(
   final profileImage = SharedPref.getString(PrefsKey.profilePhoto, "");
 
   controller.fetchComments(id);
-  if (isBottomSheetOpen) return;
-
-  isBottomSheetOpen = true;
 
   showModalBottomSheet(
     context: context,
@@ -472,21 +451,20 @@ void _showCommentSection(
                         final item = controller.commentsList[index];
                         String commentId = item["comment_id"] ?? "";
                         String existingCommentText = item["commentText"] ?? "";
-                        String profile_picture = item["profile_picture"] ?? "";
                         String commentUserId = item["user_id"] ?? "";
 
                         return ListTile(
                           leading:
-                              profile_picture.isNotEmpty
+                              profileImage.isNotEmpty
                                   ? ClipOval(
                                     child: Image.network(
-                                      profile_picture,
+                                      profileImage,
                                       height: 40,
                                       width: 40,
                                     ),
                                   )
                                   : CircleAvatar(
-                                    radius: Constant.size20,
+                                    radius: Constant.size40,
                                     backgroundColor: ColorAssets.lightGrey,
                                     child: Icon(
                                       Icons.person,
@@ -574,9 +552,8 @@ void _showCommentSection(
                             ),
                           )
                           : CircleAvatar(
-                            radius: Constant.size20,
+                            radius: Constant.size40,
                             backgroundColor: ColorAssets.lightGrey,
-
                             child: Icon(
                               Icons.person,
                               color: ColorAssets.themeColorOrange,
@@ -613,29 +590,18 @@ void _showCommentSection(
                             ),
                             suffixIcon: InkWell(
                               onTap: () async {
-                                if (!controller.addisLoading.value) {
-                                  await controller.commentVideos(
-                                    id,
-                                    commentController.text.trim(),
-                                  );
-                                  commentController.clear();
-                                  scrollController.animateTo(
-                                    0,
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeOut,
-                                  );
-                                }
+                                await controller.commentVideos(
+                                  id,
+                                  commentController.text.trim(),
+                                );
+                                commentController.clear();
+                                scrollController.animateTo(
+                                  0,
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOut,
+                                );
                               },
-                              child: Obx(() {
-                                if (controller.addisLoading.value) {
-                                  return Image.asset(
-                                    ImageAssets.send,
-                                    scale: 3,
-                                    color: Color(0XFFD9D9D9),
-                                  );
-                                }
-                                return Image.asset(ImageAssets.send, scale: 3);
-                              }),
+                              child: Image.asset(ImageAssets.send, scale: 3),
                             ),
                           ),
                         ),
@@ -649,12 +615,7 @@ void _showCommentSection(
         ),
       );
     },
-  ).whenComplete(() {
-    // This runs when bottom sheet is closed
-    isBottomSheetOpen = false;
-    print("Bottom sheet closed");
-  });
-  ;
+  );
 }
 
 void _showEditCommentDialog(

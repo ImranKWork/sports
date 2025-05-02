@@ -54,30 +54,11 @@ class _HomeWidgetState extends State<HomeWidget> {
     }
   }
 
-  late ScrollController _scrollController;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     controller.fetchCategories();
-    _scrollController = ScrollController()..addListener(_scrollListener);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      controller.fetchVideos(
-        controller.selectedCategoryId.value,
-        isLoadMore: true,
-      );
-    }
   }
 
   @override
@@ -728,17 +709,8 @@ class _HomeWidgetState extends State<HomeWidget> {
         height: 540,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          controller: _scrollController,
-
           itemCount: controller.videos.length,
           itemBuilder: (context, index) {
-            if (index == controller.videos.length) {
-              return SizedBox(
-                width: Get.width / 1.4,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-
             var video = controller.videos[index];
             String thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? "";
             String defaultthumbnailUrl =
@@ -904,10 +876,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                           style: Styles.textStyleWhiteMedium,
                         ),
                         SizedBox(height: Constant.size10),
-                        Image.asset(
-                          "assets/images/chat.png",
-                          height: 22,
-                          width: 22,
+                        GestureDetector(
+                          onTap: () => _showCommentSection(context),
+                          child: Image.asset(
+                            "assets/images/chat.png",
+                            height: 22,
+                            width: 22,
+                          ),
                         ),
                         SizedBox(height: Constant.size5),
                         Text(
@@ -921,9 +896,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         SizedBox(height: Constant.size10),
                         Image.asset(
-                          "assets/images/share.png",
-                          height: 25,
-                          width: 25,
+                          "assets/images/chat.png",
+                          height: 22,
+                          width: 22,
                         ),
                         SizedBox(height: Constant.size5),
                         Text(

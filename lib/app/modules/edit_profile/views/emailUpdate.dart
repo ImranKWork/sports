@@ -81,7 +81,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
       });
     } catch (e) {
       if (e.toString().contains("Log in again before retrying this request")) {
-        loginController.logout(context);
+        loginController.logout();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("For security reasons, please log in again.")),
         );

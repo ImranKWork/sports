@@ -1,13 +1,11 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/styles.dart';
 
 import '../source/color_assets.dart';
@@ -83,13 +81,6 @@ class AppUtils {
         ],
       ),
     );
-  }
-
-  static Future<String?> getRefreshToken() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    final refreshTokens = await user!.getIdTokenResult(true);
-    SharedPref.setValue(PrefsKey.accessToken, refreshTokens.token);
-    return refreshTokens.token;
   }
 
   // hide keyboard

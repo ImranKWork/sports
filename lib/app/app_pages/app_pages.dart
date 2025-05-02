@@ -16,12 +16,15 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/signup/bindings/signup_binding.dart';
 import '../modules/signup/views/signup_view.dart';
+import '../modules/splash/bindings/splash_binding.dart';
+import '../modules/splash/views/splash_view.dart';
 import '../modules/user_profile/bindings/user_profile_binding.dart';
 import '../modules/user_profile/views/user_profile_view.dart';
 
 class AppPages {
   AppPages._();
 
+  static const splash = '/splash';
   static const onboarding = '/onboarding';
   static const login = '/login';
   static const otp = '/otp';
@@ -34,6 +37,7 @@ class AppPages {
   static const helpSupport = '/helpSupport';
 
   static final routes = [
+    GetPage(name: splash, page: () => SplashView(), binding: SplashBinding()),
     GetPage(
       name: onboarding,
       page: () => OnboardingView(),

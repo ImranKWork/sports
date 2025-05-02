@@ -21,7 +21,7 @@ class ApiProvider {
     String password,
   ) async {
     final url = Uri.parse('${ApiUtils.BASE_URL}/auth/register');
-    var reff = SharedPref.getString(PrefsKey.refercode) ?? "";
+
     final response = await http.post(
       url,
       body: jsonEncode({
@@ -29,7 +29,6 @@ class ApiProvider {
         "lastname": lName,
         "email": email,
         "password": password,
-        "referralCode": reff,
       }),
       headers: {"Content-Type": "application/json"},
     );
