@@ -1,11 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:chewie/chewie.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/home/controllers/home_controller.dart';
+import 'package:sports_trending/app/modules/home/views/home_view.dart';
+import 'package:sports_trending/app/modules/login/controllers/login_controller.dart';
+import 'package:sports_trending/app/modules/login/views/login_view.dart';
+import 'package:sports_trending/utils/api_utils.dart';
+import 'package:sports_trending/utils/app_utils.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -17,23 +24,18 @@ import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../search/views/comment_list.dart';
 
-class ShortsPlayerScreen extends StatefulWidget {
-  final List<Map<String, dynamic>> allVideos;
-  final int initialIndex;
-
-  const ShortsPlayerScreen({
-    super.key,
-    required this.allVideos,
-    required this.initialIndex,
-  });
+class VideoShortsPlayerScreen extends StatefulWidget {
+  String videoId;
+  VideoShortsPlayerScreen(this.videoId, {super.key});
 
   @override
   _ShortsPlayerScreenState createState() => _ShortsPlayerScreenState();
 }
 
-class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
+class _ShortsPlayerScreenState extends State<VideoShortsPlayerScreen> {
   late PageController _pageController;
   final HomeController controller = Get.put(HomeController());
+  // final LoginController loginController = Get.find();
 
   YoutubePlayerController? _controller;
   VideoPlayerController? _videoController;
@@ -42,17 +44,68 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   int currentIndex = 0;
   bool isScrolling = false;
   bool isPlaying = true;
-
+  bool isLoading = true;
+  var allVideos;
   Timer? _debounce;
+
+  Future<void> byIdVideos() async {
+    
+    await SharedPref.setValue(PrefsKey.isVideoOpen, "1");
+
+    final url = Uri.parse(
+      'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/search/search-video?videoId=${widget.videoId}',
+    );
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+    try {
+      final response = await http.get(
+        url,
+        // headers: {
+        //   ApiUtils.DEVICE_ID: deviceId,
+        //   ApiUtils.DEVICE_TOKEN: token,
+        //   ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+        //   ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        // },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        final newVideos = List<Map<String, dynamic>>.from(
+          jsonData['data']['videosData'],
+        );
+
+        allVideos = newVideos;
+        currentIndex = 0;
+        _pageController = PageController(initialPage: currentIndex);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _initializePlayer(allVideos[currentIndex]['videoUrl']);
+        });
+        setState(() {});
+      } else {
+        Get.snackbar('Error', 'Failed to load videos: ${response.statusCode}');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+      setState(() {
+        isLoading = false;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex;
-    _pageController = PageController(initialPage: currentIndex);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-    });
+
+    byIdVideos();
   }
 
   void _initializePlayer(String videoUrl) {
@@ -79,9 +132,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           });
 
           if (_controller!.value.playerState == PlayerState.ended) {
-            if (!isBottomSheetOpen) {
-              _scrollToNextVideo();
-            }
+            _scrollToNextVideo();
           }
         }
       });
@@ -105,16 +156,14 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         if (_videoController!.value.position >=
                 _videoController!.value.duration &&
             !_videoController!.value.isPlaying) {
-          if (!isBottomSheetOpen) {
-            _scrollToNextVideo();
-          }
+          _scrollToNextVideo();
         }
       });
     }
   }
 
   void _scrollToNextVideo() {
-    if (isScrolling || currentIndex >= widget.allVideos.length - 1) return;
+    if (isScrolling || currentIndex >= allVideos.length - 1) return;
 
     isScrolling = true;
     currentIndex++;
@@ -127,7 +176,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         )
         .then((_) {
           isScrolling = false;
-          _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
+          _initializePlayer(allVideos[currentIndex]['videoUrl']);
         });
   }
 
@@ -170,203 +219,214 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: PageView.builder(
-        controller: _pageController,
-        scrollDirection: Axis.vertical,
-        physics: const PageScrollPhysics(),
-        itemCount: widget.allVideos.length,
-        onPageChanged: (index) {
-          if (_debounce?.isActive ?? false) _debounce?.cancel();
-          _debounce = Timer(const Duration(milliseconds: 200), () {
-            if (index != currentIndex) {
-              setState(() {
-                currentIndex = index;
-                _initializePlayer(widget.allVideos[currentIndex]['videoUrl']);
-              });
-              controller.viewVideos(widget.allVideos[currentIndex]['_id']);
-            }
-          });
-        },
-        itemBuilder: (context, index) {
-          final videoData = widget.allVideos[index];
-          return Stack(
-            children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child:
-                    _controller != null
-                        ? YoutubePlayerBuilder(
-                          key: ValueKey(
-                            _controller!.initialVideoId,
-                          ), // ✅ Forces full rebuild
-                          player: YoutubePlayer(
-                            controller: _controller!,
-                            showVideoProgressIndicator: false,
+      body:
+          isLoading
+              ? Center(child: CircularProgressIndicator())
+              : PageView.builder(
+                controller: _pageController,
+                scrollDirection: Axis.vertical,
+                physics: const PageScrollPhysics(),
+                itemCount: allVideos.length,
+                onPageChanged: (index) {
+                  if (_debounce?.isActive ?? false) _debounce?.cancel();
+                  _debounce = Timer(const Duration(milliseconds: 200), () {
+                    if (index != currentIndex) {
+                      setState(() {
+                        currentIndex = index;
+                        _initializePlayer(allVideos[currentIndex]['videoUrl']);
+                      });
+                      controller.viewVideos(allVideos[currentIndex]['_id']);
+                    }
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final videoData = allVideos[index];
+                  return Stack(
+                    children: [
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child:
+                            _controller != null
+                                ? YoutubePlayerBuilder(
+                                  key: ValueKey('youtube-${videoData['_id']}'),
+                                  player: YoutubePlayer(
+                                    controller: _controller!,
+                                    showVideoProgressIndicator: false,
+                                  ),
+                                  builder:
+                                      (context, player) =>
+                                          SizedBox.expand(child: player),
+                                )
+                                : (_chewieController != null &&
+                                    _chewieController!
+                                        .videoPlayerController
+                                        .value
+                                        .isInitialized)
+                                ? SizedBox.expand(
+                                  key: ValueKey('chewie-${videoData['_id']}'),
+                                  child: Chewie(controller: _chewieController!),
+                                )
+                                : Container(
+                                  key: const ValueKey('loading'),
+                                  color: Colors.black,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: ColorAssets.themeColorOrange,
+                                    ),
+                                  ),
+                                ),
+                      ),
+                      // Back Button
+                      Positioned(
+                        top: 30,
+                        left: 10,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                            size: 30,
                           ),
-                          builder:
-                              (context, player) =>
-                                  SizedBox.expand(child: player),
-                        )
-                        : (_chewieController != null &&
-                            _chewieController!
-                                .videoPlayerController
-                                .value
-                                .isInitialized)
-                        ? SizedBox.expand(
-                          key: ValueKey('chewie-${videoData['_id']}'),
-                          child: Chewie(controller: _chewieController!),
-                        )
-                        : Container(
-                          key: const ValueKey('loading'),
-                          color: Colors.black,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: ColorAssets.themeColorOrange,
+                          onPressed: () {
+                            final accessToken = SharedPref.getString(
+                              PrefsKey.accessToken,
+                            );
+
+                            if (accessToken != "") {
+                              Get.offAll(() => HomeView());
+                            } else {
+                              Get.offAll(() => LoginView());
+                            }
+                          },
+                        ),
+                      ),
+
+                      // Video Details Bottom Left
+                      Positioned(
+                        bottom: 15,
+                        left: 10,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (videoData['type'] != "tik-tok")
+                              SizedBox(
+                                width: Get.width / 1.7,
+                                child: Text(
+                                  (videoData['videoContent']['snippet']['tags']
+                                              as List<dynamic>?)
+                                          ?.map((tag) => '#$tag')
+                                          .join(' ') ??
+                                      '',
+                                  style: Styles.textStyleWhiteNormal.copyWith(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: Get.width / 1.7,
+                              child: Text(
+                                videoData['title'] ?? '',
+                                style: Styles.textStyleWhiteSemiBold,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                        ),
-              ),
-
-              // Back Button
-              Positioned(
-                top: 30,
-                left: 10,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-
-              // Video Details Bottom Left
-              Positioned(
-                bottom: 15,
-                left: 10,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (videoData['type'] != "tik-tok")
-                      SizedBox(
-                        width: Get.width / 1.7,
-                        child: Text(
-                          (videoData['videoContent']['snippet']['tags']
-                                      as List<dynamic>?)
-                                  ?.map((tag) => '#$tag')
-                                  .join(' ') ??
-                              '',
-                          style: Styles.textStyleWhiteNormal.copyWith(
-                            fontSize: 12,
-                          ),
+                            const SizedBox(height: 8),
+                          ],
                         ),
                       ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: Get.width / 1.7,
-                      child: Text(
-                        videoData['title'] ?? '',
-                        style: Styles.textStyleWhiteSemiBold,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
 
-              // Action Buttons Bottom Right
-              Positioned(
-                bottom: 15,
-                right: 10,
-                child: Column(
-                  children: [
-                    InkWell(
-                      onTap: () async {
-                        videoData['isLiked'] = !(videoData['isLiked'] ?? false);
-                        setState(() {});
-                        await controller.likeVideos(videoData['_id']);
-                      },
-                      child: Image.asset(
-                        videoData['isLiked']
-                            ? "assets/images/mdi_heart.png"
-                            : "assets/images/like.png",
-                        height: 22,
-                        width: 22,
+                      // Action Buttons Bottom Right
+                      Positioned(
+                        bottom: 15,
+                        right: 10,
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                videoData['isLiked'] =
+                                    !(videoData['isLiked'] ?? false);
+                                setState(() {});
+                                await controller.likeVideos(videoData['_id']);
+                              },
+                              child: Image.asset(
+                                videoData['isLiked']
+                                    ? "assets/images/mdi_heart.png"
+                                    : "assets/images/like.png",
+                                height: 22,
+                                width: 22,
+                              ),
+                            ),
+                            Text(
+                              formatNumber(
+                                int.tryParse(
+                                      videoData['sourceLikes'].toString(),
+                                    ) ??
+                                    0,
+                              ),
+                              style: Styles.textStyleWhiteMedium,
+                            ),
+                            const SizedBox(height: 20),
+                            GestureDetector(
+                              onTap:
+                                  () => _showCommentSection(
+                                    context,
+                                    controller,
+                                    videoData['_id'],
+                                  ),
+                              child: Image.asset(
+                                "assets/images/chat.png",
+                                height: 22,
+                                width: 22,
+                              ),
+                            ),
+                            Text(
+                              formatNumber(
+                                int.tryParse(
+                                      videoData['sourceComments'].toString(),
+                                    ) ??
+                                    0,
+                              ),
+                              style: Styles.textStyleWhiteMedium,
+                            ),
+                            const SizedBox(height: 20),
+                            InkWell(
+                              onTap: () async {
+                                Share.share(
+                                  'Check out this video: ${videoData['videoUrl']}',
+                                );
+                                var data = await controller.shareVideos(
+                                  videoData['_id'],
+                                );
+                                var sharec = data["shares"];
+                                videoData['sourceSharess'] = sharec;
+                                setState(() {});
+                              },
+                              child: Image.asset(
+                                "assets/images/share.png",
+                                height: 25,
+                                width: 25,
+                              ),
+                            ),
+                            Text(
+                              formatNumber(
+                                int.tryParse(
+                                      videoData['sourceSharess'].toString(),
+                                    ) ??
+                                    0,
+                              ),
+                              style: Styles.textStyleWhiteMedium,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Text(
-                      formatNumber(
-                        int.tryParse(videoData['sourceLikes'].toString()) ?? 0,
-                      ),
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                    const SizedBox(height: 20),
-                    GestureDetector(
-                      onTap:
-                          () => _showCommentSection(
-                            context,
-                            controller,
-                            videoData['_id'],
-                          ),
-                      child: Image.asset(
-                        "assets/images/chat.png",
-                        height: 22,
-                        width: 22,
-                      ),
-                    ),
-                    Text(
-                      formatNumber(
-                        int.tryParse(videoData['sourceComments'].toString()) ??
-                            0,
-                      ),
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                    const SizedBox(height: 20),
-                    InkWell(
-                      onTap: () async {
-                        String thumbnailUrl =
-                            videoData['thumbnails']?['maxres']?['url'] ?? "";
-                        String defaultthumbnailUrl =
-                            videoData['thumbnails']?['default']?['url'] ?? '';
-                        Share.share(
-                          'Check out this video: https://sport-trending.softuvo.click/share/${videoData['_id']}',
-                        );
-
-                        var data = await controller.shareVideos(
-                          videoData['_id'],
-                        );
-                        var sharec = data["shares"];
-                        videoData['sourceSharess'] = sharec;
-                        setState(() {});
-                      },
-                      child: Image.asset(
-                        "assets/images/share.png",
-                        height: 25,
-                        width: 25,
-                      ),
-                    ),
-                    Text(
-                      formatNumber(
-                        int.tryParse(videoData['sourceSharess'].toString()) ??
-                            0,
-                      ),
-                      style: Styles.textStyleWhiteMedium,
-                    ),
-                  ],
-                ),
+                    ],
+                  );
+                },
               ),
-            ],
-          );
-        },
-      ),
     );
   }
 }
-
-bool isBottomSheetOpen = false;
 
 void _showCommentSection(
   BuildContext context,
@@ -378,9 +438,6 @@ void _showCommentSection(
   final profileImage = SharedPref.getString(PrefsKey.profilePhoto, "");
 
   controller.fetchComments(id);
-  if (isBottomSheetOpen) return;
-
-  isBottomSheetOpen = true;
 
   showModalBottomSheet(
     context: context,
@@ -472,21 +529,20 @@ void _showCommentSection(
                         final item = controller.commentsList[index];
                         String commentId = item["comment_id"] ?? "";
                         String existingCommentText = item["commentText"] ?? "";
-                        String profile_picture = item["profile_picture"] ?? "";
                         String commentUserId = item["user_id"] ?? "";
 
                         return ListTile(
                           leading:
-                              profile_picture.isNotEmpty
+                              profileImage.isNotEmpty
                                   ? ClipOval(
                                     child: Image.network(
-                                      profile_picture,
+                                      profileImage,
                                       height: 40,
                                       width: 40,
                                     ),
                                   )
                                   : CircleAvatar(
-                                    radius: Constant.size20,
+                                    radius: Constant.size40,
                                     backgroundColor: ColorAssets.lightGrey,
                                     child: Icon(
                                       Icons.person,
@@ -574,9 +630,8 @@ void _showCommentSection(
                             ),
                           )
                           : CircleAvatar(
-                            radius: Constant.size20,
+                            radius: Constant.size40,
                             backgroundColor: ColorAssets.lightGrey,
-
                             child: Icon(
                               Icons.person,
                               color: ColorAssets.themeColorOrange,
@@ -613,29 +668,18 @@ void _showCommentSection(
                             ),
                             suffixIcon: InkWell(
                               onTap: () async {
-                                if (!controller.addisLoading.value) {
-                                  await controller.commentVideos(
-                                    id,
-                                    commentController.text.trim(),
-                                  );
-                                  commentController.clear();
-                                  scrollController.animateTo(
-                                    0,
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeOut,
-                                  );
-                                }
+                                await controller.commentVideos(
+                                  id,
+                                  commentController.text.trim(),
+                                );
+                                commentController.clear();
+                                scrollController.animateTo(
+                                  0,
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOut,
+                                );
                               },
-                              child: Obx(() {
-                                if (controller.addisLoading.value) {
-                                  return Image.asset(
-                                    ImageAssets.send,
-                                    scale: 3,
-                                    color: Color(0XFFD9D9D9),
-                                  );
-                                }
-                                return Image.asset(ImageAssets.send, scale: 3);
-                              }),
+                              child: Image.asset(ImageAssets.send, scale: 3),
                             ),
                           ),
                         ),
@@ -649,12 +693,7 @@ void _showCommentSection(
         ),
       );
     },
-  ).whenComplete(() {
-    // This runs when bottom sheet is closed
-    isBottomSheetOpen = false;
-    print("Bottom sheet closed");
-  });
-  ;
+  );
 }
 
 void _showEditCommentDialog(

@@ -93,19 +93,20 @@ class _CommentListState extends State<CommentList> {
             final item = controller.commentsList[index];
             final commentUserId = item["user_id"];
             final currentUserId = SharedPref.getString(PrefsKey.userId, "");
+            String profile_picture = item["profile_picture"] ?? "";
 
             return ListTile(
               leading:
-                  profileImage.isNotEmpty
+                  profile_picture.isNotEmpty
                       ? ClipOval(
                         child: Image.network(
-                          profileImage,
+                          profile_picture,
                           height: 40,
                           width: 40,
                         ),
                       )
                       : CircleAvatar(
-                        radius: Constant.size40,
+                        radius: Constant.size20,
                         backgroundColor: ColorAssets.lightGrey,
                         child: Icon(
                           Icons.person,
@@ -178,8 +179,9 @@ class _CommentListState extends State<CommentList> {
                     child: Image.network(profileImage, height: 40, width: 40),
                   )
                   : CircleAvatar(
-                    radius: Constant.size40,
+                    radius: Constant.size20,
                     backgroundColor: ColorAssets.lightGrey,
+
                     child: Icon(
                       Icons.person,
                       color: ColorAssets.themeColorOrange,
@@ -260,7 +262,16 @@ class _CommentListState extends State<CommentList> {
                             FocusScope.of(context).unfocus();
                             setState(() {});
                           },
-                          child: Image.asset(ImageAssets.send, scale: 3),
+                          child: Obx(() {
+                            if (controller.addisLoading.value) {
+                              return Image.asset(
+                                ImageAssets.send,
+                                scale: 3,
+                                color: Color(0XFFD9D9D9),
+                              );
+                            }
+                            return Image.asset(ImageAssets.send, scale: 3);
+                          }),
                         ),
                         SizedBox(width: Constant.size10),
                       ],

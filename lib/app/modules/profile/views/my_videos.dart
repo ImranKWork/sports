@@ -79,37 +79,6 @@ class _MyVideosState extends State<MyVideos> {
 
   Widget _buildCategoryList() {
     return Obx(() {
-      if (controller.isLoading.value) {
-        return SizedBox(
-          height: 45,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 2),
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(46),
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 60,
-                      height: 16,
-                      color: Colors.grey[300],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      }
-
       if (selectedMyCategory.value.isEmpty) {
         selectedMyCategory.value =
             controller.myVideosCategories[0]['name'].toString();
@@ -135,6 +104,8 @@ class _MyVideosState extends State<MyVideos> {
                   controller.myCommentsVideos();
                 } else if (category == "Viewed Videos") {
                   controller.myViewedVideos();
+                } else {
+                  controller.mySharedVideos();
                 }
               },
               child: Container(
@@ -167,7 +138,7 @@ class _MyVideosState extends State<MyVideos> {
 
   Widget _buildHorizontalImageList() {
     return Obx(() {
-      if (controller.isLoading.value) {
+      if (controller.myisLoading.value) {
         return ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
@@ -189,12 +160,8 @@ class _MyVideosState extends State<MyVideos> {
         );
       }
 
-      if (controller.videos.isEmpty) {
-        return Center(child: Text("No Videos found with selected category"));
-      }
-
       return selectedMyCategory.value == "Liked Videos"
-          ? controller.isLoading.value
+          ? controller.myisLoading.value
               ? Center(
                 child: CircularProgressIndicator(
                   color: ColorAssets.themeColorOrange,
@@ -208,219 +175,237 @@ class _MyVideosState extends State<MyVideos> {
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   var video = controller.recentsLikesVideos[index]["video"];
-                  String thumbnailUrl =
-                      video['thumbnails']?['maxres']?['url'] ?? '';
-                  return GestureDetector(
-                    onTap: () {
-                      Get.to(
-                        () => ShortsPlayerMYScreen(
-                          allVideos: controller.recentsLikesVideos,
-                          initialIndex: index,
-                        ),
-                      );
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      height: 398,
-                      width: double.infinity,
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(22),
-                            child: Image.network(
-                              thumbnailUrl,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              loadingBuilder: (
-                                context,
-                                child,
-                                loadingProgress,
-                              ) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    color: ColorAssets.themeColorOrange,
-                                    value:
-                                        loadingProgress.expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                (loadingProgress
-                                                        .expectedTotalBytes ??
-                                                    1)
-                                            : null,
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/images/world_cup.png',
+                  String thumbnailUrl = "";
+                  String defaultthumbnailUrl = "";
+
+                  if (video != null) {
+                    thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? "";
+
+                    defaultthumbnailUrl =
+                        video['thumbnails']?['default']?['url'] ?? '';
+                  }
+
+                  return video != null
+                      ? GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => ShortsPlayerMYScreen(
+                              allVideos: controller.recentsLikesVideos,
+                              initialIndex: index,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 10,
+                          ),
+                          height: 398,
+                          width: double.infinity,
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(22),
+                                child: Image.network(
+                                  thumbnailUrl.isEmpty
+                                      ? defaultthumbnailUrl
+                                      : thumbnailUrl,
                                   fit: BoxFit.cover,
                                   width: double.infinity,
-                                  height: 398,
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(22),
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: [
-                                  Colors.black.withOpacity(0.6),
-                                  Colors.transparent,
-                                ],
+                                  height: double.infinity,
+                                  loadingBuilder: (
+                                    context,
+                                    child,
+                                    loadingProgress,
+                                  ) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: ColorAssets.themeColorOrange,
+                                        value:
+                                            loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
+                                                : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/world_cup.png',
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: 398,
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            left: 10,
-                            right: 70,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                video['title'] != null &&
-                                        video['title']
-                                            .toString()
-                                            .trim()
-                                            .isNotEmpty
-                                    ? Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 8,
-                                        horizontal: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white24,
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: SizedBox(
-                                        width: Get.width / 1,
-                                        child: Text(
-                                          video['title'],
-                                          style: Styles.textStyleWhiteMedium
-                                              .copyWith(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    )
-                                    : SizedBox.shrink(),
-
-                                SizedBox(height: Constant.size8),
-                                video['description'] != null &&
-                                        video['description']
-                                            .toString()
-                                            .trim()
-                                            .isNotEmpty
-                                    ? SizedBox(
-                                      width: Get.width / 1.7,
-                                      child: Text(
-                                        video['description'],
-                                        style: Styles.textStyleWhiteSemiBold,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )
-                                    : SizedBox.shrink(),
-
-                                SizedBox(height: 6),
-                                (() {
-                                  final tags =
-                                      (video['videoContent']?['snippet']?['tags']
-                                              as List<dynamic>?)
-                                          ?.map((tag) => '#$tag')
-                                          .join(' ');
-                                  return tags != null && tags.isNotEmpty
-                                      ? Text(
-                                        tags,
-                                        style: Styles.textStyleWhiteNormal
-                                            .copyWith(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.6),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10,
+                                left: 10,
+                                right: 70,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    video['title'] != null &&
+                                            video['title']
+                                                .toString()
+                                                .trim()
+                                                .isNotEmpty
+                                        ? Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white24,
+                                            borderRadius: BorderRadius.circular(
+                                              30,
                                             ),
-                                        overflow: TextOverflow.ellipsis,
-                                      )
-                                      : SizedBox();
-                                })(),
-                              ],
-                            ),
-                          ),
+                                          ),
+                                          child: SizedBox(
+                                            width: Get.width / 1,
+                                            child: Text(
+                                              video['title'],
+                                              style: Styles.textStyleWhiteMedium
+                                                  .copyWith(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        )
+                                        : SizedBox.shrink(),
 
-                          // Bottom Right Icons
-                          Positioned(
-                            bottom: 10,
-                            right: 10,
-                            child: Column(
-                              children: [
-                                Image.asset(
-                                  "assets/images/like.png",
-                                  height: 22,
-                                  width: 22,
+                                    SizedBox(height: Constant.size8),
+                                    video['description'] != null &&
+                                            video['description']
+                                                .toString()
+                                                .trim()
+                                                .isNotEmpty
+                                        ? SizedBox(
+                                          width: Get.width / 1.7,
+                                          child: Text(
+                                            video['description'],
+                                            style:
+                                                Styles.textStyleWhiteSemiBold,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        )
+                                        : SizedBox.shrink(),
+
+                                    SizedBox(height: 6),
+                                    (() {
+                                      final tags =
+                                          (video['videoContent']?['snippet']?['tags']
+                                                  as List<dynamic>?)
+                                              ?.map((tag) => '#$tag')
+                                              .join(' ');
+                                      return tags != null && tags.isNotEmpty
+                                          ? Text(
+                                            tags,
+                                            style: Styles.textStyleWhiteNormal
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                            overflow: TextOverflow.ellipsis,
+                                          )
+                                          : SizedBox();
+                                    })(),
+                                  ],
                                 ),
-                                SizedBox(height: 5),
-                                Text(
-                                  formatNumber(
-                                    int.tryParse(
-                                          video['sourceLikes'].toString(),
-                                        ) ??
-                                        0,
-                                  ),
-                                  //  video['sourceLikes']?.toString() ?? '0',
-                                  style: Styles.textStyleWhiteMedium,
+                              ),
+
+                              // Bottom Right Icons
+                              Positioned(
+                                bottom: 10,
+                                right: 10,
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/like.png",
+                                      height: 22,
+                                      width: 22,
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceLikes'].toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      //  video['sourceLikes']?.toString() ?? '0',
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Image.asset(
+                                      "assets/images/chat.png",
+                                      height: 22,
+                                      width: 22,
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceComments']
+                                                  .toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Image.asset(
+                                      "assets/images/share.png",
+                                      height: 25,
+                                      width: 25,
+                                    ),
+                                    SizedBox(height: Constant.size5),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceSharess'].toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(height: 10),
-                                GestureDetector(
-                                  onTap: () => _showCommentSection(context),
-                                  child: Image.asset(
-                                    "assets/images/chat.png",
-                                    height: 22,
-                                    width: 22,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  formatNumber(
-                                    int.tryParse(
-                                          video['sourceComments'].toString(),
-                                        ) ??
-                                        0,
-                                  ),
-                                  style: Styles.textStyleWhiteMedium,
-                                ),
-                                SizedBox(height: 10),
-                                Image.asset(
-                                  "assets/images/chat.png",
-                                  height: 22,
-                                  width: 22,
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  formatNumber(
-                                    int.tryParse(
-                                          video['sourceSharess'].toString(),
-                                        ) ??
-                                        0,
-                                  ),
-                                  style: Styles.textStyleWhiteMedium,
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  );
+                        ),
+                      )
+                      : Container();
                 },
               )
           : selectedMyCategory.value == "Viewed Videos"
-          ? controller.isLoading.value
+          ? controller.myisLoading.value
               ? Center(
                 child: CircularProgressIndicator(
                   color: ColorAssets.themeColorOrange,
@@ -434,13 +419,505 @@ class _MyVideosState extends State<MyVideos> {
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   var video = controller.recentsViewedVideos[index]["video"];
-                  String thumbnailUrl =
-                      video['thumbnails']?['maxres']?['url'] ?? '';
-                  return GestureDetector(
+                  String thumbnailUrl = "";
+                  String defaultthumbnailUrl = "";
+
+                  if (video != null) {
+                    thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? "";
+
+                    defaultthumbnailUrl =
+                        video['thumbnails']?['default']?['url'] ?? '';
+                  }
+
+                  return video != null
+                      ? GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => ShortsPlayerMYScreen(
+                              allVideos: controller.recentsViewedVideos,
+                              initialIndex: index,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 10,
+                          ),
+                          height: 398,
+                          width: double.infinity,
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(22),
+                                child: Image.network(
+                                  thumbnailUrl.isEmpty
+                                      ? defaultthumbnailUrl
+                                      : thumbnailUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  loadingBuilder: (
+                                    context,
+                                    child,
+                                    loadingProgress,
+                                  ) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: ColorAssets.themeColorOrange,
+                                        value:
+                                            loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
+                                                : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/world_cup.png',
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: 398,
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.6),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10,
+                                left: 10,
+                                right: 70,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    video['title'] != null &&
+                                            video['title']
+                                                .toString()
+                                                .trim()
+                                                .isNotEmpty
+                                        ? Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white24,
+                                            borderRadius: BorderRadius.circular(
+                                              30,
+                                            ),
+                                          ),
+                                          child: SizedBox(
+                                            width: Get.width / 1,
+                                            child: Text(
+                                              video['title'],
+                                              style: Styles.textStyleWhiteMedium
+                                                  .copyWith(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        )
+                                        : SizedBox.shrink(),
+
+                                    SizedBox(height: Constant.size8),
+                                    video['description'] != null &&
+                                            video['description']
+                                                .toString()
+                                                .trim()
+                                                .isNotEmpty
+                                        ? SizedBox(
+                                          width: Get.width / 1.7,
+                                          child: Text(
+                                            video['description'],
+                                            style:
+                                                Styles.textStyleWhiteSemiBold,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        )
+                                        : SizedBox.shrink(),
+
+                                    SizedBox(height: 6),
+                                    (() {
+                                      final tags =
+                                          (video['videoContent']?['snippet']?['tags']
+                                                  as List<dynamic>?)
+                                              ?.map((tag) => '#$tag')
+                                              .join(' ');
+                                      return tags != null && tags.isNotEmpty
+                                          ? Text(
+                                            tags,
+                                            style: Styles.textStyleWhiteNormal
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                            overflow: TextOverflow.ellipsis,
+                                          )
+                                          : SizedBox();
+                                    })(),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10,
+                                right: 10,
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/like.png",
+                                      height: 22,
+                                      width: 22,
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceLikes'].toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      //  video['sourceLikes']?.toString() ?? '0',
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Image.asset(
+                                      "assets/images/chat.png",
+                                      height: 22,
+                                      width: 22,
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceComments']
+                                                  .toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Image.asset(
+                                      "assets/images/share.png",
+                                      height: 25,
+                                      width: 25,
+                                    ),
+                                    SizedBox(height: Constant.size5),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceSharess'].toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      : Container();
+                },
+              )
+          : selectedMyCategory.value == "Shared Videos"
+          ? controller.myisLoading.value
+              ? Center(
+                child: CircularProgressIndicator(
+                  color: ColorAssets.themeColorOrange,
+                ),
+              )
+              : controller.recentsSharedVideos.isEmpty
+              ? Center(child: Text("No Viewed Videos found"))
+              : ListView.builder(
+                itemCount: controller.recentsSharedVideos.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  var video = controller.recentsSharedVideos[index]["video"];
+                  String thumbnailUrl = "";
+                  String defaultthumbnailUrl = "";
+
+                  if (video != null) {
+                    thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? "";
+
+                    defaultthumbnailUrl =
+                        video['thumbnails']?['default']?['url'] ?? '';
+                  }
+
+                  return video != null
+                      ? GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => ShortsPlayerMYScreen(
+                              allVideos: controller.recentsSharedVideos,
+                              initialIndex: index,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 10,
+                          ),
+                          height: 398,
+                          width: double.infinity,
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(22),
+                                child: Image.network(
+                                  thumbnailUrl.isEmpty
+                                      ? defaultthumbnailUrl
+                                      : thumbnailUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  loadingBuilder: (
+                                    context,
+                                    child,
+                                    loadingProgress,
+                                  ) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: ColorAssets.themeColorOrange,
+                                        value:
+                                            loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
+                                                : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/world_cup.png',
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: 398,
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.6),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10,
+                                left: 10,
+                                right: 70,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    video['title'] != null &&
+                                            video['title']
+                                                .toString()
+                                                .trim()
+                                                .isNotEmpty
+                                        ? Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white24,
+                                            borderRadius: BorderRadius.circular(
+                                              30,
+                                            ),
+                                          ),
+                                          child: SizedBox(
+                                            width: Get.width / 1,
+                                            child: Text(
+                                              video['title'],
+                                              style: Styles.textStyleWhiteMedium
+                                                  .copyWith(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        )
+                                        : SizedBox.shrink(),
+
+                                    SizedBox(height: Constant.size8),
+                                    video['description'] != null &&
+                                            video['description']
+                                                .toString()
+                                                .trim()
+                                                .isNotEmpty
+                                        ? SizedBox(
+                                          width: Get.width / 1.7,
+                                          child: Text(
+                                            video['description'],
+                                            style:
+                                                Styles.textStyleWhiteSemiBold,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        )
+                                        : SizedBox.shrink(),
+
+                                    SizedBox(height: 6),
+                                    (() {
+                                      final tags =
+                                          (video['videoContent']?['snippet']?['tags']
+                                                  as List<dynamic>?)
+                                              ?.map((tag) => '#$tag')
+                                              .join(' ');
+                                      return tags != null && tags.isNotEmpty
+                                          ? Text(
+                                            tags,
+                                            style: Styles.textStyleWhiteNormal
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                            overflow: TextOverflow.ellipsis,
+                                          )
+                                          : SizedBox();
+                                    })(),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10,
+                                right: 10,
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/like.png",
+                                      height: 22,
+                                      width: 22,
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceLikes'].toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      //  video['sourceLikes']?.toString() ?? '0',
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Image.asset(
+                                      "assets/images/chat.png",
+                                      height: 22,
+                                      width: 22,
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceComments']
+                                                  .toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Image.asset(
+                                      "assets/images/share.png",
+                                      height: 25,
+                                      width: 25,
+                                    ),
+                                    SizedBox(height: Constant.size5),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      formatNumber(
+                                        int.tryParse(
+                                              video['sourceSharess'].toString(),
+                                            ) ??
+                                            0,
+                                      ),
+                                      style: Styles.textStyleWhiteMedium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      : Container();
+                },
+              )
+          : controller.myisLoading.value
+          ? Center(
+            child: CircularProgressIndicator(
+              color: ColorAssets.themeColorOrange,
+            ),
+          )
+          : controller.recentsCommentsVideos.isEmpty
+          ? Center(child: Text("No Commented Videos found"))
+          : ListView.builder(
+            itemCount: controller.recentsCommentsVideos.length,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              var video = controller.recentsCommentsVideos[index]["video"];
+              String thumbnailUrl = "";
+              String defaultthumbnailUrl = "";
+
+              if (video != null) {
+                thumbnailUrl = video['thumbnails']?['maxres']?['url'] ?? "";
+
+                defaultthumbnailUrl =
+                    video['thumbnails']?['default']?['url'] ?? '';
+              }
+
+              return video != null
+                  ? GestureDetector(
                     onTap: () {
                       Get.to(
                         () => ShortsPlayerMYScreen(
-                          allVideos: controller.recentsViewedVideos,
+                          allVideos: controller.recentsCommentsVideos,
                           initialIndex: index,
                         ),
                       );
@@ -454,7 +931,9 @@ class _MyVideosState extends State<MyVideos> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(22),
                             child: Image.network(
-                              thumbnailUrl,
+                              thumbnailUrl.isEmpty
+                                  ? defaultthumbnailUrl
+                                  : thumbnailUrl,
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,
@@ -502,6 +981,7 @@ class _MyVideosState extends State<MyVideos> {
                               ),
                             ),
                           ),
+
                           Positioned(
                             bottom: 10,
                             left: 10,
@@ -578,6 +1058,7 @@ class _MyVideosState extends State<MyVideos> {
                               ],
                             ),
                           ),
+
                           Positioned(
                             bottom: 10,
                             right: 10,
@@ -600,13 +1081,10 @@ class _MyVideosState extends State<MyVideos> {
                                   style: Styles.textStyleWhiteMedium,
                                 ),
                                 SizedBox(height: 10),
-                                GestureDetector(
-                                  onTap: () => _showCommentSection(context),
-                                  child: Image.asset(
-                                    "assets/images/chat.png",
-                                    height: 22,
-                                    width: 22,
-                                  ),
+                                Image.asset(
+                                  "assets/images/chat.png",
+                                  height: 22,
+                                  width: 22,
                                 ),
                                 SizedBox(height: 5),
                                 Text(
@@ -620,10 +1098,11 @@ class _MyVideosState extends State<MyVideos> {
                                 ),
                                 SizedBox(height: 10),
                                 Image.asset(
-                                  "assets/images/chat.png",
-                                  height: 22,
-                                  width: 22,
+                                  "assets/images/share.png",
+                                  height: 25,
+                                  width: 25,
                                 ),
+                                SizedBox(height: Constant.size5),
                                 SizedBox(height: 5),
                                 Text(
                                   formatNumber(
@@ -640,221 +1119,8 @@ class _MyVideosState extends State<MyVideos> {
                         ],
                       ),
                     ),
-                  );
-                },
-              )
-          : controller.isLoading.value
-          ? Center(
-            child: CircularProgressIndicator(
-              color: ColorAssets.themeColorOrange,
-            ),
-          )
-          : controller.recentsCommentsVideos.isEmpty
-          ? Center(child: Text("No Commented Videos found"))
-          : ListView.builder(
-            itemCount: controller.recentsCommentsVideos.length,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              var video = controller.recentsCommentsVideos[index]["video"];
-              String thumbnailUrl =
-                  video['thumbnails']?['maxres']?['url'] ?? '';
-              return GestureDetector(
-                onTap: () {
-                  Get.to(
-                    () => ShortsPlayerMYScreen(
-                      allVideos: controller.recentsCommentsVideos,
-                      initialIndex: index,
-                    ),
-                  );
-                },
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                  height: 398,
-                  width: double.infinity,
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(22),
-                        child: Image.network(
-                          thumbnailUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                color: ColorAssets.themeColorOrange,
-                                value:
-                                    loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            (loadingProgress
-                                                    .expectedTotalBytes ??
-                                                1)
-                                        : null,
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'assets/images/world_cup.png',
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: 398,
-                            );
-                          },
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(22),
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.6),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      Positioned(
-                        bottom: 10,
-                        left: 10,
-                        right: 70,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            video['title'] != null &&
-                                    video['title'].toString().trim().isNotEmpty
-                                ? Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white24,
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: SizedBox(
-                                    width: Get.width / 1,
-                                    child: Text(
-                                      video['title'],
-                                      style: Styles.textStyleWhiteMedium
-                                          .copyWith(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                )
-                                : SizedBox.shrink(),
-
-                            SizedBox(height: Constant.size8),
-                            video['description'] != null &&
-                                    video['description']
-                                        .toString()
-                                        .trim()
-                                        .isNotEmpty
-                                ? SizedBox(
-                                  width: Get.width / 1.7,
-                                  child: Text(
-                                    video['description'],
-                                    style: Styles.textStyleWhiteSemiBold,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                )
-                                : SizedBox.shrink(),
-
-                            SizedBox(height: 6),
-                            (() {
-                              final tags =
-                                  (video['videoContent']?['snippet']?['tags']
-                                          as List<dynamic>?)
-                                      ?.map((tag) => '#$tag')
-                                      .join(' ');
-                              return tags != null && tags.isNotEmpty
-                                  ? Text(
-                                    tags,
-                                    style: Styles.textStyleWhiteNormal.copyWith(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  )
-                                  : SizedBox();
-                            })(),
-                          ],
-                        ),
-                      ),
-
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              "assets/images/like.png",
-                              height: 22,
-                              width: 22,
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              formatNumber(
-                                int.tryParse(video['sourceLikes'].toString()) ??
-                                    0,
-                              ),
-                              //  video['sourceLikes']?.toString() ?? '0',
-                              style: Styles.textStyleWhiteMedium,
-                            ),
-                            SizedBox(height: 10),
-                            GestureDetector(
-                              onTap: () => _showCommentSection(context),
-                              child: Image.asset(
-                                "assets/images/chat.png",
-                                height: 22,
-                                width: 22,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              formatNumber(
-                                int.tryParse(
-                                      video['sourceComments'].toString(),
-                                    ) ??
-                                    0,
-                              ),
-                              style: Styles.textStyleWhiteMedium,
-                            ),
-                            SizedBox(height: 10),
-                            Image.asset(
-                              "assets/images/chat.png",
-                              height: 22,
-                              width: 22,
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              formatNumber(
-                                int.tryParse(
-                                      video['sourceSharess'].toString(),
-                                    ) ??
-                                    0,
-                              ),
-                              style: Styles.textStyleWhiteMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+                  )
+                  : Container();
             },
           );
     });

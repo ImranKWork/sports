@@ -55,6 +55,7 @@ class ImageAssets {
   static String img5 = "assets/images/img5.png";
   static String img6 = "assets/images/img6.png";
   static String send = "assets/images/send.png";
+  static String loadsend = "assets/images/Frame 1000002628.png";
   static String smile = "assets/images/smile.png";
   static String check = "assets/images/check.png";
   static String unCheck = "assets/images/uncheck.png";

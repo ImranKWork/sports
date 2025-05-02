@@ -9,7 +9,8 @@ import '../../../../widgets/common_header.dart';
 import '../controller/search_videos_controller.dart';
 
 class FilterPage extends StatefulWidget {
-  const FilterPage({super.key});
+  String searchkey = "";
+  FilterPage(this.searchkey, {super.key});
 
   @override
   State<FilterPage> createState() => _FilterPageState();
@@ -24,12 +25,7 @@ class _FilterPageState extends State<FilterPage> {
     "30 Days",
     "All Time",
   ];
-  final List<String> _changePlatFormOptions = [
-    "YouTube",
-    "TikTok",
-    "Instagram",
-    "Twitter",
-  ];
+  //final List<String> _changePlatFormOptions = ["YouTube", "TikTok"];
 
   @override
   void initState() {
@@ -67,6 +63,22 @@ class _FilterPageState extends State<FilterPage> {
                       searchController.selectedSort.value = '';
                       searchController.selectedDateRange.value = '';
                       searchController.selectedPlatForm.value = '';
+
+                      searchController.fselectedSort.value = '';
+                      searchController.fselectedDateRange.value = '';
+                      searchController.fselectedPlatForm.value = '';
+                      searchController.videoResults.clear();
+
+                      searchController.fetchSearchVideos(
+                        keyword: widget.searchkey,
+                        page: 1,
+                        limit: 100,
+                        timeRange: "",
+                        type: "",
+                        sort: "",
+                      );
+
+                      Get.back();
                     });
                   },
                   child: Text("Clear", style: Styles.textMetalHeader),
@@ -99,6 +111,17 @@ class _FilterPageState extends State<FilterPage> {
                                         ? ''
                                         : option;
                               });
+
+                              if (option == "Newest") {
+                                searchController.fselectedSort.value =
+                                    "uploadDate";
+                              } else if (option == "Most Viewed") {
+                                searchController.fselectedSort.value =
+                                    "totalViews";
+                              } else {
+                                searchController.fselectedSort.value =
+                                    "totalLikes";
+                              }
                             },
                             child: Image.asset(
                               searchController.selectedSort.value == option
@@ -143,6 +166,20 @@ class _FilterPageState extends State<FilterPage> {
                                         ? ''
                                         : option;
                               });
+
+                              if (option == "Last 24h") {
+                                searchController.fselectedDateRange.value =
+                                    "last24Hours";
+                              } else if (option == "7 Days") {
+                                searchController.fselectedDateRange.value =
+                                    "last7Days";
+                              } else if (option == "30 Days") {
+                                searchController.fselectedDateRange.value =
+                                    "last30Days";
+                              } else {
+                                searchController.fselectedDateRange.value =
+                                    "allTime";
+                              }
                             },
                             child: Image.asset(
                               searchController.selectedDateRange.value == option
@@ -169,51 +206,59 @@ class _FilterPageState extends State<FilterPage> {
                     );
                   }).toList(),
             ),
-            SizedBox(height: 15),
-            Text("Platform", style: Styles.buttonTextStyle18),
-            SizedBox(height: 5),
-            Column(
-              children:
-                  _changePlatFormOptions.map((option) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                searchController.selectedPlatForm.value =
-                                    searchController.selectedPlatForm.value ==
-                                            option
-                                        ? ''
-                                        : option;
-                              });
-                            },
-                            child: Image.asset(
-                              searchController.selectedPlatForm.value == option
-                                  ? "assets/images/check.png"
-                                  : "assets/images/uncheck.png",
-                              width: 16,
-                              height: 16,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            option,
-                            style: Styles.textBlackHeader.copyWith(
-                              fontWeight: FontWeight.w400,
-                              color:
-                                  searchController.selectedPlatForm.value ==
-                                          option
-                                      ? ColorAssets.black
-                                      : Colors.blueGrey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-            ),
+            // SizedBox(height: 15),
+            // Text("Platform", style: Styles.buttonTextStyle18),
+            // SizedBox(height: 5),
+            // Column(
+            //   children:
+            //       _changePlatFormOptions.map((option) {
+            //         return Padding(
+            //           padding: const EdgeInsets.symmetric(vertical: 8.0),
+            //           child: Row(
+            //             children: [
+            //               GestureDetector(
+            //                 onTap: () {
+            //                   setState(() {
+            //                     searchController.selectedPlatForm.value =
+            //                         searchController.selectedPlatForm.value ==
+            //                                 option
+            //                             ? ''
+            //                             : option;
+            //                   });
+
+            //                   if (option == "YouTube") {
+            //                     searchController.fselectedPlatForm.value =
+            //                         "youtube";
+            //                   } else {
+            //                     searchController.fselectedPlatForm.value =
+            //                         "tik-tok";
+            //                   }
+            //                 },
+            //                 child: Image.asset(
+            //                   searchController.selectedPlatForm.value == option
+            //                       ? "assets/images/check.png"
+            //                       : "assets/images/uncheck.png",
+            //                   width: 16,
+            //                   height: 16,
+            //                 ),
+            //               ),
+            //               SizedBox(width: 8),
+            //               Text(
+            //                 option,
+            //                 style: Styles.textBlackHeader.copyWith(
+            //                   fontWeight: FontWeight.w400,
+            //                   color:
+            //                       searchController.selectedPlatForm.value ==
+            //                               option
+            //                           ? ColorAssets.black
+            //                           : Colors.blueGrey,
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         );
+            //       }).toList(),
+            // ),
             SizedBox(height: 20),
           ],
         ),
@@ -223,16 +268,16 @@ class _FilterPageState extends State<FilterPage> {
         child: CommonButton(
           label: 'Apply Filters',
           onClick: () {
-            if (searchController.selectedSort.value.isNotEmpty &&
-                searchController.selectedDateRange.value.isNotEmpty &&
+            if (searchController.selectedSort.value.isNotEmpty ||
+                searchController.selectedDateRange.value.isNotEmpty ||
                 searchController.selectedPlatForm.value.isNotEmpty) {
               searchController.fetchSearchVideos(
-                keyword: 'search',
+                keyword: widget.searchkey,
                 page: 1,
                 limit: 100,
-                timeRange: searchController.selectedDateRange.value,
-                type: searchController.selectedPlatForm.value,
-                sort: searchController.selectedSort.value,
+                timeRange: searchController.fselectedDateRange.value,
+                type: searchController.fselectedPlatForm.value,
+                sort: searchController.fselectedSort.value,
               );
               Get.back();
             } else {

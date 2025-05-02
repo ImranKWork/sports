@@ -1,0 +1,9 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.sporttrending.app",
+      "sha256_cert_fingerprints":
+      ["47:89:F9:4E:47:F1:A9:D6:77:9C:DA:1E:AF:C2:A6:2A:97:80:83:05:8D:AA:6C:EA:68:03:84:7F:B7:2C:AB:F4"]
+    }
+  }]

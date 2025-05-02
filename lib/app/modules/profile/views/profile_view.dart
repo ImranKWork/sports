@@ -329,7 +329,7 @@ class CommonTileList extends StatelessWidget {
                             child: CommonButton(
                               label: languageController.getLabel("logout"),
                               onClick: () {
-                                loginController.logout();
+                                loginController.logout(context);
                               },
                             ),
                           ),
