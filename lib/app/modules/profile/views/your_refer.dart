@@ -1,6 +1,13 @@
+import 'dart:convert';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
+import 'package:sports_trending/utils/api_utils.dart';
+import 'package:sports_trending/utils/app_utils.dart';
 
 import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
@@ -15,6 +22,74 @@ class YourRefer extends StatefulWidget {
 }
 
 class _YourReferState extends State<YourRefer> {
+  var detailsReward;
+  bool isLoading = true;
+
+  Future<void> detailsrewardsapi() async {
+    final url = Uri.parse(
+      'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/referral/track-milestone/681326e94120250908dd40e4',
+    );
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        final newVideos = List<Map<String, dynamic>>.from(
+          jsonData['referralDetails'],
+        );
+        detailsReward = newVideos[0];
+      } else {
+        Get.snackbar('Error', 'Failed to load videos: ${response.statusCode}');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+      setState(() {
+        isLoading = false;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    detailsrewardsapi();
+  }
+
+  String getRewardText(rewardType) {
+    bool hasStcoins = rewardType.contains('stcoins');
+    bool hasPremium = rewardType.contains('premium_access');
+
+    if (hasStcoins && hasPremium) {
+      return 'Stcoins with Premium Membership';
+    } else if (hasStcoins) {
+      return 'Stcoins';
+    } else if (hasPremium) {
+      return 'Premium Membership';
+    } else {
+      return 'No Rewards';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +172,10 @@ class _YourReferState extends State<YourRefer> {
                                 "Total Referrals",
                                 style: Styles.textStyleWhite14,
                               ),
-                              Text("12", style: Styles.textStyleBlackMedium),
+                              Text(
+                                "${detailsReward["stats"]["totalReferrals"]}",
+                                style: Styles.textStyleBlackMedium,
+                              ),
                             ],
                           ),
                         ],
@@ -119,7 +197,7 @@ class _YourReferState extends State<YourRefer> {
                                 style: Styles.textStyleWhite14,
                               ),
                               Text(
-                                "8",
+                                "${detailsReward["stats"]["eligibleReferrals"]}",
                                 style: Styles.textStyleBlackMedium.copyWith(
                                   color: ColorAssets.green,
                                 ),
@@ -147,7 +225,7 @@ class _YourReferState extends State<YourRefer> {
                             children: [
                               Text("Pending", style: Styles.textStyleWhite14),
                               Text(
-                                "4",
+                                "${detailsReward["stats"]["pendingReferrals"]}",
                                 style: Styles.textStyleBlackMedium.copyWith(
                                   color: ColorAssets.themeColorOrange,
                                 ),
@@ -175,7 +253,9 @@ class _YourReferState extends State<YourRefer> {
                                 style: Styles.textStyleWhite14,
                               ),
                               Text(
-                                "Premium Access\n(1 month)",
+                                getRewardText(
+                                  detailsReward["milestoneId"]["rewardType"],
+                                ),
                                 style: Styles.textStyleBlackMedium,
                               ),
                             ],

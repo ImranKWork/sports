@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/image_assets.dart';
 import '../../../../source/color_assets.dart';
 import '../../../../source/styles.dart';
@@ -17,9 +18,16 @@ class ReferYourFriends extends StatefulWidget {
 }
 
 class _ReferYourFriendsState extends State<ReferYourFriends> {
-  final TextEditingController _inviteLinkController = TextEditingController(
-    text: "https://sportstrending.com/invite/ih/ukjs21...",
-  );
+  final TextEditingController _inviteLinkController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final referalCode = SharedPref.getString(PrefsKey.referralCode);
+    _inviteLinkController.text =
+        "https://sport-trending.softuvo.click/refer/$referalCode";
+  }
 
   @override
   Widget build(BuildContext context) {

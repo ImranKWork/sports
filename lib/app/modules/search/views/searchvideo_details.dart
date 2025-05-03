@@ -4,7 +4,6 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/home/controllers/home_controller.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
@@ -17,11 +16,11 @@ import '../../../../source/styles.dart';
 import '../../../../utils/screen_util.dart';
 import '../../search/views/comment_list.dart';
 
-class ShortsPlayerScreen extends StatefulWidget {
+class SearchShortsPlayerScreen extends StatefulWidget {
   final List<Map<String, dynamic>> allVideos;
   final int initialIndex;
 
-  const ShortsPlayerScreen({
+  const SearchShortsPlayerScreen({
     super.key,
     required this.allVideos,
     required this.initialIndex,
@@ -31,7 +30,7 @@ class ShortsPlayerScreen extends StatefulWidget {
   _ShortsPlayerScreenState createState() => _ShortsPlayerScreenState();
 }
 
-class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
+class _ShortsPlayerScreenState extends State<SearchShortsPlayerScreen> {
   late PageController _pageController;
   final HomeController controller = Get.put(HomeController());
 
@@ -79,9 +78,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
           });
 
           if (_controller!.value.playerState == PlayerState.ended) {
-            if (!isBottomSheetOpen) {
-              _scrollToNextVideo();
-            }
+            _scrollToNextVideo();
           }
         }
       });
@@ -105,9 +102,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
         if (_videoController!.value.position >=
                 _videoController!.value.duration &&
             !_videoController!.value.isPlaying) {
-          if (!isBottomSheetOpen) {
-            _scrollToNextVideo();
-          }
+          _scrollToNextVideo();
         }
       });
     }
@@ -196,9 +191,7 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                 child:
                     _controller != null
                         ? YoutubePlayerBuilder(
-                          key: ValueKey(
-                            _controller!.initialVideoId,
-                          ), // ✅ Forces full rebuild
+                          key: ValueKey('youtube-${videoData['_id']}'),
                           player: YoutubePlayer(
                             controller: _controller!,
                             showVideoProgressIndicator: false,
@@ -327,14 +320,9 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
                     const SizedBox(height: 20),
                     InkWell(
                       onTap: () async {
-                        String thumbnailUrl =
-                            videoData['thumbnails']?['maxres']?['url'] ?? "";
-                        String defaultthumbnailUrl =
-                            videoData['thumbnails']?['default']?['url'] ?? '';
                         Share.share(
-                          'Check out this video: https://sport-trending.softuvo.click/share/${videoData['_id']}',
+                          'Check out this video: ${videoData['videoUrl']}',
                         );
-
                         var data = await controller.shareVideos(
                           videoData['_id'],
                         );
@@ -366,8 +354,6 @@ class _ShortsPlayerScreenState extends State<ShortsPlayerScreen> {
   }
 }
 
-bool isBottomSheetOpen = false;
-
 void _showCommentSection(
   BuildContext context,
   HomeController controller,
@@ -378,9 +364,6 @@ void _showCommentSection(
   final profileImage = SharedPref.getString(PrefsKey.profilePhoto, "");
 
   controller.fetchComments(id);
-  if (isBottomSheetOpen) return;
-
-  isBottomSheetOpen = true;
 
   showModalBottomSheet(
     context: context,
@@ -472,21 +455,20 @@ void _showCommentSection(
                         final item = controller.commentsList[index];
                         String commentId = item["comment_id"] ?? "";
                         String existingCommentText = item["commentText"] ?? "";
-                        String profile_picture = item["profile_picture"] ?? "";
                         String commentUserId = item["user_id"] ?? "";
 
                         return ListTile(
                           leading:
-                              profile_picture.isNotEmpty
+                              profileImage.isNotEmpty
                                   ? ClipOval(
                                     child: Image.network(
-                                      profile_picture,
+                                      profileImage,
                                       height: 40,
                                       width: 40,
                                     ),
                                   )
                                   : CircleAvatar(
-                                    radius: Constant.size20,
+                                    radius: Constant.size40,
                                     backgroundColor: ColorAssets.lightGrey,
                                     child: Icon(
                                       Icons.person,
@@ -574,9 +556,8 @@ void _showCommentSection(
                             ),
                           )
                           : CircleAvatar(
-                            radius: Constant.size20,
+                            radius: Constant.size40,
                             backgroundColor: ColorAssets.lightGrey,
-
                             child: Icon(
                               Icons.person,
                               color: ColorAssets.themeColorOrange,
@@ -613,29 +594,18 @@ void _showCommentSection(
                             ),
                             suffixIcon: InkWell(
                               onTap: () async {
-                                if (!controller.addisLoading.value) {
-                                  await controller.commentVideos(
-                                    id,
-                                    commentController.text.trim(),
-                                  );
-                                  commentController.clear();
-                                  scrollController.animateTo(
-                                    0,
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeOut,
-                                  );
-                                }
+                                await controller.commentVideos(
+                                  id,
+                                  commentController.text.trim(),
+                                );
+                                commentController.clear();
+                                scrollController.animateTo(
+                                  0,
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOut,
+                                );
                               },
-                              child: Obx(() {
-                                if (controller.addisLoading.value) {
-                                  return Image.asset(
-                                    ImageAssets.send,
-                                    scale: 3,
-                                    color: Color(0XFFD9D9D9),
-                                  );
-                                }
-                                return Image.asset(ImageAssets.send, scale: 3);
-                              }),
+                              child: Image.asset(ImageAssets.send, scale: 3),
                             ),
                           ),
                         ),
@@ -649,12 +619,7 @@ void _showCommentSection(
         ),
       );
     },
-  ).whenComplete(() {
-    // This runs when bottom sheet is closed
-    isBottomSheetOpen = false;
-    print("Bottom sheet closed");
-  });
-  ;
+  );
 }
 
 void _showEditCommentDialog(

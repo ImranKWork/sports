@@ -1,7 +1,15 @@
+import 'dart:convert';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
 import 'package:sports_trending/app/modules/profile/views/your_refer.dart';
+import 'package:sports_trending/core/shared_preference.dart';
+import 'package:sports_trending/utils/api_utils.dart';
+import 'package:sports_trending/utils/app_utils.dart';
 import 'package:sports_trending/widgets/common_button.dart';
 
 import '../../../../source/color_assets.dart';
@@ -15,11 +23,61 @@ class ReferScreen extends StatefulWidget {
 }
 
 class _ReferScreenState extends State<ReferScreen> {
-  final TextEditingController _inviteLinkController = TextEditingController(
-    text: "https://sportstrending.com/invite/ih/ukjs21...",
-  );
-  double progressValue = 0.4;
-  double progressValue2 = 0.9;
+  final TextEditingController _inviteLinkController = TextEditingController();
+  double progressValue = 1.33;
+  bool isLoading = true;
+  List rewardliist = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final referalCode = SharedPref.getString(PrefsKey.referralCode);
+    _inviteLinkController.text =
+        "https://sport-trending.softuvo.click/refer/$referalCode";
+    rewardsapi();
+  }
+
+  Future<void> rewardsapi() async {
+
+    final url = Uri.parse(
+      'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/referral/list-all-milestones',
+    );
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    final accessToken = SharedPref.getString(PrefsKey.accessToken);
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        final newVideos = List<Map<String, dynamic>>.from(jsonData['result']);
+        rewardliist = newVideos;
+      } else {
+        Get.snackbar('Error', 'Failed to load videos: ${response.statusCode}');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+      setState(() {
+        isLoading = false;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,91 +136,102 @@ class _ReferScreenState extends State<ReferScreen> {
       ),
 
       body: SingleChildScrollView(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 1.2,
-          child: Stack(
-            children: [
-              Container(
-                height: 350,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFFFC99A), Color(0xFFE67E22)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          // top: 40,
-                          left: 10,
-                          right: 10,
-                        ),
-                        child: Column(
-                          children: [
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.asset(
-                                  "assets/images/blue_shade.png",
-                                  width: 180,
-                                  height: 180,
-                                  fit: BoxFit.contain,
-                                ),
-
-                                Image.asset(
-                                  "assets/images/gift.png",
-                                  scale: 2.5,
-                                ),
-                              ],
-                            ),
-
-                            Text(
-                              "Refer your Friends &\nEarn 100 ST Points",
-                              style: Styles.buttonTextStyle18,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Invite friends & earn rewards!",
-                              style: Styles.textStyleWhite14.copyWith(
-                                color: ColorAssets.black,
-                              ),
-                            ),
-                          ],
-                        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 500,
+              child: Stack(
+                children: [
+                  Container(
+                    height: 350,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFFC99A), Color(0xFFE67E22)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
                       ),
                     ),
-                  ],
-                ),
-              ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              // top: 40,
+                              left: 10,
+                              right: 10,
+                            ),
+                            child: Column(
+                              children: [
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/blue_shade.png",
+                                      width: 180,
+                                      height: 180,
+                                      fit: BoxFit.contain,
+                                    ),
 
-              Positioned(
-                top: 270,
-                left: 8,
-                right: 8,
-                child: _buildReferralContainer(),
-              ),
-              Positioned(
-                top: 495,
-                left: 16,
-                right: 8,
-                child: Text("Your Rewards", style: Styles.buttonTextStyle18),
-              ),
+                                    Image.asset(
+                                      "assets/images/gift.png",
+                                      scale: 2.5,
+                                    ),
+                                  ],
+                                ),
 
-              Positioned(
-                top: 525,
-                left: 8,
-                right: 8,
-                child: Container(
+                                Text(
+                                  "Refer your Friends &\nEarn 100 ST Points",
+                                  style: Styles.buttonTextStyle18,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "Invite friends & earn rewards!",
+                                  style: Styles.textStyleWhite14.copyWith(
+                                    color: ColorAssets.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Positioned(
+                    top: 270,
+                    left: 8,
+                    right: 8,
+                    child: _buildReferralContainer(),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: Row(
+                children: [
+                  Text("Your Rewards", style: Styles.buttonTextStyle18),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            ListView.builder(
+              itemCount: rewardliist.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              itemBuilder: (context, index) {
+                var item = rewardliist[index];
+
+                return Container(
                   margin: EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -181,7 +250,11 @@ class _ReferScreenState extends State<ReferScreen> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset("assets/images/refer2.png", scale: 3),
+                          Image.asset(
+                            "assets/images/refer2.png",
+                            scale: 3,
+                            height: 40,
+                          ),
                           SizedBox(width: 8),
                           Expanded(
                             child: Column(
@@ -192,11 +265,11 @@ class _ReferScreenState extends State<ReferScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "Refer 1 friend",
+                                      item["title"]["en"],
                                       style: Styles.textStyleBlackMedium,
                                     ),
                                     Text(
-                                      "InProgress",
+                                      getstatusText(item["status"]),
                                       style: Styles.textBlueHeader.copyWith(
                                         color: ColorAssets.themeColorOrange,
                                       ),
@@ -204,7 +277,7 @@ class _ReferScreenState extends State<ReferScreen> {
                                   ],
                                 ),
                                 Text(
-                                  "Refer a friend and enjoy 1 month of Premium Access for free!",
+                                  item['description'] ?? "",
                                   style: Styles.textStyleWhite14.copyWith(
                                     fontSize: 12,
                                   ),
@@ -217,7 +290,7 @@ class _ReferScreenState extends State<ReferScreen> {
 
                       SizedBox(height: 15),
                       LinearProgressIndicator(
-                        value: progressValue,
+                        value: item["achived"] / item["target"],
                         backgroundColor: Color(0xffF0F0F0),
                         valueColor: AlwaysStoppedAnimation<Color>(
                           ColorAssets.themeColorBlue,
@@ -230,14 +303,14 @@ class _ReferScreenState extends State<ReferScreen> {
                       Row(
                         children: [
                           Text(
-                            "1/3 Referred",
+                            "${item["achived"]}/${item["target"]} Referred",
                             style: Styles.textStyleWhite14.copyWith(
                               fontSize: 12,
                             ),
                           ),
                           Spacer(),
                           Text(
-                            "1 Month Premium Membership",
+                            getRewardText(item["rewardtype"]),
                             style: Styles.textStyleBlackRegular,
                           ),
                         ],
@@ -252,109 +325,35 @@ class _ReferScreenState extends State<ReferScreen> {
                       SizedBox(height: 5),
                     ],
                   ),
-                ),
-              ),
-              Positioned(
-                top: 720,
-                left: 8,
-                right: 8,
-                child: Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset("assets/images/refer2.png", scale: 3),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Refer 1 friend",
-                                      style: Styles.textStyleBlackMedium,
-                                    ),
-                                    Text(
-                                      "InProgress",
-                                      style: Styles.textBlueHeader.copyWith(
-                                        color: ColorAssets.themeColorOrange,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  "Refer a friend and enjoy 1 month of Premium Access for free!",
-                                  style: Styles.textStyleWhite14.copyWith(
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: 15),
-                      LinearProgressIndicator(
-                        value: progressValue2,
-                        backgroundColor: Color(0xffF0F0F0),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorAssets.themeColorBlue,
-                        ),
-                        minHeight: 8,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      SizedBox(height: 10),
-
-                      Row(
-                        children: [
-                          Text(
-                            "1/3 Referred",
-                            style: Styles.textStyleWhite14.copyWith(
-                              fontSize: 12,
-                            ),
-                          ),
-                          Spacer(),
-                          Text(
-                            "1 Month Premium Membership",
-                            style: Styles.textStyleBlackRegular,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 15),
-                      CommonButton(
-                        label: "Track Referral",
-                        onClick: () {
-                          Get.to(() => YourRefer());
-                        },
-                      ),
-                      SizedBox(height: 5),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  String getRewardText(rewardType) {
+    bool hasStcoins = rewardType.contains('stcoins');
+    bool hasPremium = rewardType.contains('premium_access');
+
+    if (hasStcoins && hasPremium) {
+      return 'Stcoins with Premium Membership';
+    } else if (hasStcoins) {
+      return 'Stcoins';
+    } else if (hasPremium) {
+      return 'Premium Membership';
+    } else {
+      return 'No Rewards';
+    }
+  }
+
+  String getstatusText(text) {
+    if (text == "upcoming") {
+      return 'Upcoming';
+    }
+    return 'Inprogress';
   }
 
   Widget _buildReferralContainer() {
@@ -441,7 +440,14 @@ class _ReferScreenState extends State<ReferScreen> {
           ),
 
           const SizedBox(height: 16),
-          CommonButton(label: 'Share invite code', onClick: () {}),
+          CommonButton(
+            label: 'Share invite code',
+            onClick: () {
+              Share.share(
+                'Sign up using my referral link and get reward/benefit : ${_inviteLinkController.text}',
+              );
+            },
+          ),
         ],
       ),
     );

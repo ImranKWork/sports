@@ -414,7 +414,7 @@ class LoginController extends GetxController {
     return null;
   }
 
-  Future<void> logout() async {
+  Future<void> logout(context) async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
     await FacebookAuth.instance.logOut();
@@ -434,8 +434,12 @@ class LoginController extends GetxController {
       await SharedPref.remove(PrefsKey.bio);
       await SharedPref.remove(PrefsKey.memberSince);
     }
-
-    Get.offAllNamed('/login');
+Navigator.pushAndRemoveUntil(
+  context,
+  MaterialPageRoute(builder: (context) => LoginView()),
+  (Route<dynamic> route) => false,
+);
+    
   }
 
   Future<UserCredential?> signInWithYouTube() async {
@@ -590,13 +594,12 @@ class LoginController extends GetxController {
     List<String> nameParts = user.user?.displayName?.trim().split(" ") ?? [];
 
     // get Id token is equal to ID Token (JWT) for login with emails
-    String? accessToken =
-        isLoginWithEmail == true
-            ? await user.user?.getIdToken()
-            : user.credential?.accessToken;
+    String? accessToken = await user.user?.getIdToken();
+    String? refreshAccessToken = user.user?.refreshToken;
 
     // Use the null-coalescing operator to provide default values if necessary
     await SharedPref.setValue(PrefsKey.accessToken, accessToken);
+    await SharedPref.setValue(PrefsKey.refreshToken, refreshAccessToken);
     await SharedPref.setValue(PrefsKey.key_uid, user.user?.uid.toString());
 
     // Safely assign firstName and lastName, defaulting to an empty string if necessary
@@ -620,7 +623,10 @@ class LoginController extends GetxController {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final signUpData = SignUpResponseModel.fromJson(responseData);
-
+        await SharedPref.setValue(
+          PrefsKey.referralCode,
+          responseData["data"]["referralCode"],
+        );
         // Save the user info using a helper method
         saveUserInfo(signUpData);
 

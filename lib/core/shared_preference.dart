@@ -6,8 +6,13 @@ abstract class PrefsKey {
   static const isLoggedIn = "key_IsLoggedIn";
   static const isCaraSoulIn = "key_IsCaraSoulIn";
   static const accessToken = "key_AccessToken";
+  static const refercode = "key_refercode";
+  static const deeplink = "key_deeplink";
+  static const isVideoOpen = "key_isVideoOpen";
+  static const isSignuupOpen = "isSignuupOpen";
   static const key_uid = "key_uid";
   static const refreshToken = "key_RefreshToken";
+  static const referralCode = "key_referralCode";
   static const tokenType = "key_tokenType";
   static const userData = "key_userData";
   static const userId = "key_userId";
