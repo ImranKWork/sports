@@ -239,7 +239,7 @@ class ApiProvider {
       headers: {
         ApiUtils.DEVICE_ID: deviceId,
         ApiUtils.DEVICE_TOKEN: token,
-        ApiUtils.AUTHORIZATION: accessToken,
+        ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
         ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
       },
     );

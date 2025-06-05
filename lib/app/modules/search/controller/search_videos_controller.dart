@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:sports_trending/core/shared_preference.dart';
+import 'package:sports_trending/utils/api_utils.dart';
+import 'package:sports_trending/utils/app_utils.dart';
 
 class SearchVideoController extends GetxController {
   var isLoading = false.obs;
@@ -33,13 +37,23 @@ class SearchVideoController extends GetxController {
       videos.clear();
       videoResults.clear();
     }
-
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    String accessToken = SharedPref.getString(PrefsKey.accessToken) ?? "";
     final url = Uri.parse(
       'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/search/get-trending-video?pageNumber=${currentPage.value}&limit=10',
     );
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -73,9 +87,19 @@ class SearchVideoController extends GetxController {
     final url = Uri.parse(
       'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/search/trending-recent',
     );
-
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    String accessToken = SharedPref.getString(PrefsKey.accessToken) ?? "";
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -111,9 +135,19 @@ class SearchVideoController extends GetxController {
       '&sort=$sort'
       '&keyword=$encodedKeyword',
     );
-
+    String? token = await FirebaseMessaging.instance.getToken() ?? " ";
+    String? deviceId = await AppUtils.getDeviceDetails() ?? "";
+    String accessToken = SharedPref.getString(PrefsKey.accessToken) ?? "";
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
+      );
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);

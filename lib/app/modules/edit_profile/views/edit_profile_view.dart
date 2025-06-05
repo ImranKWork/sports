@@ -184,7 +184,7 @@ class EditProfileView extends GetView<EditProfileController> {
                 Theme(
                   data: ThemeData(
                     dividerColor: ColorAssets.themeColorOrange,
-                    dialogTheme: DialogTheme(backgroundColor: Colors.white),
+                    dialogTheme: DialogThemeData(backgroundColor: Colors.white),
                   ),
                   child: IntlPhoneField(
                     controller: controller.mobileController,
@@ -263,7 +263,7 @@ class EditProfileView extends GetView<EditProfileController> {
                                   controller.mobileController.text,
                                   controller.countryN.value,
                                   0,
-                                  controller.countryCode.value
+                                  controller.countryCode.value,
                                 ),
                               );
                             } else {
@@ -290,7 +290,7 @@ class EditProfileView extends GetView<EditProfileController> {
                                   controller.mobileController.text,
                                   controller.countryN.value,
                                   1,
-                                  controller.countryCode.value
+                                  controller.countryCode.value,
                                 ),
                               );
                             } else {

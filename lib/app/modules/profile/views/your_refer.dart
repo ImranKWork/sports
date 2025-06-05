@@ -4,6 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/source/color_assets.dart';
 import 'package:sports_trending/utils/api_utils.dart';
@@ -15,7 +17,8 @@ import '../../../../widgets/common_button.dart';
 import '../../../../widgets/common_header.dart';
 
 class YourRefer extends StatefulWidget {
-  const YourRefer({super.key});
+  String id = "";
+  YourRefer(this.id, {super.key});
 
   @override
   State<YourRefer> createState() => _YourReferState();
@@ -27,7 +30,7 @@ class _YourReferState extends State<YourRefer> {
 
   Future<void> detailsrewardsapi() async {
     final url = Uri.parse(
-      'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/referral/track-milestone/681326e94120250908dd40e4',
+      'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/referral/track-milestone/${widget.id}',
     );
     String? token = await FirebaseMessaging.instance.getToken() ?? " ";
     String? deviceId = await AppUtils.getDeviceDetails() ?? "";
@@ -50,6 +53,7 @@ class _YourReferState extends State<YourRefer> {
           jsonData['referralDetails'],
         );
         detailsReward = newVideos[0];
+        setState(() {});
       } else {
         Get.snackbar('Error', 'Failed to load videos: ${response.statusCode}');
         setState(() {
@@ -133,287 +137,327 @@ class _YourReferState extends State<YourRefer> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Referral Stats", style: Styles.textBlackHeader),
-                  SizedBox(height: 15),
-
-                  Row(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-
-                        children: [
-                          Image.asset(
-                            "assets/images/total_ref.png",
-                            scale: 2.5,
-                          ),
-                          SizedBox(width: 8),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-
-                            children: [
-                              Text(
-                                "Total Referrals",
-                                style: Styles.textStyleWhite14,
-                              ),
-                              Text(
-                                "${detailsReward["stats"]["totalReferrals"]}",
-                                style: Styles.textStyleBlackMedium,
-                              ),
-                            ],
-                          ),
-                        ],
+            isLoading
+                ? Container(
+                  margin: EdgeInsets.all(8),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 2),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 25,
                       ),
-                      SizedBox(width: 70),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-
-                        children: [
-                          Image.asset("assets/images/success.png", scale: 2.5),
-                          SizedBox(width: 8),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-
-                            children: [
-                              Text(
-                                "Successful",
-                                style: Styles.textStyleWhite14,
-                              ),
-                              Text(
-                                "${detailsReward["stats"]["eligibleReferrals"]}",
-                                style: Styles.textStyleBlackMedium.copyWith(
-                                  color: ColorAssets.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-
-                        children: [
-                          Image.asset("assets/images/pending.png", scale: 2.5),
-                          SizedBox(width: 8),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-
-                            children: [
-                              Text("Pending", style: Styles.textStyleWhite14),
-                              Text(
-                                "${detailsReward["stats"]["pendingReferrals"]}",
-                                style: Styles.textStyleBlackMedium.copyWith(
-                                  color: ColorAssets.themeColorOrange,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(width: 30),
-                        ],
+                      child: Center(
+                        child: Container(
+                          width: 60, // Placeholder width for text
+                          height: 100, // Placeholder height for text
+                          color: Colors.grey[300],
+                        ),
                       ),
-                      Spacer(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(width: 40),
-
-                          Image.asset("assets/images/reward.png", scale: 2.5),
-                          SizedBox(width: 8),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-
-                            children: [
-                              Text(
-                                "Next Reward",
-                                style: Styles.textStyleWhite14,
-                              ),
-                              Text(
-                                getRewardText(
-                                  detailsReward["milestoneId"]["rewardType"],
-                                ),
-                                style: Styles.textStyleBlackMedium,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 10),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Text("Referred Friends", style: Styles.textBlackHeader),
-            SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.asset("assets/images/user_image.png", scale: 2),
-                      SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "John Doe",
-                            style: Styles.textStyleWhiteRegular.copyWith(
-                              color: ColorAssets.black,
-                            ),
-                          ),
-                          Text(
-                            "Signed Up & Liked 5 Videos",
-                            style: Styles.textStyleWhite14.copyWith(
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Color(0xffE8FFEC),
-                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                )
+                : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  child: Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset("assets/images/gift2.png", scale: 3),
-                        SizedBox(width: 8),
-                        Text(
-                          "500 ST Points",
-                          style: Styles.textStyleWhite14.copyWith(
-                            fontSize: 12,
-                            color: ColorAssets.green,
-                          ),
+                        Text("Referral Stats", style: Styles.textBlackHeader),
+                        SizedBox(height: 15),
+
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // First section - Total Referrals and Successful
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/total_ref.png",
+                                        scale: 2.5,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Total Referrals",
+                                              style: Styles.textStyleWhite14,
+                                            ),
+                                            Text(
+                                              "${detailsReward["stats"]["totalReferrals"]}",
+                                              style:
+                                                  Styles.textStyleBlackMedium,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/success.png",
+                                        scale: 2.5,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Successful",
+                                              style: Styles.textStyleWhite14,
+                                            ),
+                                            Text(
+                                              "${detailsReward["stats"]["eligibleReferrals"]}",
+                                              style: Styles.textStyleBlackMedium
+                                                  .copyWith(
+                                                    color: ColorAssets.green,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            SizedBox(width: 20),
+
+                            // Second section - Pending and Next Reward
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/pending.png",
+                                        scale: 2.5,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Pending",
+                                              style: Styles.textStyleWhite14,
+                                            ),
+                                            Text(
+                                              "${detailsReward["stats"]["pendingReferrals"]}",
+                                              style: Styles.textStyleBlackMedium
+                                                  .copyWith(
+                                                    color:
+                                                        ColorAssets
+                                                            .themeColorOrange,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/reward.png",
+                                        scale: 2.5,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Next Reward",
+                                              style: Styles.textStyleWhite14,
+                                            ),
+                                            Text(
+                                              getRewardText(
+                                                detailsReward["milestoneId"]["rewardType"],
+                                              ),
+                                              style:
+                                                  Styles.textStyleBlackMedium,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: true,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+            isLoading ? Container() : SizedBox(height: 20),
+            isLoading
+                ? Container()
+                : detailsReward["referredUsersMetCondition"].length != 0
+                ? Text("Referred Friends", style: Styles.textBlackHeader)
+                : Container(),
             SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+            isLoading
+                ? Container(
+                  margin: EdgeInsets.all(8),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 2),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 25,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 60, // Placeholder width for text
+                          height: 100, // Placeholder height for text
+                          color: Colors.grey[300],
+                        ),
+                      ),
+                    ),
                   ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                )
+                : ListView.builder(
+                  itemCount: detailsReward["referredUsersMetCondition"].length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  itemBuilder: (context, index) {
+                    var item =
+                        detailsReward["referredUsersMetCondition"][index];
 
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.asset("assets/images/user_image.png", scale: 2),
-                      SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Jane Smith",
-                            style: Styles.textStyleWhiteRegular.copyWith(
-                              color: ColorAssets.black,
-                            ),
-                          ),
-                          Text(
-                            "Signed Up",
-                            style: Styles.textStyleWhite14.copyWith(
-                              fontSize: 12,
-                            ),
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                        color:
+                            item["isEligible"]
+                                ? Color(0xffE8FFEC)
+                                : Color(0xffFDF8EE),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
 
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Color(0xffFDF8EE),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset("assets/images/pending.png", scale: 3),
-                        SizedBox(width: 8),
-                        Text(
-                          "Pending: Share 2 videos to earn Premium Access",
-                          style: Styles.textStyleWhite14.copyWith(
-                            fontSize: 12,
-                            color: ColorAssets.themeColorOrange,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              item["userId"]["profileImage"] != ""
+                                  ? CircleAvatar(
+                                    radius: Constant.size20,
+                                    backgroundColor: ColorAssets.lightGrey,
+                                    child: Image.network(
+                                      item["userId"]["profileImage"],
+                                      scale: 1,
+                                    ),
+                                  )
+                                  : CircleAvatar(
+                                    radius: Constant.size20,
+                                    backgroundColor: ColorAssets.lightGrey,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: ColorAssets.themeColorOrange,
+                                    ),
+                                  ),
+                              SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item["userId"]["firstname"],
+                                    style: Styles.textStyleWhiteRegular
+                                        .copyWith(color: ColorAssets.black),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
             SizedBox(height: 30),
-            CommonButton(
-              label: "Invite More friends",
-              onClick: () {
-                Get.off(() => YourRefer());
-              },
-            ),
+            isLoading
+                ? Container()
+                : CommonButton(
+                  label: "Invite More friends",
+                  onClick: () {
+                    final link = SharedPref.getString(PrefsKey.referralCode);
+
+                    Share.share(
+                      'Sign up using my referral link and get reward/benefit : https://sport-trending.softuvo.click/refer/$link',
+                    );
+                  },
+                ),
             SizedBox(height: 10),
           ],
         ),

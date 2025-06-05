@@ -143,7 +143,9 @@ class _PhoneNumberUpdateScreenState extends State<PhoneNumberUpdateScreen> {
             Theme(
               data: ThemeData(
                 dividerColor: ColorAssets.themeColorOrange,
-                dialogTheme: DialogTheme(backgroundColor: Colors.white),
+                dialogTheme: DialogThemeData(
+    backgroundColor: Colors.white,
+  ),
               ),
               child: IntlPhoneField(
                 controller: _phoneController,

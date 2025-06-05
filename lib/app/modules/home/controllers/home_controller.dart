@@ -683,14 +683,16 @@ class HomeController extends GetxController {
     try {
       isLoading.value = true;
 
-      var url = Uri.parse('${ApiUtils.BASE_URL}/admin/list-categories');
+      var url = Uri.parse(
+        '${ApiUtils.BASE_URL}/admin/list-categories?pageNumber=1&limit=100',
+      );
 
       var response = await http.get(
         url,
         headers: {
           ApiUtils.DEVICE_ID: deviceId,
           ApiUtils.DEVICE_TOKEN: token,
-          ApiUtils.AUTHORIZATION: "Bearer" + "2222",
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
           ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
         },
       );

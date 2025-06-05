@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/profile/views/your_refer.dart';
 import 'package:sports_trending/core/shared_preference.dart';
 import 'package:sports_trending/utils/api_utils.dart';
@@ -38,7 +39,6 @@ class _ReferScreenState extends State<ReferScreen> {
   }
 
   Future<void> rewardsapi() async {
-
     final url = Uri.parse(
       'https://urgd9n1ccg.execute-api.us-east-1.amazonaws.com/v1/referral/list-all-milestones',
     );
@@ -223,111 +223,145 @@ class _ReferScreenState extends State<ReferScreen> {
               ),
             ),
             SizedBox(height: 10),
-            ListView.builder(
-              itemCount: rewardliist.length,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              itemBuilder: (context, index) {
-                var item = rewardliist[index];
-
-                return Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            "assets/images/refer2.png",
-                            scale: 3,
-                            height: 40,
+            isLoading
+                ? ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.all(8),
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 2),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 25,
                           ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 60, // Placeholder width for text
+                              height: 100, // Placeholder height for text
+                              color: Colors.grey[300],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                )
+                : ListView.builder(
+                  itemCount: rewardliist.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  itemBuilder: (context, index) {
+                    var item = rewardliist[index];
+
+                    return Container(
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                "assets/images/refer2.png",
+                                scale: 3,
+                                height: 40,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      item["title"]["en"],
-                                      style: Styles.textStyleBlackMedium,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          item["title"],
+                                          style: Styles.textStyleBlackMedium,
+                                        ),
+                                        Text(
+                                          getstatusText(item["status"]),
+                                          style: Styles.textBlueHeader.copyWith(
+                                            color: ColorAssets.themeColorOrange,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     Text(
-                                      getstatusText(item["status"]),
-                                      style: Styles.textBlueHeader.copyWith(
-                                        color: ColorAssets.themeColorOrange,
+                                      item['description'] ?? "",
+                                      style: Styles.textStyleWhite14.copyWith(
+                                        fontSize: 12,
                                       ),
                                     ),
                                   ],
                                 ),
-                                Text(
-                                  item['description'] ?? "",
-                                  style: Styles.textStyleWhite14.copyWith(
-                                    fontSize: 12,
-                                  ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: 15),
+                          LinearProgressIndicator(
+                            value: item["achived"] / item["target"],
+                            backgroundColor: Color(0xffF0F0F0),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              ColorAssets.themeColorBlue,
+                            ),
+                            minHeight: 8,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          SizedBox(height: 10),
+
+                          Row(
+                            children: [
+                              Text(
+                                "${item["achived"]}/${item["target"]} Referred",
+                                style: Styles.textStyleWhite14.copyWith(
+                                  fontSize: 12,
                                 ),
-                              ],
-                            ),
+                              ),
+                              Spacer(),
+                              Text(
+                                getRewardText(item["rewardtype"]),
+                                style: Styles.textStyleBlackRegular,
+                              ),
+                            ],
                           ),
+                          SizedBox(height: 15),
+                          CommonButton(
+                            label: "Track Referral",
+                            onClick: () {
+                              Get.to(() => YourRefer(item["milestoneId"]));
+                            },
+                          ),
+                          SizedBox(height: 5),
                         ],
                       ),
-
-                      SizedBox(height: 15),
-                      LinearProgressIndicator(
-                        value: item["achived"] / item["target"],
-                        backgroundColor: Color(0xffF0F0F0),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorAssets.themeColorBlue,
-                        ),
-                        minHeight: 8,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      SizedBox(height: 10),
-
-                      Row(
-                        children: [
-                          Text(
-                            "${item["achived"]}/${item["target"]} Referred",
-                            style: Styles.textStyleWhite14.copyWith(
-                              fontSize: 12,
-                            ),
-                          ),
-                          Spacer(),
-                          Text(
-                            getRewardText(item["rewardtype"]),
-                            style: Styles.textStyleBlackRegular,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 15),
-                      CommonButton(
-                        label: "Track Referral",
-                        onClick: () {
-                          Get.to(() => YourRefer());
-                        },
-                      ),
-                      SizedBox(height: 5),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
           ],
         ),
       ),
@@ -352,11 +386,19 @@ class _ReferScreenState extends State<ReferScreen> {
   String getstatusText(text) {
     if (text == "upcoming") {
       return 'Upcoming';
+    } else if (text == "completed") {
+      return 'Completed';
+    } else if (text == "in_progress") {
+      return 'Inprogress';
+    } else if (text == "expired") {
+      return 'Expired';
     }
+
     return 'Inprogress';
   }
 
   Widget _buildReferralContainer() {
+    final link = SharedPref.getString(PrefsKey.referralCode);
     return Container(
       margin: EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -393,7 +435,7 @@ class _ReferScreenState extends State<ReferScreen> {
               readOnly: true,
               controller: _inviteLinkController,
               decoration: InputDecoration(
-                hintText: "https://sportstrending.com/invite/ih/ukjs21...",
+                hintText: "https://sport-trending.softuvo.click/refer/$link",
                 hintStyle: Styles.textStyleWhite14.copyWith(
                   fontSize: 12,
                   color: Colors.grey, // lighter hint text
@@ -589,12 +631,7 @@ class _ReferScreenState extends State<ReferScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                CommonButton(
-                  label: "Got It!",
-                  onClick: () {
-                    Get.off(() => YourRefer());
-                  },
-                ),
+                CommonButton(label: "Got It!", onClick: () {}),
               ],
             ),
           ),

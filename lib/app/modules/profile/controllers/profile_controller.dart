@@ -69,15 +69,15 @@ class ProfileController extends GetxController {
       isLoading(false);
     } catch (e) {
       isLoading(false);
-      Get.snackbar(
-        languageController.getLabel("error"),
-        languageController.getLabel(
-          "an_unexpected_error_occurred._please_try_again_later.",
-        ),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   languageController.getLabel("error"),
+      //   languageController.getLabel(
+      //     "an_unexpected_error_occurred._please_try_again_later.",
+      //   ),
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   backgroundColor: Colors.red,
+      //   colorText: Colors.white,
+      // );
     }
   }
 

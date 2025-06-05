@@ -60,12 +60,12 @@ class _ShortsPlayerScreenState extends State<VideoShortsPlayerScreen> {
     try {
       final response = await http.get(
         url,
-        // headers: {
-        //   ApiUtils.DEVICE_ID: deviceId,
-        //   ApiUtils.DEVICE_TOKEN: token,
-        //   ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
-        //   ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
-        // },
+        headers: {
+          ApiUtils.DEVICE_ID: deviceId,
+          ApiUtils.DEVICE_TOKEN: token,
+          ApiUtils.AUTHORIZATION: "Bearer " + accessToken,
+          ApiUtils.CONTENT_TYPE: ApiUtils.HEADER_TYPE,
+        },
       );
 
       if (response.statusCode == 200) {
