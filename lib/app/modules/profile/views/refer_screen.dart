@@ -526,114 +526,108 @@ class _ReferScreenState extends State<ReferScreen> {
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Spacer(),
+                  Text("How it Works?", style: Styles.buttonTextStyle18),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Image.asset(
+                      "assets/images/cancel.png",
+                      scale: 2.2,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: List.generate(steps.length, (index) {
+                  final step = steps[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Image.asset(step['icon']!, scale: 3),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                step['title']!,
+                                style: Styles.textStyleBlackMedium,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                step['subtitle']!,
+                                style: Styles.textStyleWhite14.copyWith(
+                                  fontSize: 12,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 8),
+          
+              Container(
+                margin: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(16),
+          
+                child: Row(
                   children: [
-                    const Spacer(),
-                    Text("How it Works?", style: Styles.buttonTextStyle18),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Image.asset(
-                        "assets/images/cancel.png",
-                        scale: 2.2,
+                    Image.asset("assets/images/idea 1.png", scale: 2.2),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Tip:",
+                            style: Styles.textMetalHeader.copyWith(
+                              color: ColorAssets.black,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Invite more friends to reach exclusive milestones and unlock higher rewards! 🎁",
+                            style: Styles.textStyleWhite14.copyWith(
+                              fontSize: 12,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: steps.length,
-                  itemBuilder: (context, index) {
-                    final step = steps[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12, top: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset(step['icon']!, scale: 3),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  step['title']!,
-                                  style: Styles.textStyleBlackMedium,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  step['subtitle']!,
-                                  style: Styles.textStyleWhite14.copyWith(
-                                    fontSize: 12,
-                                  ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(16),
-
-                  child: Row(
-                    children: [
-                      Image.asset("assets/images/idea 1.png", scale: 2.2),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Tip:",
-                              style: Styles.textMetalHeader.copyWith(
-                                color: ColorAssets.black,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "Invite more friends to reach exclusive milestones and unlock higher rewards! 🎁",
-                              style: Styles.textStyleWhite14.copyWith(
-                                fontSize: 12,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                CommonButton(label: "Got It!", onClick: () {}),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+          
+              CommonButton(label: "Got It!", onClick: () {}),
+            ],
           ),
         );
       },

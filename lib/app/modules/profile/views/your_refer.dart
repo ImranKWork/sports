@@ -179,164 +179,156 @@ class _YourReferState extends State<YourRefer> {
                     horizontal: 20,
                     vertical: 16,
                   ),
-                  child: Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Referral Stats", style: Styles.textBlackHeader),
-                        SizedBox(height: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Referral Stats", style: Styles.textBlackHeader),
+                      SizedBox(height: 15),
 
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // First section - Total Referrals and Successful
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        "assets/images/total_ref.png",
-                                        scale: 2.5,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // First section - Total Referrals and Successful
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/total_ref.png",
+                                      scale: 2.5,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Total Referrals",
+                                            style: Styles.textStyleWhite14,
+                                          ),
+                                          Text(
+                                            "${detailsReward["stats"]["totalReferrals"]}",
+                                            style: Styles.textStyleBlackMedium,
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Total Referrals",
-                                              style: Styles.textStyleWhite14,
-                                            ),
-                                            Text(
-                                              "${detailsReward["stats"]["totalReferrals"]}",
-                                              style:
-                                                  Styles.textStyleBlackMedium,
-                                            ),
-                                          ],
-                                        ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 15),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/success.png",
+                                      scale: 2.5,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Successful",
+                                            style: Styles.textStyleWhite14,
+                                          ),
+                                          Text(
+                                            "${detailsReward["stats"]["eligibleReferrals"]}",
+                                            style: Styles.textStyleBlackMedium
+                                                .copyWith(
+                                                  color: ColorAssets.green,
+                                                ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 15),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        "assets/images/success.png",
-                                        scale: 2.5,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Successful",
-                                              style: Styles.textStyleWhite14,
-                                            ),
-                                            Text(
-                                              "${detailsReward["stats"]["eligibleReferrals"]}",
-                                              style: Styles.textStyleBlackMedium
-                                                  .copyWith(
-                                                    color: ColorAssets.green,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
+                          ),
 
-                            SizedBox(width: 20),
+                          SizedBox(width: 20),
 
-                            // Second section - Pending and Next Reward
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        "assets/images/pending.png",
-                                        scale: 2.5,
+                          // Second section - Pending and Next Reward
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/pending.png",
+                                      scale: 2.5,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Pending",
+                                            style: Styles.textStyleWhite14,
+                                          ),
+                                          Text(
+                                            "${detailsReward["stats"]["pendingReferrals"]}",
+                                            style: Styles.textStyleBlackMedium
+                                                .copyWith(
+                                                  color:
+                                                      ColorAssets
+                                                          .themeColorOrange,
+                                                ),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Pending",
-                                              style: Styles.textStyleWhite14,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 15),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/reward.png",
+                                      scale: 2.5,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Next Reward",
+                                            style: Styles.textStyleWhite14,
+                                          ),
+                                          Text(
+                                            getRewardText(
+                                              detailsReward["milestoneId"]["rewardType"],
                                             ),
-                                            Text(
-                                              "${detailsReward["stats"]["pendingReferrals"]}",
-                                              style: Styles.textStyleBlackMedium
-                                                  .copyWith(
-                                                    color:
-                                                        ColorAssets
-                                                            .themeColorOrange,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
+                                            style: Styles.textStyleBlackMedium,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: true,
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 15),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        "assets/images/reward.png",
-                                        scale: 2.5,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Next Reward",
-                                              style: Styles.textStyleWhite14,
-                                            ),
-                                            Text(
-                                              getRewardText(
-                                                detailsReward["milestoneId"]["rewardType"],
-                                              ),
-                                              style:
-                                                  Styles.textStyleBlackMedium,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              softWrap: true,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
             isLoading ? Container() : SizedBox(height: 20),
@@ -515,17 +507,12 @@ class _YourReferState extends State<YourRefer> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
                 Text(
                   "Referrals are tracked when:",
                   style: Styles.textBlackHeader,
                 ),
-                const SizedBox(height: 15),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: steps.length,
-                  itemBuilder: (context, index) {
+                Column(
+                  children: List.generate(steps.length, (index) {
                     final step = steps[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12, top: 8),
@@ -557,9 +544,8 @@ class _YourReferState extends State<YourRefer> {
                         ],
                       ),
                     );
-                  },
+                  }),
                 ),
-                const SizedBox(height: 8),
                 Container(
                   margin: EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -603,6 +589,7 @@ class _YourReferState extends State<YourRefer> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 30),
               ],
             ),
           ),
