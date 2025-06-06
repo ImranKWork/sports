@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sports_trending/app/modules/home/views/video_player_screen.dart';
+import 'package:sports_trending/app/modules/profile/controllers/profile_controller.dart';
 import 'package:sports_trending/app/modules/search/views/filter_page.dart';
 import 'package:sports_trending/app/modules/search/views/searchvideo_details.dart';
 
@@ -54,6 +55,7 @@ class _SearchWidgetState extends State<SearchWidget>
         showRecent = _focusNode.hasFocus && controller.text.isEmpty;
       });
     });
+    Get.put(ProfileController()).getProfileById();
   }
 
   @override

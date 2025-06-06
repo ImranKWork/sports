@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sports_trending/app/modules/profile/controllers/profile_controller.dart';
+import 'package:sports_trending/core/shared_preference.dart';
 
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
@@ -22,13 +24,24 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
     {'name': 'Daily'},
     {'name': 'Weekly'},
     {'name': 'Monthly'},
-    {'name': 'Yearly'},
+    {'name': 'Event Based'},
+    {'name': 'Completed'},
   ];
   String selectedCategory = 'All';
   double progressValue = 0.4;
   String? selectedFilter;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Get.put(ProfileController()).getProfileById();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final coins = SharedPref.getString(PrefsKey.userstcoin);
+
     return Scaffold(
       backgroundColor: ColorAssets.white,
 
@@ -60,7 +73,7 @@ class _ChallengesWidgetState extends State<ChallengesWidget> {
 
                       children: [
                         Image.asset(ImageAssets.star, scale: 3),
-                        Text("250.0", style: Styles.textStyleWhiteMedium),
+                        Text(coins, style: Styles.textStyleWhiteMedium),
                         SizedBox(width: 2),
                       ],
                     ),

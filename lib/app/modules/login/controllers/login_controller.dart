@@ -434,12 +434,11 @@ class LoginController extends GetxController {
       await SharedPref.remove(PrefsKey.bio);
       await SharedPref.remove(PrefsKey.memberSince);
     }
-Navigator.pushAndRemoveUntil(
-  context,
-  MaterialPageRoute(builder: (context) => LoginView()),
-  (Route<dynamic> route) => false,
-);
-    
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginView()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   Future<UserCredential?> signInWithYouTube() async {
@@ -626,6 +625,14 @@ Navigator.pushAndRemoveUntil(
         await SharedPref.setValue(
           PrefsKey.referralCode,
           responseData["data"]["referralCode"],
+        );
+        await SharedPref.setValue(
+          PrefsKey.userstcoin,
+          responseData["data"]["STPoints"].toString(),
+        );
+        await SharedPref.setValue(
+          PrefsKey.userchallengecount,
+          responseData["data"]["engagementMetrics"]["Challenges"].toString(),
         );
         // Save the user info using a helper method
         saveUserInfo(signUpData);

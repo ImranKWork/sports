@@ -6,8 +6,10 @@ import 'package:sports_trending/app/modules/home/views/premium_videos.dart';
 import 'package:sports_trending/app/modules/home/views/video_player_screen.dart';
 import 'package:sports_trending/app/modules/home/views/view_winner.dart';
 import 'package:sports_trending/app/modules/language/controllers/language_controller.dart';
+import 'package:sports_trending/app/modules/profile/controllers/profile_controller.dart';
 import 'package:sports_trending/app/modules/search/views/comment_list.dart';
 import 'package:sports_trending/app/modules/wallet/views/wallet_page.dart';
+import 'package:sports_trending/core/shared_preference.dart';
 
 import '../../../../source/color_assets.dart';
 import '../../../../source/image_assets.dart';
@@ -62,6 +64,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     super.initState();
     controller.fetchCategories();
     _scrollController = ScrollController()..addListener(_scrollListener);
+    Get.put(ProfileController()).getProfileById();
   }
 
   @override
@@ -82,6 +85,8 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final coins = SharedPref.getString(PrefsKey.userstcoin);
+
     return Scaffold(
       backgroundColor: ColorAssets.white,
       appBar: CommonAppBar(
@@ -108,10 +113,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                     ),
                     child: Row(
                       spacing: Constant.size5,
-
                       children: [
                         Image.asset(ImageAssets.star, scale: 3),
-                        Text("250.0", style: Styles.textStyleWhiteMedium),
+                        Text(coins, style: Styles.textStyleWhiteMedium),
                         SizedBox(width: 2),
                       ],
                     ),
@@ -642,54 +646,64 @@ class _HomeWidgetState extends State<HomeWidget> {
 
       if (controller.selectedCategory.value.isEmpty &&
           controller.categories.isNotEmpty) {
-        controller.selectedCategory.value = controller.categories[0]['name'];
-        controller.fetchVideos(controller.categories[0]['_id']);
+        controller.selectedCategory.value = "All";
+        controller.fetchVideos("");
       }
 
       return SizedBox(
         height: 45,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: controller.categories.length,
-          itemBuilder: (context, index) {
-            final category = controller.categories[index]['name'];
-            final categoryId =
-                controller.categories[index]['_id']; // Category ID
-            bool isSelected = controller.selectedCategory.value == category;
+        child: Obx(() {
+          final totalCount = controller.categories.length + 1; // +1 for "All"
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: totalCount,
+            itemBuilder: (context, index) {
+              String category;
+              String categoryId;
 
-            return GestureDetector(
-              onTap: () {
-                controller.selectedCategory.value =
-                    category; // Set the selected category
-                controller.fetchVideos(
-                  categoryId,
-                ); // Fetch videos based on the category
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 2),
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? ColorAssets
-                              .themeColorOrange // Selected color
-                          : ColorAssets.grey1, // Unselected color
-                  borderRadius: BorderRadius.circular(46),
-                ),
-                child: Center(
-                  child: Text(
-                    category,
-                    style:
+              if (index == 0) {
+                category = "All";
+                categoryId = "all";
+              } else {
+                category = controller.categories[index - 1]['name'];
+                categoryId = controller.categories[index - 1]['_id'];
+              }
+
+              bool isSelected = controller.selectedCategory.value == category;
+
+              return GestureDetector(
+                onTap: () {
+                  controller.selectedCategory.value = category;
+                  if (controller.selectedCategory.value == "All") {
+                    controller.fetchVideos("");
+                  } else {
+                    controller.fetchVideos(categoryId);
+                  }
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+                  decoration: BoxDecoration(
+                    color:
                         isSelected
-                            ? Styles
-                                .textStyleWhiteMedium // Style for selected
-                            : Styles.textStyleWhite14, // Style for unselected
+                            ? ColorAssets.themeColorOrange
+                            : ColorAssets.grey1,
+                    borderRadius: BorderRadius.circular(46),
+                  ),
+                  child: Center(
+                    child: Text(
+                      category,
+                      style:
+                          isSelected
+                              ? Styles.textStyleWhiteMedium
+                              : Styles.textStyleWhite14,
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          );
+        }),
       );
     });
   }

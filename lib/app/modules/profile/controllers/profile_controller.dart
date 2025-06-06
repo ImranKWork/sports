@@ -56,6 +56,14 @@ class ProfileController extends GetxController {
         final signUpData = SignUpResponseModel.fromJson(responseData);
         debugPrint("profile info : $signUpData");
         loginController.saveUserInfo(signUpData);
+        await SharedPref.setValue(
+          PrefsKey.userstcoin,
+          responseData["data"]["STPoints"].toString(),
+        );
+        await SharedPref.setValue(
+          PrefsKey.userchallengecount,
+          responseData["data"]["engagementMetrics"]["Challenges"].toString(),
+        );
         debugPrint("name : ${SharedPref.getString(PrefsKey.fName)}");
       } else {
         Get.snackbar(

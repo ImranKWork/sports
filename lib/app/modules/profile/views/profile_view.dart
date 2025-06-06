@@ -43,6 +43,10 @@ class ProfileView extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(ProfileController()).getProfileById();
+    final coins = SharedPref.getString(PrefsKey.userstcoin);
+    final challengecount = SharedPref.getString(PrefsKey.userchallengecount);
+
     return Scaffold(
       backgroundColor: ColorAssets.white,
       appBar: CommonAppBar(
@@ -72,7 +76,7 @@ class ProfileView extends GetView<ProfileController> {
 
                       children: [
                         Image.asset(ImageAssets.star, scale: 3),
-                        Text("250.0", style: Styles.textStyleWhiteMedium),
+                        Text(coins, style: Styles.textStyleWhiteMedium),
                         SizedBox(width: 2),
                       ],
                     ),
@@ -178,7 +182,7 @@ class ProfileView extends GetView<ProfileController> {
                           ),
 
                           NameAndMemberSinceWidget(),
-                          WalletAndChallengesCountWidget(),
+                          WalletAndChallengesCountWidget(coins, challengecount),
 
                           CommonTileList(),
                         ],
@@ -477,7 +481,9 @@ class CommonTile extends StatelessWidget {
 }
 
 class WalletAndChallengesCountWidget extends StatelessWidget {
-  WalletAndChallengesCountWidget({super.key});
+  String coin = "";
+  String challenge = "";
+  WalletAndChallengesCountWidget(this.coin, this.challenge, {super.key});
 
   final LanguageController languageController = Get.find();
 
@@ -496,7 +502,7 @@ class WalletAndChallengesCountWidget extends StatelessWidget {
           Column(
             children: [
               Text(
-                "140.00",
+                coin,
                 style: Styles.textStyleBlackMedium.copyWith(
                   fontSize: FontSize.s22,
                 ),
@@ -519,7 +525,7 @@ class WalletAndChallengesCountWidget extends StatelessWidget {
           Column(
             children: [
               Text(
-                "123",
+                challenge,
                 style: Styles.textStyleBlackMedium.copyWith(
                   fontSize: FontSize.s22,
                 ),

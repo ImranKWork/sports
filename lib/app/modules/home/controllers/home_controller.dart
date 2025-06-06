@@ -705,9 +705,8 @@ class HomeController extends GetxController {
           );
 
           if (categories.isNotEmpty) {
-            selectedCategory.value = categories[0]['name'];
-            selectedCategoryId.value = categories[0]['_id'];
-            fetchVideos(selectedCategoryId.value);
+            selectedCategory.value = "All";
+            fetchVideos("");
           }
         }
       } else if (response.statusCode == 400) {
@@ -734,7 +733,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     //fetchCategories();
-    Get.put(ProfileController()).getProfileById();
+
     super.onInit();
   }
 }

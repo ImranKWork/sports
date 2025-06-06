@@ -23,7 +23,8 @@ class UserProfileView extends GetView<UserProfileController> {
   Widget build(BuildContext context) {
     final profileImage = SharedPref.getString(PrefsKey.profilePhoto, "");
     controller.getProfile();
-
+    final coins = SharedPref.getString(PrefsKey.userstcoin);
+    final challengecount = SharedPref.getString(PrefsKey.userchallengecount);
     return Scaffold(
       backgroundColor: ColorAssets.white,
       appBar: CommonAppBar(
@@ -84,7 +85,7 @@ class UserProfileView extends GetView<UserProfileController> {
 
                 NameAndMemberSinceWidget(),
 
-                CommonTileList(),
+                CommonTileList(coins, challengecount),
               ],
             ),
           ),
@@ -104,7 +105,9 @@ class UserProfileView extends GetView<UserProfileController> {
 }
 
 class CommonTileList extends StatelessWidget {
-  CommonTileList({super.key});
+  String coin = "";
+  String challenges = "";
+  CommonTileList(this.coin, this.challenges, {super.key});
 
   final LanguageController languageController = Get.find();
   final UserProfileController controller = Get.put(UserProfileController());
@@ -125,7 +128,7 @@ class CommonTileList extends StatelessWidget {
           CommonDivider(),
           CommonTile(
             text1: languageController.getLabel('stcoins_balance'),
-            text2: "2510 Coins",
+            text2: "$coin Coins",
             iconPath: ImageAssets.coin,
           ),
           CommonDivider(),
@@ -149,7 +152,7 @@ class CommonTileList extends StatelessWidget {
           CommonDivider(),
           CommonTile(
             text1: languageController.getLabel('challenges_completed'),
-            text2: "212 Challenges",
+            text2: "$challenges Challenges",
             iconPath: ImageAssets.challenges,
           ),
         ],

@@ -37,6 +37,8 @@ abstract class PrefsKey {
   static const lName = "key_lName";
   static const phoneNo = "key_PhoneNo";
   static const phoneNocountry = "key_PhoneNo_country";
+  static const userstcoin = "key_user_stcoin";
+  static const userchallengecount = "key_user_userchallengecount";
 }
 
 abstract class SharedPref {
